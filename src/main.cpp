@@ -34,7 +34,7 @@ void loop()
 {
   mpu_loop();
 
-  Serial.printf("X = %f, Y = %f, Z = %f,\n", getAngleX(), getAngleY(), getAngleZ());
+  Serial.printf("X = %.1f, Y = %.1f, Z = %.1f,\n", getAngleX(), getAngleY(), getAngleZ());
 
   // calcularCelula(accelerationX, DISTANCIA_MEDIDA);
 

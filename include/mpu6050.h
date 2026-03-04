@@ -1,6 +1,5 @@
 #include <Wire.h>
-
-const float PI = 3.14;
+#include <Arduino.h>
 
 const int MPU = 0x68;  // MPU6050 I2C address
 
