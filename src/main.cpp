@@ -7,8 +7,8 @@
 Adafruit_MPU6050 mpu;
 sensors_event_t g, a, t;
 
-char* ssid = "FAMILIA SILVA_2.4G";
-char* password = "senha123";
+char* ssid = "Arthur";
+char* password = "arthur123";
 
 const int tamanhoTabuleiro[2] = {10, 10};
 int posicaoAtual[2] = {3, 4};
@@ -20,10 +20,10 @@ float calcularDistanciaY();
 void calcularCelula(float distanciaX, float distanciaY);
 
 const float DIMENSAO_DE_QUADRO = 1.0;
-const float DISTANCIA_MEDIDA = 4.0;
+const float DISTANCIA_MEDIDA = 12.0;
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
   if (!mpu.begin()) {
     Serial.println("Erro ao carregar MPU6050");
   }
@@ -38,7 +38,7 @@ void loop() {
 
   Serial.printf("X = %f\n", accelerationX);
   
-  calcularCelula(accelerationX, DISTANCIA_MEDIDA);
+  calcularCelula(30, DISTANCIA_MEDIDA);
   
   delay(1000);
 }
