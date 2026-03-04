@@ -58,14 +58,20 @@ void calcularCelula(float angulo, float distancia)
   int X = calcularDistanciaX(anguloEmGraus, distancia);
   int Y = calcularDistanciaY(anguloEmGraus, distancia);
 
-  tabuleiro[posicaoAtual[0] + X][posicaoAtual[1] + Y] = true;
+  int targetX = abs(posicaoAtual[0] + Y);
+  int targetY = abs(posicaoAtual[1] + X);
+  
   Serial.printf("Celula: X=%i Y=%i\n", X, Y);
   for(int linha = 0 ; linha <= tamanhoTabuleiro[0] ; linha++) {
     for(int coluna = 0 ; coluna <= tamanhoTabuleiro[1] ; coluna++) {
-      if (!tabuleiro[coluna][linha]) {
+      if (linha == targetY, coluna == targetX) {
         Serial.print("[ ]");
       } else {
-        Serial.print("[X]");
+        if (linha == posicaoAtual[0] && coluna == posicaoAtual[1]) {
+          Serial.print("[O]");
+        } else {
+          Serial.print("[X]");
+        }
       }
     }
     Serial.println("");
