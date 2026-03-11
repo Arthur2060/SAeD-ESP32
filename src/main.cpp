@@ -1,6 +1,5 @@
 #include <Adafruit_QMC5883P.h>  // Importa lib para módulo bussola
 #include <Adafruit_Sensor.h>    // Importa lib genérica para sensores em geral
-#include <micro_ros_arduino.h>  // Importa lib para Micro-ROS
 #include <Wire.h>               // Importa lib para comunicação UART e I2C
 
 // Defines
@@ -42,7 +41,7 @@ void configurarBussola() {
   }
 
   // Configurações padrão da biblioteca
-  
+
   qmc.setMode(QMC5883P_MODE_NORMAL);
   qmc.setODR(QMC5883P_ODR_50HZ);
   qmc.setOSR(QMC5883P_OSR_4);
