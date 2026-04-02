@@ -23,7 +23,6 @@ private:
         }
 
         compass.setMode(QMC5883P_MODE_NORMAL);
-
         compass.setODR(QMC5883P_ODR_50HZ);
         compass.setOSR(QMC5883P_OSR_4);
         compass.setDSR(QMC5883P_DSR_2);

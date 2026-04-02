@@ -1,37 +1,43 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-class TFLunaSAeD {
-  public:
+class TFLunaSAeD
+{
+public:
     const int LiDAR_DATA_LENGTH = 9;
-  
-    TFLunaSAeD(int SCL, int SDA) {
-      Wire.begin(SDA, SCL);
+
+    TFLunaSAeD(int SCL, int SDA)
+    {
+        Wire.begin(SDA, SCL);
     }
 
-    TFLunaSAeD() {
-      Serial2.begin(9600, SERIAL_8N1, 16, 17);
+    TFLunaSAeD()
+    {
+        Serial2.begin(9600, SERIAL_8N1, 16, 17);
     }
 
     void collectDataUART();
     void collectDataI2C();
 };
 
-void TFLunaSAeD::collectDataUART() {
-    uint8_t data[LiDAR_DATA_LENGTH] = { 0 };
+void TFLunaSAeD::collectDataUART()
+{
+    uint8_t data[LiDAR_DATA_LENGTH] = {0};
 
     uint16_t distance = 0;
     uint16_t strength = 0;
     uint16_t temperature = 0;
-        
+
     int checksum = 0;
     int index = 0;
 
-    while(Serial2.available() && index < LiDAR_DATA_LENGTH) {
+    while (Serial2.available() && index < LiDAR_DATA_LENGTH)
+    {
         data[index++] = Serial2.read();
     }
 
-    if (index == LiDAR_DATA_LENGTH) {
+    if (index == LiDAR_DATA_LENGTH)
+    {
         distance = data[2] + data[3] * 256;
         strength = data[4] + data[5] * 256;
         temperature = data[6] + data[7] * 256;
@@ -40,21 +46,24 @@ void TFLunaSAeD::collectDataUART() {
     Serial.printf("Distance: %f cm\n", (float)distance);
 }
 
-void TFLunaSAeD::collectDataI2C() {
-    uint8_t data[LiDAR_DATA_LENGTH] = { 0 };
+void TFLunaSAeD::collectDataI2C()
+{
+    uint8_t data[LiDAR_DATA_LENGTH] = {0};
 
     uint16_t distance = 0;
     uint16_t strength = 0;
     uint16_t temperature = 0;
-        
+
     int checksum = 0;
     int index = 0;
 
-    while(Wire.available() && index < LiDAR_DATA_LENGTH) {
+    while (Wire.available() && index < LiDAR_DATA_LENGTH)
+    {
         data[index++] = Wire.read();
     }
 
-    if (index == LiDAR_DATA_LENGTH) {
+    if (index == LiDAR_DATA_LENGTH)
+    {
         distance = data[2] + data[3] * 256;
         strength = data[4] + data[5] * 256;
         temperature = data[6] + data[7] * 256;
