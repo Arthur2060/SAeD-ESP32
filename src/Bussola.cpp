@@ -10,7 +10,7 @@ public:
     }
 
     bool testCompass();
-    void collectCompassData();
+    float collectCompassData();
 
 private:
     Adafruit_QMC5883P compass;
@@ -31,7 +31,7 @@ private:
     }
 };
 
-void Bussola::collectCompassData()
+float Bussola::collectCompassData()
 {
     if (compass.isDataReady())
     {
@@ -39,7 +39,10 @@ void Bussola::collectCompassData()
         compass.getRawMagnetic(&x, &y, &z);
 
         Serial.printf("X: %f, Y: %f, Z: %f\n", (float)x, (float)y, (float)z);
+        return z;
     }
+
+    return 0;
 }
 
 bool Bussola::testCompass()

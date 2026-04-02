@@ -16,11 +16,11 @@ public:
         Serial2.begin(9600, SERIAL_8N1, 16, 17);
     }
 
-    void collectDataUART();
-    void collectDataI2C();
+    float collectDataUART();
+    float collectDataI2C();
 };
 
-void TFLuna::collectDataUART()
+float TFLuna::collectDataUART()
 {
     uint8_t data[LiDAR_DATA_LENGTH] = {0};
 
@@ -44,9 +44,11 @@ void TFLuna::collectDataUART()
     }
 
     Serial.printf("Distance: %f cm\n", (float)distance);
+
+    return distance;
 }
 
-void TFLuna::collectDataI2C()
+float TFLuna::collectDataI2C()
 {
     uint8_t data[LiDAR_DATA_LENGTH] = {0};
 
@@ -70,4 +72,6 @@ void TFLuna::collectDataI2C()
     }
 
     Serial.printf("Distance: %f cm\n", (float)distance);
+    
+    return distance;
 }
