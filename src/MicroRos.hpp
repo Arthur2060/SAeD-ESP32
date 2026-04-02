@@ -26,11 +26,6 @@ rcl_allocator_t allocator;
 rclc_support_t support;
 rcl_node_t node;
 
-void loop()
-{
-  delay(100);
-}
-
 class MicroRos
 {
 public:

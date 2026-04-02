@@ -1,8 +1,8 @@
 #include <Arduino.h>
 
-#include "TFLuna.cpp"
-#include "Bussola.cpp"
-#include "MicroRos.cpp"
+#include "TFLuna.hpp"
+#include "Bussola.hpp"
+#include "MicroRos.hpp"
 
 TFLuna tfluna;
 Bussola bussola;
