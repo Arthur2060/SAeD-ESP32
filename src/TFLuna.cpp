@@ -1,17 +1,17 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-class TFLunaSAeD
+class TFLuna
 {
 public:
     const int LiDAR_DATA_LENGTH = 9;
 
-    TFLunaSAeD(int SCL, int SDA)
+    TFLuna(int SCL, int SDA)
     {
         Wire.begin(SDA, SCL);
     }
 
-    TFLunaSAeD()
+    TFLuna()
     {
         Serial2.begin(9600, SERIAL_8N1, 16, 17);
     }
@@ -20,7 +20,7 @@ public:
     void collectDataI2C();
 };
 
-void TFLunaSAeD::collectDataUART()
+void TFLuna::collectDataUART()
 {
     uint8_t data[LiDAR_DATA_LENGTH] = {0};
 
@@ -46,7 +46,7 @@ void TFLunaSAeD::collectDataUART()
     Serial.printf("Distance: %f cm\n", (float)distance);
 }
 
-void TFLunaSAeD::collectDataI2C()
+void TFLuna::collectDataI2C()
 {
     uint8_t data[LiDAR_DATA_LENGTH] = {0};
 
