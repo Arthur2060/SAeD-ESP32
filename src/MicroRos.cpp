@@ -20,7 +20,7 @@ uint agent_port = 8888;
 rcl_publisher_t lidar_publisher;
 rcl_publisher_t compass_publisher;
 std_msgs__msg__Float32 lidar_msg;
-geometry_msgs__msg__Vector3 compass_msg;
+std_msgs__msg__Float32 compass_msg;
 rclc_executor_t executor;
 rcl_allocator_t allocator;
 rclc_support_t support;
@@ -93,12 +93,14 @@ public:
     Serial.println("micro-ROS initialized successfully!");
   }
 
-  void sendData();
+  void sendData(float lidar, float bussola);
 
 private:
 };
 
-void MicroRos::sendData()
+void MicroRos::sendData(float lidar, float bussola)
 {
+  lidar_msg.data = lidar;
+  compass_msg.data = bussola;
   rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100));
 }
