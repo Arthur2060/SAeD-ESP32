@@ -1,21 +1,21 @@
 #include <Arduino.h>
 
-#include "TFLuna.hpp"
-#include "Bussola.hpp"
-#include "MicroRos.hpp"
+// #include "TFLuna.hpp"
+// #include "Bussola.hpp"
+// #include "MicroRos.hpp"
 #include "Ultrasom.hpp"
 
-TFLuna tfluna;
-Bussola bussola;
-MicroRos ros;
-Ultrasom ultrasom(7, 7);
+// TFLuna tfluna;
+// Bussola bussola;
+// MicroRos ros;
+Ultrasom ultrasom(14, 12); // Pino 14 - Trigger, Pino 12 - Echo
 
 void setup() {
-    Serial.begin(115900);
+    Serial.begin(9600);
 }
 
 void loop() {
-    float distance = ultrasom.collectUltrasonicData();
-    float angle = bussola.collectCompassData();
-    ros.sendData(distance, angle);
+    int distance = ultrasom.collectUltrasonicData();
+    
+    Serial.printf("Distance: %i\n", distance);
 }

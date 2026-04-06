@@ -1,36 +1,38 @@
 #include <Arduino.h>
 
-class Ultrasom {
-    public:
+class Ultrasom
+{
 
-        Ultrasom(int trigger, int echo) {
-            this->trigger = trigger;
-            this->echo = echo;
-        }
+private:
+    int trigger, echo;
+    const float MIN_DISTANCE = 0.4;
 
-        long collectUltrasonicData()
-        {
-            pinMode(trigger, OUTPUT);
-            digitalWrite(trigger, LOW);
-            delay(2);
-            digitalWrite(trigger, HIGH);
-            delay(10);
-            digitalWrite(trigger, LOW);
-            pinMode(echo, INPUT);
-            return pulseIn(echo, HIGH) / 100;
-        }
+public:
+    Ultrasom(int trigger, int echo)
+    {
+        this->trigger = trigger;
+        this->echo = echo;
+    }
 
-        void setTrigger(int trigger)
-        {
-            this->trigger = trigger;
-        }
+    long collectUltrasonicData()
+    {
+        pinMode(trigger, OUTPUT);
+        digitalWrite(trigger, LOW);
+        delay(2);
+        digitalWrite(trigger, HIGH);
+        delay(10);
+        digitalWrite(trigger, LOW);
+        pinMode(echo, INPUT);
+        return pulseIn(echo, HIGH) / 100;
+    }
 
-        void setEcho(int echo)
-        {
-            this->echo = echo;
-        }
+    void setTrigger(int trigger)
+    {
+        this->trigger = trigger;
+    }
 
-    private:
-        int trigger, echo;
-        const MIN_DISTANCE = 0.4;
+    void setEcho(int echo)
+    {
+        this->echo = echo;
+    }
 };
