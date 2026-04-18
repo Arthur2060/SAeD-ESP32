@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include <Adafruit_QMC5883P.h>
 #include <Adafruit_Sensor.h>
 
