@@ -3,13 +3,20 @@ class Ultrasom
 
 private:
     int trigger, echo;
-    const float MIN_DISTANCE = 0.4;
+    float minDistance = 0.3;
 
 public:
     void begin(int trigger, int echo)
     {
         this->trigger = trigger;
         this->echo = echo;
+    }
+
+    void begin(int trigger, int echo, float minDistance)
+    {
+        this->trigger = trigger;
+        this->echo = echo;
+        this->minDistance = minDistance;
     }
 
     long collectUltrasonicData()
@@ -24,10 +31,10 @@ public:
 
         long pulse = pulseIn(echo, HIGH) / 100;
 
-        if (pulse > MIN_DISTANCE) {
+        if (pulse > minDistance) {
             return pulse;
         }
-        return 0;
+        return minDistance;
     }
 
     void setTrigger(int trigger)
