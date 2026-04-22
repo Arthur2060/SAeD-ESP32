@@ -21,7 +21,13 @@ public:
         delay(10);
         digitalWrite(trigger, LOW);
         pinMode(echo, INPUT);
-        return pulseIn(echo, HIGH) / 100;
+
+        long pulse = pulseIn(echo, HIGH) / 100;
+
+        if (pulse > MIN_DISTANCE) {
+            return pulse;
+        }
+        return 0;
     }
 
     void setTrigger(int trigger)
