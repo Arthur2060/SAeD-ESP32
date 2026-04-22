@@ -4,7 +4,7 @@
 class Bussola
 {
 public:
-    Bussola() {
+    void begin() {
         configureCompass();
     }
 

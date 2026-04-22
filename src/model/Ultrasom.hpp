@@ -6,7 +6,7 @@ private:
     const float MIN_DISTANCE = 0.4;
 
 public:
-    Ultrasom(int trigger, int echo)
+    void begin(int trigger, int echo)
     {
         this->trigger = trigger;
         this->echo = echo;
