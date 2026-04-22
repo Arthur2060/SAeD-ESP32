@@ -1,4 +1,3 @@
-#include <cmath>
 #include <vector>
 
 class SAeDMap {
@@ -15,5 +14,27 @@ class SAeDMap {
             }
 
             this->distanciaDeQuadro = distanciaDeQuadro;
+        }
+
+        float getDistanciaDeQuadro() {
+            return distanciaDeQuadro;
+        } 
+
+        float setDistanciaDeQuadro(float distancia) {
+            if (distancia > 0) {
+                distanciaDeQuadro = distancia;
+            }
+        }
+
+        bool addObstacle(float distanceX, float distanceY) {
+            float x = distanceX / distanciaDeQuadro;
+            float y = distanceY / distanciaDeQuadro;
+
+            if (!map[x][y]) {
+                map[x][y] = !map[x][y];
+                return true;
+            }
+
+            return false;
         }
 };
