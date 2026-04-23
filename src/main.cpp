@@ -1,14 +1,15 @@
-#include "controll/Radar.hpp"
+#include "model/Color.hpp"
 
-Radar radar;
+Color color;
 
 void setup() {
   Serial.begin(9600);
-  radar.begin(14, 13);
+  color.begin();
 }
 
 void loop() {
-  float leitura[2] = {radar.getObstacle()[0], radar.getObstacle()[1]};
-  Serial.printf("X = %.2fm, Y = %.2fm\n", leitura[0], leitura[1]);
-  delay(1000);
+  std::vector<uint> valores = color.readColor();
+
+  Serial.printf("R=%i, G=%i, B=%i", valores[0], valores[1], valores[2]);
+  delay(100);
 }
