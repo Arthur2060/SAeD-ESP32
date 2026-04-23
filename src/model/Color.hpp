@@ -23,6 +23,9 @@ class Color {
     private:
         int mapRange(double x);
         const int ERROR_MARGE = 110;
+
+        int currentState = 0;
+
     public:
         void begin();
         std::vector<uint> readColor();
@@ -30,6 +33,7 @@ class Color {
         bool readColor(int vm, int vd, int vz, int vb);
         bool readColor(int valores[3]);
         bool readColor(int valores[4]);
+        void setState(int state);
 };
 
 void Color::begin()
@@ -46,8 +50,7 @@ void Color::begin()
   pinMode(pinoLedVerd, OUTPUT);
   pinMode(pinoLedAzul, OUTPUT);
   
-  digitalWrite(pinS0, HIGH);
-  digitalWrite(pinS1, LOW);
+  setState(2);
 
   digitalWrite(pinS2, HIGH);
   digitalWrite(pinS3, LOW);
@@ -125,4 +128,33 @@ bool Color::readColor(int valores[3]) {
 
 bool Color::readColor(int valores[4]) {
     return readColor(valores[0], valores[1], valores[2], valores[3]);
+}
+
+void Color::setState(int state) {
+    switch (state)
+    {
+    case 0:
+        digitalWrite(pinS0, LOW);
+        digitalWrite(pinS1, LOW);
+        break;
+        
+    case 1:
+        digitalWrite(pinS0, LOW);
+        digitalWrite(pinS1, HIGH);
+        break;
+    case 2:
+        digitalWrite(pinS0, HIGH);
+        digitalWrite(pinS1, LOW);
+        break;
+        
+    case 3:
+        digitalWrite(pinS0, HIGH);
+        digitalWrite(pinS1, HIGH);
+        break;
+        
+    default:
+        return;
+        break;
+    }
+    currentState = state;
 }
