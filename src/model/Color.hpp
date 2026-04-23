@@ -1,4 +1,5 @@
 #include "Arduino.h"
+#include <vector>
 
 //Pinos de conexao do modulo
 #define pinS0 18
@@ -23,7 +24,7 @@ class Color {
 
     public:
         void begin();
-        void detectaCor();
+        std::vector<uint> readColor();
 };
 
 void Color::begin()
@@ -54,26 +55,18 @@ void Color::begin()
 }
 
 // *********** Função de leitura so sensor de cor ********************
-void Color::detectaCor() {
-  //Vermelho
-  digitalWrite(pinS2, LOW);
-  digitalWrite(pinS3, LOW);
-  valorVm = pulseIn(pinOut, digitalRead(pinOut) == HIGH ? LOW : HIGH);
+std::vector<uint> Color::readColor() {
+  valorVm = mapRange(pulseIn(pinOut, digitalRead(pinOut) == HIGH ? LOW : HIGH));
   
-  //Sem filtro
-  digitalWrite(pinS2, HIGH);
-  valorBr = pulseIn(pinOut, digitalRead(pinOut) == HIGH ? LOW : HIGH);
+  valorVd = mapRange(pulseIn(pinOut, digitalRead(pinOut) == HIGH ? LOW : HIGH));
+  
+  valorAz = mapRange(pulseIn(pinOut, digitalRead(pinOut) == HIGH ? LOW : HIGH));
+  
+  valorBr = mapRange(pulseIn(pinOut, digitalRead(pinOut) == HIGH ? LOW : HIGH));
 
-  //Azul
-  digitalWrite(pinS2, LOW);
-  digitalWrite(pinS3, HIGH);
-  valorAz = pulseIn(pinOut, digitalRead(pinOut) == HIGH ? LOW : HIGH);
-
-  //Verde
-  digitalWrite(pinS2, HIGH);
-  valorVd = pulseIn(pinOut, digitalRead(pinOut) == HIGH ? LOW : HIGH);
+  return {valorVm, valorVd, valorAz, valorBr};
 }
 
-double mapRange(double x) {
+int mapRange(double x) {
     return (x - 0) * (255 - 0) / (1023 - 0) + 0;
 }
