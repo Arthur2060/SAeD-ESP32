@@ -46,10 +46,12 @@ void Color::begin()
   pinMode(pinoLedVerd, OUTPUT);
   pinMode(pinoLedAzul, OUTPUT);
   
-  digitalWrite(pinS0, LOW);
+  digitalWrite(pinS0, HIGH);
   digitalWrite(pinS1, LOW);
-  digitalWrite(pinS2, LOW);
+
+  digitalWrite(pinS2, HIGH);
   digitalWrite(pinS3, LOW);
+
   digitalWrite(pinLED, LOW);
 
   digitalWrite(pinoLedVerm, LOW);
@@ -61,12 +63,25 @@ void Color::begin()
 
 // *********** Função de leitura so sensor de cor ********************
 std::vector<uint> Color::readColor() {
+
+  digitalWrite(pinS2, LOW);
+  digitalWrite(pinS3, LOW);
+
   valorVm = mapRange(pulseIn(pinOut, digitalRead(pinOut) == HIGH ? LOW : HIGH));
+  
+  digitalWrite(pinS2, HIGH);
+  digitalWrite(pinS3, HIGH);
   
   valorVd = mapRange(pulseIn(pinOut, digitalRead(pinOut) == HIGH ? LOW : HIGH));
   
+  digitalWrite(pinS2, LOW);
+  digitalWrite(pinS3, HIGH);
+
   valorAz = mapRange(pulseIn(pinOut, digitalRead(pinOut) == HIGH ? LOW : HIGH));
   
+  digitalWrite(pinS2, HIGH);
+  digitalWrite(pinS3, LOW);
+
   valorBr = mapRange(pulseIn(pinOut, digitalRead(pinOut) == HIGH ? LOW : HIGH));
 
   return {valorVm, valorVd, valorAz, valorBr};
