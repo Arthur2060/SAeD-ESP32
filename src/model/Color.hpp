@@ -28,24 +28,29 @@ class Color {
 
 void Color::begin()
 {
+  pinMode(pinOut, INPUT);
+
   pinMode(pinS0, OUTPUT);
   pinMode(pinS1, OUTPUT);
   pinMode(pinS2, OUTPUT);
   pinMode(pinS3, OUTPUT);
   pinMode(pinLED, OUTPUT);
-  pinMode(pinOut, INPUT);
-
+  
   pinMode(pinoLedVerm, OUTPUT);
   pinMode(pinoLedVerd, OUTPUT);
   pinMode(pinoLedAzul, OUTPUT);
-
-  Serial.begin(115200);
-  digitalWrite(pinS0, HIGH);
+  
+  digitalWrite(pinS0, LOW);
   digitalWrite(pinS1, LOW);
+  digitalWrite(pinS2, LOW);
+  digitalWrite(pinS3, LOW);
+  digitalWrite(pinLED, LOW);
 
-  delay(2000);
-  //Liga LED
-  digitalWrite(pinLED, HIGH);
+  digitalWrite(pinoLedVerm, LOW);
+  digitalWrite(pinoLedVerd, LOW);
+  digitalWrite(pinoLedAzul, LOW);
+  
+  digitalWrite(pinS1, LOW);
 }
 
 // *********** Função de leitura so sensor de cor ********************
@@ -67,4 +72,8 @@ void Color::detectaCor() {
   //Verde
   digitalWrite(pinS2, HIGH);
   valorVd = pulseIn(pinOut, digitalRead(pinOut) == HIGH ? LOW : HIGH);
+}
+
+double mapRange(double x) {
+    return (x - 0) * (255 - 0) / (1023 - 0) + 0;
 }
