@@ -21,10 +21,15 @@ unsigned int valorBr = 0;
 
 class Color {
     private:
-
+        int mapRange(double x);
+        const int ERROR_MARGE = 110;
     public:
         void begin();
         std::vector<uint> readColor();
+        bool readColor(int vm, int vd, int vz);
+        bool readColor(int vm, int vd, int vz, int vb);
+        bool readColor(int valores[3]);
+        bool readColor(int valores[4]);
 };
 
 void Color::begin()
@@ -67,6 +72,20 @@ std::vector<uint> Color::readColor() {
   return {valorVm, valorVd, valorAz, valorBr};
 }
 
-int mapRange(double x) {
+int Color::mapRange(double x) {
     return (x - 0) * (255 - 0) / (1023 - 0) + 0;
+}
+
+bool Color::readColor(int vm, int vd, int vb) {
+    int valores[3] = {readColor()[0], readColor()[1], readColor()[2]};
+    
+    if (
+        (valores[0] - ERROR_MARGE) < vm && vm < (valores[0] + ERROR_MARGE) && 
+        (valores[1] - ERROR_MARGE) < vd && vd < (valores[1] + ERROR_MARGE) && 
+        (valores[2] - ERROR_MARGE) < vb && vb < (valores[2] + ERROR_MARGE)
+    ) {
+        return true;
+    }
+
+    return false;
 }
