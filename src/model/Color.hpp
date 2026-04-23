@@ -76,16 +76,38 @@ int Color::mapRange(double x) {
     return (x - 0) * (255 - 0) / (1023 - 0) + 0;
 }
 
-bool Color::readColor(int vm, int vd, int vb) {
+bool Color::readColor(int vm, int vd, int vz) {
     int valores[3] = {readColor()[0], readColor()[1], readColor()[2]};
     
     if (
         (valores[0] - ERROR_MARGE) < vm && vm < (valores[0] + ERROR_MARGE) && 
         (valores[1] - ERROR_MARGE) < vd && vd < (valores[1] + ERROR_MARGE) && 
-        (valores[2] - ERROR_MARGE) < vb && vb < (valores[2] + ERROR_MARGE)
+        (valores[2] - ERROR_MARGE) < vz && vz < (valores[2] + ERROR_MARGE)
     ) {
         return true;
     }
 
     return false;
+}
+
+bool Color::readColor(int vm, int vd, int vz, int vb) {
+    int valorBranco = readColor()[3];
+    bool resul = readColor(vm, vd, vz);
+
+    if (
+        resul &&
+        (valorBranco - ERROR_MARGE) < vb && vb < (valorBranco + ERROR_MARGE)
+    ) {
+        return true;
+    }
+
+    return false;
+}
+
+bool Color::readColor(int valores[3]) {
+    return readColor(valores[0], valores[1], valores[2]);
+}
+
+bool Color::readColor(int valores[4]) {
+    return readColor(valores[0], valores[1], valores[2], valores[3]);
 }
