@@ -10,6 +10,6 @@ void setup() {
 void loop() {
   std::vector<uint> valores = color.readColor();
 
-  Serial.printf("R=%i, G=%i, B=%i", valores[0], valores[1], valores[2]);
+  Serial.printf("R=%i, G=%i, B=%i, Luminosidade=%i", valores[0], valores[1], valores[2], valores[3]);
   delay(100);
 }
