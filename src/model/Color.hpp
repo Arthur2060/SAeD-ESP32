@@ -9,11 +9,6 @@
 #define pinOut 23
 #define pinLED 26
 
-//Pinos dos LEDs
-#define pinoLedVerm 14
-#define pinoLedVerd 12
-#define pinoLedAzul 27
-
 unsigned int valorVm = 0;
 unsigned int valorVd = 0;
 unsigned int valorAz = 0;
@@ -28,6 +23,7 @@ class Color {
 
     public:
         void begin();
+        void begin(int initialState);
         std::vector<uint> readColor();
         bool readColor(int vm, int vd, int vz);
         bool readColor(int vm, int vd, int vz, int vb);
@@ -46,22 +42,30 @@ void Color::begin()
   pinMode(pinS3, OUTPUT);
   pinMode(pinLED, OUTPUT);
   
-  pinMode(pinoLedVerm, OUTPUT);
-  pinMode(pinoLedVerd, OUTPUT);
-  pinMode(pinoLedAzul, OUTPUT);
-  
   setState(2);
 
   digitalWrite(pinS2, HIGH);
   digitalWrite(pinS3, LOW);
 
-  digitalWrite(pinLED, LOW);
+  digitalWrite(pinLED, HIGH);
+}
 
-  digitalWrite(pinoLedVerm, LOW);
-  digitalWrite(pinoLedVerd, LOW);
-  digitalWrite(pinoLedAzul, LOW);
+void Color::begin(int initialState)
+{
+  pinMode(pinOut, INPUT);
+
+  pinMode(pinS0, OUTPUT);
+  pinMode(pinS1, OUTPUT);
+  pinMode(pinS2, OUTPUT);
+  pinMode(pinS3, OUTPUT);
+  pinMode(pinLED, OUTPUT);
   
-  digitalWrite(pinS1, LOW);
+  setState(initialState);
+
+  digitalWrite(pinS2, HIGH);
+  digitalWrite(pinS3, LOW);
+
+  digitalWrite(pinLED, HIGH);
 }
 
 // *********** Função de leitura so sensor de cor ********************
