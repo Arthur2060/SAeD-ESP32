@@ -17,7 +17,7 @@ unsigned int valorBr = 0;
 class Color {
     private:
         int mapRange(double x);
-        const int ERROR_MARGE = 110;
+        const int ERROR_MARGE = mapRange(110);
 
         int currentState = 0;
 
