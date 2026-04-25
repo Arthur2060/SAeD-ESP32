@@ -13,6 +13,8 @@ class Demarcacao {
         std::vector<area> areas;
 
     public:
+        Demarcacao() {}
+
         Demarcacao(std::vector<std::vector<bool>> map) {
             this->map = map;
         }

@@ -1,10 +1,12 @@
 #include <vector>
+#include "Demarcacao.hpp"
 
 class SAeDMap {
     private:
         std::vector<std::vector<bool>> map;
         float distanciaDeQuadro = 0.3f;
-
+        Demarcacao demarcacao;
+    
     public:
         SAeDMap(int scalex, int scaley, float distanciaDeQuadro) {
             for (int x = 0 ; x <= scalex ; x++) {
@@ -14,8 +16,9 @@ class SAeDMap {
             }
 
             this->distanciaDeQuadro = distanciaDeQuadro;
+            this->demarcacao = Demarcacao(map);
         }
-
+        
         float getDistanciaDeQuadro() {
             return distanciaDeQuadro;
         } 
@@ -37,4 +40,8 @@ class SAeDMap {
 
             return false;
         }
-};
+
+        Demarcacao getDemarcacao() {
+            return this->demarcacao;
+        }
+    };
