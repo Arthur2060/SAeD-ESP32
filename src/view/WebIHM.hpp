@@ -1,6 +1,0 @@
-class WebIHM {
-    private:
-        
-    public:
-
-};
