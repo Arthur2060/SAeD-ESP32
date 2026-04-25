@@ -25,9 +25,21 @@ class Garra {
 
             home();
         }
+
+        uint16_t getServoMax() {
+            return this->SERVO_MAX;
+        }
+
+        uint16_t getServoMin() {
+            return this->SERVO_MIN;
+        }
 };
 
 void Garra::moverCosseno(int servoIdx, int de, int para, int passos) {
+    if (de < getServoMin() || para > getServoMax()) {
+        return;
+    }
+
   for (int i = 0; i <= passos; i++) {
     // Cálculo da curva de 0 a 1 usando Cosseno (Ease In-Out)
     float t = (float)i / (float)passos;
