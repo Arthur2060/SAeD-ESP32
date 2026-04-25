@@ -6,19 +6,19 @@
 // 1. DEFINIÇÕES DOS PINOS (HARDWARE)
 // ============================================================
 // Motor Esquerdo (Ponte H)
-#define PIN_MOTOR_L_PWM 26
-#define PIN_MOTOR_L_IN1 14
-#define PIN_MOTOR_L_IN2 27
+#define PIN_MOTOR_L_PWM 27
+#define PIN_MOTOR_L_IN1 2
+#define PIN_MOTOR_L_IN2 4
 // Motor Direito
-#define PIN_MOTOR_R_PWM 25
-#define PIN_MOTOR_R_IN3 33
+#define PIN_MOTOR_R_PWM 19
+#define PIN_MOTOR_R_IN3 18
 #define PIN_MOTOR_R_IN4 32
 
 // Encoders (Sinais dos canais)
-#define PIN_ENC_L_A 18
-#define PIN_ENC_L_B 19
-#define PIN_ENC_R_A 21
-#define PIN_ENC_R_B 22
+#define PIN_ENC_L_A 26
+#define PIN_ENC_L_B 25
+#define PIN_ENC_R_A 33
+#define PIN_ENC_R_B 32
 
 // ============================================================
 // 2. CONSTANTES DO ROBÔ E DA ODOMETRIA
