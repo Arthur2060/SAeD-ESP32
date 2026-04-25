@@ -18,7 +18,8 @@ class Radar {
 
     std::vector<float> getObstacle() {
         float distance = ultrasom.collectUltrasonicData();
-        float angle = bussola.collectCompassData();
+        float angle = bussola.collectCompassData(); 
+        
 
         return {distance * sin(angle), distance * cos(angle)};
     }
