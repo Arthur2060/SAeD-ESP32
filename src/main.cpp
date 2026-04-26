@@ -18,7 +18,7 @@
 #define PIN_ENC_L_A 26
 #define PIN_ENC_L_B 25
 #define PIN_ENC_R_A 33
-#define PIN_ENC_R_B 32
+#define PIN_ENC_R_B 31
 
 // ============================================================
 // 2. CONSTANTES DO ROBÔ E DA ODOMETRIA
