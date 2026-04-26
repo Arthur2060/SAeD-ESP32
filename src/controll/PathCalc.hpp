@@ -5,8 +5,11 @@ class PathCalc {
     private:
         int currentCell[2] = {0, 0};
         int targetCell[2] = {0, 0};
+        std::vector<std::vector<bool>> map;
     public:
-        PathCalc() {}
+        PathCalc(std::vector<std::vector<bool>> map) {
+            this->map = map;
+        }
 
         std::vector<char> moveToTarget() {
             if (
@@ -38,5 +41,21 @@ class PathCalc {
             }
 
             return path;
+        }
+
+        bool setTarget(int target[2]) {
+            if 
+            (
+                !(target[0] >= 0 && target[0] <= sizeof(map) &&
+                target[1] >= 0 && target[1] <= sizeof(map[target[0]]))
+            ) {
+                return false;
+            }
+
+            this->targetCell[0] = target[0];
+            this->targetCell[1] = target[1];
+
+            moveToTarget();
+            return true;
         }
 };
