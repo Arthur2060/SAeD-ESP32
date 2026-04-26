@@ -17,7 +17,7 @@ class WebIHM {
     public:
         WebIHM(MapManager MapManager) {
             this->mapManager = mapManager;
-            this->pathCalc = PathCalc(mapManager.getMap());
+            this->pathCalc.setMap(mapManager.getMap());
         }
 
         void begin(char* ssid, char* password) {
@@ -31,6 +31,8 @@ class WebIHM {
             ip = WiFi.localIP();
 
             server.addHandler(&ws);
+
+            defineRoutes();
 
             server.begin();
         }
@@ -66,10 +68,10 @@ class WebIHM {
             sendSomething(content);
         }
 
-        void defineRoutes(AsyncWebServer server) {
-            server.on("/path", HTTP_POST, [this](AsyncWebServerRequest* request) {
+        void defineRoutes() {
+            server.on("/target", HTTP_POST, [this](AsyncWebServerRequest* request) {
                 int target[2] = {request->getAttribute("x", 0.0), request->getAttribute("y", 0.0)};
-
+                
                 std::vector<char> path = pathCalc.setTarget(target);
                 JsonDocument doc;
                 JsonArray pathJson = doc.to<JsonArray>();
@@ -77,8 +79,15 @@ class WebIHM {
                 for (char step : path) {
                     pathJson.add(step);
                 }
-
+                
                 sendSomething(doc);
+            });
+
+            server.on("/map", HTTP_POST, [this](AsyncWebServerRequest* request) {
+                int dimensions[2] = {request->getAttribute("x", 0.0), request->getAttribute("y", 0.0)};
+
+                mapManager.setNewMap(dimensions);
+                pathCalc.setMap(mapManager.getMap());
             });
         }
 };

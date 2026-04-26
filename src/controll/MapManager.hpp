@@ -20,6 +20,12 @@ class MapManager {
             this->distanciaDeQuadro = distanciaDeQuadro;
             this->demarcacao = Demarcacao(map);
         }
+
+        MapManager(std::vector<std::vector<bool>> map, float distanciaDeQuadro) {
+            this->map = map;
+            this->distanciaDeQuadro = distanciaDeQuadro;
+            this->demarcacao = Demarcacao(map);
+        }
         
         float getDistanciaDeQuadro() {
             return distanciaDeQuadro;
@@ -49,5 +55,40 @@ class MapManager {
 
         std::vector<std::vector<bool>> getMap() {
             return this->map;
+        }
+
+        void setNewMap(int scalex, int scaley) {
+            for (int x = 0 ; x <= scalex ; x++) {
+                for (int y = 0 ; y <= scaley ; y++) {
+                    this->map[x].push_back(false);
+                }
+            }
+
+            this->demarcacao;
+        }
+
+        void setNewMap(std::vector<std::vector<bool>> map) {
+            this->map = map;
+            this->demarcacao.setMap(this->map);
+        }
+
+        void setNewMap(int scalex, int scaley) {
+            for (int x = 0 ; x <= scalex ; x++) {
+                for (int y = 0 ; y <= scaley ; y++) {
+                    this->map[x].push_back(false);
+                }
+            }
+            
+            this->demarcacao.setMap(this->map);
+        }
+
+        void setNewMap(int* scale) {
+            for (int x = 0 ; x <= scale[0] ; x++) {
+                for (int y = 0 ; y <= scale[1] ; y++) {
+                    this->map[x].push_back(false);
+                }
+            }
+
+            this->demarcacao.setMap(this->map);
         }
     };
