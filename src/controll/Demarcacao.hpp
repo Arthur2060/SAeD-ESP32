@@ -23,13 +23,13 @@ class Demarcacao {
             if (
                 initialCell[0] < 0 ||
                 initialCell[1] < 0 ||
-                initialCell[0] > sizeof(areas) ||
-                initialCell[1] < sizeof(areas[0]) ||
+                initialCell[0] > sizeof(map) ||
+                initialCell[1] < sizeof(map[0]) ||
 
                 finalCell[0] < 0 ||
                 finalCell[1] < 0 ||
-                finalCell[0] > sizeof(areas) ||
-                finalCell[1] < sizeof(areas[0])
+                finalCell[0] > sizeof(map) ||
+                finalCell[1] < sizeof(map[0])
             ) {
                 return false;
             }
@@ -66,6 +66,29 @@ class Demarcacao {
                     cellLocation[1] < area.endCell[1]
                 ) {
                     return area;
+                }
+            }
+        }
+
+        void setMap(std::vector<std::vector<bool>> map) {
+            this->map = map;
+            validateAreas();
+        }
+
+        void validateAreas() {
+            for (int c = 0 ; c <= sizeof(areas) ; c++) {
+                if (
+                areas[c].startCell[0] < 0 ||
+                areas[c].startCell[1] < 0 ||
+                areas[c].startCell[0] > sizeof(map) ||
+                areas[c].startCell[1] < sizeof(map[areas[c].startCell[0]]) ||
+
+                areas[c].endCell[0] < 0 ||
+                areas[c].endCell[1] < 0 ||
+                areas[c].endCell[0] > sizeof(map) ||
+                areas[c].endCell[1] < sizeof(map[areas[c].endCell[0]])
+                ) {
+                    areas.erase(areas.begin() + c);
                 }
             }
         }
