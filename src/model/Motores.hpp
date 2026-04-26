@@ -108,7 +108,7 @@ private:
     float calcularVelocidadeEsquerda();
     float calcularVelocidadeDireita();
     void atualizarPID();
-    void atualizarOdometria();
+    float atualizarOdometria();
     void executarMovimentoReta(float distancia_m, float velocidade);
     void executarMovimentoReta(float distancia_m);
     void executarGiro(float angulo_rad, bool horario, float velocidade_ang);
@@ -246,7 +246,7 @@ void Motores::atualizarPID()
 /**
  * Atualiza a pose do robô (x, y, theta) usando odometria diferencial.
  */
-void Motores::atualizarOdometria()
+float Motores::atualizarOdometria()
 {
     unsigned long agora = millis();
     float deltaT = (agora - lastOdometryTime) / 1000.0;
@@ -282,6 +282,7 @@ void Motores::atualizarOdometria()
     }
 
     lastOdometryTime = agora;
+    return theta;
 }
 
 /**

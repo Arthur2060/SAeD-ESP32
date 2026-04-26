@@ -5,20 +5,15 @@
 
 class Radar {
     private:
-        Bussola bussola;
         Ultrasom ultrasom;
 
-        float lastDistance;
-        float lastAngle;
     public:
         void begin(int trigger, int echo) {
-            bussola.begin();
             ultrasom.begin(trigger, echo);
         }
 
-    std::vector<float> getObstacle() {
+    std::vector<float> getObstacle(float angle) {
         float distance = ultrasom.collectUltrasonicData();
-        float angle = bussola.collectCompassData();
 
         return {distance * sin(angle), distance * cos(angle)};
     }
