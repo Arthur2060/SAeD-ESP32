@@ -46,4 +46,8 @@ class MapManager {
         Demarcacao getDemarcacao() {
             return this->demarcacao;
         }
+
+        std::vector<std::vector<bool>> getMap() {
+            return this->map;
+        }
     };

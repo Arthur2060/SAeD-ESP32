@@ -44,4 +44,21 @@ class WebIHM {
 
             ws.textAll(payload);
         }
+
+        // Envia o contêudo do mapa atual
+        void enviarMapa() {
+            std::vector<std::vector<bool>> map = mapManager.getMap();
+
+            JsonDocument content;
+            JsonArray mapJson = content.to<JsonArray>();
+            
+            for (int c = 0 ; c <= sizeof(map) ; c++) {
+                JsonArray targetLine = mapJson.add<JsonArray>();
+                for (int d = 0 ; d <= sizeof(map[c]) ; d++) {
+                    targetLine.add(map[c][d]);
+                }
+            }
+
+            sendSomething(content);
+        }
 };
