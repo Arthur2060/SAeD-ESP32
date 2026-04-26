@@ -2,6 +2,7 @@
 #include "AsyncTCP.h"
 #include "ArduinoJson.h"
 #include "controll/MapManager.hpp"
+#include "controll/PathCalc.hpp"
 #include <WiFi.h>
 
 AsyncWebServer server(80);
@@ -11,10 +12,12 @@ class WebIHM {
     private:
         MapManager mapManager;
         IPAddress ip;
+        PathCalc pathCalc;
 
     public:
         WebIHM(MapManager MapManager) {
             this->mapManager = mapManager;
+            this->pathCalc = PathCalc(mapManager.getMap());
         }
 
         void begin(char* ssid, char* password) {
@@ -23,6 +26,7 @@ class WebIHM {
             while (WiFi.status() != WL_CONNECTED) {
                 delay(300);
             }
+
 
             ip = WiFi.localIP();
 
@@ -60,5 +64,21 @@ class WebIHM {
             }
 
             sendSomething(content);
+        }
+
+        void defineRoutes(AsyncWebServer server) {
+            server.on("/path", HTTP_POST, [this](AsyncWebServerRequest* request) {
+                int target[2] = {request->getAttribute("x", 0.0), request->getAttribute("y", 0.0)};
+
+                std::vector<char> path = pathCalc.setTarget(target);
+                JsonDocument doc;
+                JsonArray pathJson = doc.to<JsonArray>();
+
+                for (char step : path) {
+                    pathJson.add(step);
+                }
+
+                sendSomething(doc);
+            });
         }
 };
