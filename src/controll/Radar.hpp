@@ -8,6 +8,10 @@ class Radar {
         Ultrasom ultrasom;
 
     public:
+        void begin() {
+            ultrasom.begin(14, 13);
+        }
+
         void begin(int trigger, int echo) {
             ultrasom.begin(trigger, echo);
         }

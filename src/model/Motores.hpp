@@ -108,7 +108,6 @@ private:
     float calcularVelocidadeEsquerda();
     float calcularVelocidadeDireita();
     void atualizarPID();
-    float atualizarOdometria();
     void executarMovimentoReta(float distancia_m, float velocidade);
     void executarMovimentoReta(float distancia_m);
     void executarGiro(float angulo_rad, bool horario, float velocidade_ang);
@@ -156,6 +155,7 @@ public:
     }
 
     void processarComando(std::vector<char> commands);
+    float atualizarOdometria();
 };
 
 // ============================================================
