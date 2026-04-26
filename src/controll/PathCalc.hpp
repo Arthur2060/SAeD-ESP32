@@ -38,6 +38,8 @@ class PathCalc {
                     path.push_back(workChar);
                     workNumber--;
                 } while(workNumber > 0);
+
+                currentCell[c] += workNumber;
             }
 
             return path;
