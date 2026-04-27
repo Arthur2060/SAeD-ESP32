@@ -24,6 +24,14 @@
 #define PIN_ENC_R_A 33
 #define PIN_ENC_R_B 31
 
+// ============================================================
+// 2. VARIÁVEIS GLOBAIS
+// ============================================================
+// Objetos dos Encoders e PID (Biblioteca ESP32Encoder e QuickPID)
+ESP32Encoder encoderEsquerdo;
+ESP32Encoder encoderDireito;
+QuickPID pidEsquerdo;
+
 class Motores
 {
 private:
@@ -31,30 +39,23 @@ private:
     // 2. CONSTANTES DO ROBÔ E DA ODOMETRIA
     // ============================================================
     // Parâmetros Físicos do Robô
-    const float RAIO_RODA = 0.0325;       // Raio da roda (metros)
-    const float DIST_ENTRE_RODAS = 0.150; // Largura entre rodas (metros)
+    float raioDaRoda;       // Raio da roda (metros)
+    float distanciaEntreRodas; // Largura entre rodas (metros)
 
     // Parâmetros do Encoder (JGA25-370)
     const float PULSOS_POR_REVOLUCAO_MOTOR = 11.0; // 11 pulsos por volta do eixo do motor
     const float REDUCAO_GEARBOX = 34.0;            // Relação de redução do seu motor (exemplo)
     // Pulsos por volta COMPLETA da roda:
     const float PPR_RODA = PULSOS_POR_REVOLUCAO_MOTOR * REDUCAO_GEARBOX; // 374 pulsos/volta da roda
-    const float CIRCUNFERENCIA_RODA = 2.0 * PI * RAIO_RODA;              // ~0.204 metros
+    float CIRCUNFERENCIA_RODA;              // ~0.204 metros
     // Fator de conversão de pulsos do encoder para METROS
     const float METROS_POR_PULSO = CIRCUNFERENCIA_RODA / PPR_RODA; // 0.204 / 374 = ~0.000545m
 
     // Parâmetros do Movimento
-    const float DISTANCIA_POR_CELULA = 0.30;  // Distância para comando 'W' ou 'S' (0.3 metros)
+    float distanciaPorCelula;  // Distância para comando 'W' ou 'S' (0.3 metros)
     const float ANGULO_GIRO_RAD = PI / 2.0;   // 90 graus em radianos (giro)
-    const float VELOCIDADE_PADRAO_LIN = 0.15; // Velocidade linear padrão = 0.15 m/s
-    const float VELOCIDADE_PADRAO_ANG = 1.0;  // Velocidade angular padrão = 1 rad/s (~57°/s)
-
-    // ============================================================
-    // 3. VARIÁVEIS GLOBAIS
-    // ============================================================
-    // Objetos dos Encoders (Biblioteca ESP32Encoder)
-    ESP32Encoder encoderEsquerdo;
-    ESP32Encoder encoderDireito;
+    float velocidadePadraoLinear = 0.15; // Velocidade linear padrão = 0.15 m/s
+    float velocidadePadraoAngular = 1.0;  // Velocidade angular padrão = 1 rad/s (~57°/s)
 
     // --- PID para o Motor Esquerdo ---
     float setpointVelEsq = 0.0; // Velocidade desejada (m/s)
@@ -64,7 +65,6 @@ private:
     float Kp = 1.5;
     float Ki = 8.0;
     float Kd = 0.05;
-    QuickPID pidEsquerdo;
 
     // --- PID para o Motor Direito ---
     float setpointVelDir = 0.0;
@@ -121,8 +121,14 @@ public:
         QuickPID pidDireito(&inputVelDir, &outputPWM_Dir, &setpointVelDir, Kp, Ki, Kd, QuickPID::Action());
     }
 
-    void begin()
+    void begin(float distanciaEntreRodas, float raioDaRoda, float distanciaPorCelula)
     {
+        distanciaEntreRodas = distanciaEntreRodas;
+        raioDaRoda = raioDaRoda;
+        distanciaPorCelula = distanciaPorCelula;
+
+        
+        CIRCUNFERENCIA_RODA = 2.0 * PI * raioDaRoda; // ~0.204 metros
         // --- Inicialização dos Pinos dos Motores ---
         pinMode(PIN_MOTOR_L_PWM, OUTPUT);
         pinMode(PIN_MOTOR_L_IN1, OUTPUT);
@@ -154,8 +160,39 @@ public:
         lastOdometryTime = millis();
     }
 
+    void begin()
+    {
+        begin(0.0026, 0.00256,  0.30);
+    }
+
+    void begin(float distanciaPorCelula)
+    {
+        begin(0.0026, 0.00256, distanciaPorCelula);
+    }
+
     void processarComando(std::vector<char> commands);
+
     float atualizarOdometria();
+
+    float getVelocidadeLinear() {
+        return this->velocidadePadraoLinear;
+    }
+    
+    float getVelocidadeAngular() {
+        return this->velocidadePadraoAngular;
+    }
+    
+    void setVelocidadeLinear(float newVel) {
+        this->velocidadePadraoLinear = newVel;
+    }
+
+    void setVelocidadeAngular(float newVel) {
+        this->velocidadePadraoAngular = newVel;
+    }
+
+    void setDistanciaPorCelula(float newDistanciaPorCelula) {
+        this->distanciaPorCelula = newDistanciaPorCelula;
+    }
 };
 
 // ============================================================
@@ -266,8 +303,8 @@ float Motores::atualizarOdometria()
     }
     else
     {
-        float raio = (DIST_ENTRE_RODAS / 2.0) * (distDir + distEsq) / (distDir - distEsq);
-        float deltaTheta = (distDir - distEsq) / DIST_ENTRE_RODAS;
+        float raio = (distanciaEntreRodas / 2.0) * (distDir + distEsq) / (distDir - distEsq);
+        float deltaTheta = (distDir - distEsq) / distanciaEntreRodas;
         float deltaX = raio * (sin(theta + deltaTheta) - sin(theta));
         float deltaY = raio * (cos(theta) - cos(theta + deltaTheta));
         posX += deltaX;
@@ -305,8 +342,8 @@ void Motores::executarMovimentoReta(float distancia_m)
 {
     if (estadoAtual != PARADO)
         return;
-    setpointVelEsq = VELOCIDADE_PADRAO_LIN;
-    setpointVelDir = VELOCIDADE_PADRAO_LIN;
+    setpointVelEsq = velocidadePadraoLinear;
+    setpointVelDir = velocidadePadraoLinear;
     distanciaAlvo = distancia_m;
     posX = 0;
     posY = 0;
@@ -322,8 +359,8 @@ void Motores::executarGiro(float angulo_rad, bool horario, float velocidade_ang)
     if (estadoAtual != PARADO)
         return;
     // Para girar, as rodas giram em velocidades iguais e opostas.
-    // Velocidade linear das rodas = (velocidade_ang * DIST_ENTRE_RODAS) / 2.0
-    float vel_linear_roda = (velocidade_ang * DIST_ENTRE_RODAS) / 2.0;
+    // Velocidade linear das rodas = (velocidade_ang * distanciaEntreRodas) / 2.0
+    float vel_linear_roda = (velocidade_ang * distanciaEntreRodas) / 2.0;
     if (horario)
     {
         setpointVelEsq = vel_linear_roda;
@@ -344,8 +381,8 @@ void Motores::executarGiro(float angulo_rad, bool horario)
     if (estadoAtual != PARADO)
         return;
     // Para girar, as rodas giram em velocidades iguais e opostas.
-    // Velocidade linear das rodas = (velocidade_ang * DIST_ENTRE_RODAS) / 2.0
-    float vel_linear_roda = (VELOCIDADE_PADRAO_ANG * DIST_ENTRE_RODAS) / 2.0;
+    // Velocidade linear das rodas = (velocidade_ang * distanciaEntreRodas) / 2.0
+    float vel_linear_roda = (velocidadePadraoAngular * distanciaEntreRodas) / 2.0;
     if (horario)
     {
         setpointVelEsq = vel_linear_roda;
@@ -376,10 +413,10 @@ void Motores::processarComando(std::vector<char> commands)
         switch (command)
         {
         case 'W':
-            executarMovimentoReta(DISTANCIA_POR_CELULA);
+            executarMovimentoReta(distanciaPorCelula);
             break;
         case 'S':
-            executarMovimentoReta(-DISTANCIA_POR_CELULA);
+            executarMovimentoReta(-distanciaPorCelula);
             break;
         case 'A':
             executarGiro(ANGULO_GIRO_RAD, false);
