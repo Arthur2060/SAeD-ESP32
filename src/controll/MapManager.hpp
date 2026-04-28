@@ -1,24 +1,31 @@
 #include <vector>
 #include "Demarcacao.hpp"
+#include "PathCalc.hpp"
 
 class MapManager {
     private:
         std::vector<std::vector<bool>> map;
         float distanciaDeQuadro = 0.3f;
         Demarcacao demarcacao;
+        PathCalc pathCalc;
     
     public:
         MapManager() {}
 
-        MapManager(int scalex, int scaley, float distanciaDeQuadro) {
-            for (int x = 0 ; x <= scalex ; x++) {
-                for (int y = 0 ; y <= scaley ; y++) {
-                    this->map[x].push_back(false);
+        MapManager(int scaleX, int scaleY, float distanciaDeQuadro) {
+            for (int x = 0; x <= scaleX; x++)
+            {
+                map.push_back({});
+                std::vector<bool> targetLine = map[x];
+                for (int y = 0; y <= scaleY; y++)
+                {
+                    map[x].push_back(false);
                 }
             }
 
             this->distanciaDeQuadro = distanciaDeQuadro;
             this->demarcacao = Demarcacao(map);
+            this->pathCalc = PathCalc(map);
         }
 
         MapManager(std::vector<std::vector<bool>> map, float distanciaDeQuadro) {
@@ -90,5 +97,13 @@ class MapManager {
             }
 
             this->demarcacao.setMap(this->map);
+        }
+
+        void setTarget(int x, int y) {
+            pathCalc.setTarget(x, y);
+        }
+
+        void setTarget(int* coordinates) {
+            pathCalc.setTarget(coordinates);
         }
     };

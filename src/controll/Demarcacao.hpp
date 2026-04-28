@@ -19,6 +19,23 @@ class Demarcacao {
             this->map = map;
         }
 
+        Demarcacao(int scaleX, int scaleY)
+        {
+            std::vector<std::vector<bool>> map;
+
+            for (int x = 0; x <= scaleX; x++)
+            {
+                map.push_back({});
+                std::vector<bool> targetLine = map[x];
+                for (int y = 0; y <= scaleY; y++)
+                {
+                    map[x].push_back(false);
+                }
+            }
+
+            this->map = map;
+        }
+
         bool setNewArea(int* initialCell, int* finalCell, char* name) {
             if (
                 initialCell[0] < 0 ||

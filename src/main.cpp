@@ -5,11 +5,8 @@ Radar radar;
 Motores motores;
 
 void setup() {
-    radar.begin();
-    motores.begin();
 }
 
 void loop() {
 
-    radar.getObstacle(motores.atualizarOdometria());
 }
