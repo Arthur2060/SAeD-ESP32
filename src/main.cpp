@@ -27,7 +27,6 @@ unsigned int mRvermelho = 0;
 unsigned int mGvermelho = 0;
 unsigned int mBvermelho = 0;
 
-std::vector<uint> CalibraVm ();
 std::vector<uint> detectaCor();
 
 bool modoCalibracao = false;
@@ -56,21 +55,57 @@ void setup()
 
 void loop()
 {
-  while(btnCalibra == 1)
+
+ if (Serial.available())
   {
-    CalibraVm();
+    String comando = Serial.readStringUntil('\n');
+    comando.trim();
+
+    if (comando == "c")
+    {
+      Serial.println("Iniciando calibracao...");
+      modoCalibracao = true;
+      tempoInicioCalib = millis();
+
+      // Zerar valores
+      MRvermelho = 0;
+      MGvermelho = 0;
+      MBvermelho = 0;
+
+      mRvermelho = 999999;
+      mGvermelho = 999999;
+      mBvermelho = 999999;
+    }
   }
-  //Detecta a cor
-  detectaCor();
 
-  std::vector<uint> Redefine = CalibraVm();
-  MRvermelho = Redefine[0];
-  MGvermelho = Redefine[1];
-  MBvermelho = Redefine[2];
-  mRvermelho = Redefine[3];
-  mGvermelho = Redefine[4];
-  mBvermelho = Redefine[5];
+  if (modoCalibracao)
+  {
+    detectaCor();
 
+    // Atualiza máximos
+    if (R > MRvermelho) MRvermelho = R;
+    if (G > MGvermelho) MGvermelho = G;
+    if (B > MBvermelho) MBvermelho = B;
+
+    // Atualiza mínimos
+    if (R < mRvermelho) mRvermelho = R;
+    if (G < mGvermelho) mGvermelho = G;
+    if (B < mBvermelho) mBvermelho = B;
+
+    // Tempo acabou?
+    if (millis() - tempoInicioCalib >= tempoCalibracao)
+    {
+      modoCalibracao = false;
+      Serial.println("Calibracao finalizada!");
+
+      Serial.print("R: "); Serial.print(mRvermelho); Serial.print(" - "); Serial.println(MRvermelho);
+      Serial.print("G: "); Serial.print(mGvermelho); Serial.print(" - "); Serial.println(MGvermelho);
+      Serial.print("B: "); Serial.print(mBvermelho); Serial.print(" - "); Serial.println(MBvermelho);
+    }
+
+    return; 
+  }
+  
   //Mostra valores no serial monitor
   Serial.print("Vermelho :");
   Serial.print(R);
@@ -118,41 +153,4 @@ std::vector<uint> detectaCor() {
   digitalWrite(pinS3, HIGH);
   B = pulseIn(pinOut, digitalRead(pinOut) == HIGH ? LOW : HIGH);
  return {R, G, B};
-}
-
-std::vector<uint> CalibraVm ()
-{
-  std::vector<uint> cores = detectaCor();
-  unsigned int Cor, Mvm, Mvd, Maz, mvm, mvd, maz, compR, compG, compB;
-  compR = cores[0];
-  compG = cores[1];
-  compB = cores[2];
-
-    if(R < G && R < B)
-  {
-    //Salva o maior e o menor valor R lido durante calibração
-    if( R < compR)
-    { Mvm = compR; }
-
-    if( R > compR)
-    { mvm = compR; }
-
-
-    //Salva o maior e o menor valor G lido durante calibração
-    if( G < compG)
-    { Mvd = compG; }
-    
-    if( G > compG)
-    { mvd = compG; }
-    
-
-    //Salva o maior e o menor valor B lido durante calibração
-    if( B < compB)
-    { Maz = compB; }
-
-    if( B > compB)
-    { maz = compB; }
-  }
-
-  return {Mvm, Mvd, Maz, mvm, mvd, maz};
 }
