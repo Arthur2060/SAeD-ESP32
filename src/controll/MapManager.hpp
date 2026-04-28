@@ -99,11 +99,12 @@ class MapManager {
             this->demarcacao.setMap(this->map);
         }
 
-        void setTarget(int x, int y) {
-            pathCalc.setTarget(x, y);
+        std::vector<char> setTarget(int x, int y) {
+            return pathCalc.setTarget(x, y);
         }
 
-        void setTarget(int* coordinates) {
-            pathCalc.setTarget(coordinates);
+        std::vector<char> setTarget(int *coordinates)
+        {
+            return pathCalc.setTarget(coordinates);
         }
     };
