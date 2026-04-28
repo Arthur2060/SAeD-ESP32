@@ -65,5 +65,7 @@ class PathCalc {
 
         void setMap(std::vector<std::vector<bool>> map) {
             this->map = map;
+            this->currentCell[0] = 0;
+            this->currentCell[1] = 0;
         }
 };
