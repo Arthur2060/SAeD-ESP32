@@ -111,7 +111,6 @@ private:
     void executarMovimentoReta(float distancia_m, float velocidade);
     void executarMovimentoReta(float distancia_m);
     void executarGiro(float angulo_rad, bool horario, float velocidade_ang);
-    void executarGiro(float angulo_rad, bool horario);
     void movimentarCarro();
 
 public:
@@ -171,6 +170,8 @@ public:
     }
 
     void processarComando(std::vector<char> commands);
+    void executarGiro(float angulo_rad, bool horario);
+    void executarGiro(float angulo_rad);
 
     float atualizarOdometria();
 
@@ -399,8 +400,13 @@ void Motores::executarGiro(float angulo_rad, bool horario)
     estadoAtual = GIRANDO;
 }
 
+void Motores::executarGiro(float angulo_rad)
+{
+    executarGiro(angulo_rad, true);
+}
+
 /**
- * Função para processar comandos recebidos pela Serial.
+ * Função para processar comandos recebidos
  */
 void Motores::processarComando(std::vector<char> commands)
 {
