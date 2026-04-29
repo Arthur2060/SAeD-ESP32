@@ -1,6 +1,7 @@
 //Pinos de conexao do modulo
 #include "Arduino.h"
 #include "vector"
+
 #define pinS0 18
 #define pinS1 19
 #define pinS2 21
@@ -46,7 +47,7 @@ void setup()
   pinMode(pinoLedVerd, OUTPUT);
   pinMode(pinoLedAzul, OUTPUT);
 
-  Serial.begin(9200);
+  Serial.begin(9600);
   digitalWrite(pinS0, HIGH);
   digitalWrite(pinS1, LOW);
 
@@ -55,6 +56,7 @@ void setup()
 
 void loop()
 {
+  detectaCor();
 
  if (Serial.available())
   {
@@ -80,7 +82,6 @@ void loop()
 
   if (modoCalibracao)
   {
-    detectaCor();
 
     // Atualiza máximos
     if (R > MRvermelho) MRvermelho = R;
