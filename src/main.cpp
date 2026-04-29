@@ -1,12 +1,3 @@
-#include "controll/Radar.hpp"
-#include "model/Motores.hpp"
+void setup() {}
 
-Radar radar;
-Motores motores;
-
-void setup() {
-}
-
-void loop() {
-
-}
+void loop() {}
