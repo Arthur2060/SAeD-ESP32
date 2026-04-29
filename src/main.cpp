@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #include <Arduino.h>
 #include <ESP32Encoder.h> // Para leitura precisa dos encoders
 #include <QuickPID.h>     // Para controle PID dos motores
@@ -56,13 +55,13 @@ float inputVelEsq = 0.0;    // Velocidade real (m/s)
 float outputPWM_Esq = 0.0;  // PWM calculado (-255 a 255)
 // Ganhos PID (Ajuste os valores conforme o comportamento do seu robô!)
 float Kp = 1.5, Ki = 8.0, Kd = 0.05;
-QuickPID pidEsquerdo(&inputVelEsq, &outputPWM_Esq, &setpointVelEsq, Kp, Ki, Kd);
+QuickPID pidEsquerdo(&inputVelEsq, &outputPWM_Esq, &setpointVelEsq, Kp, Ki, Kd, QuickPID::Action::direct);
 
 // --- PID para o Motor Direito ---
 float setpointVelDir = 0.0;
 float inputVelDir = 0.0;
 float outputPWM_Dir = 0.0;
-QuickPID pidDireito(&inputVelDir, &outputPWM_Dir, &setpointVelDir, Kp, Ki, Kd);
+QuickPID pidDireito(&inputVelDir, &outputPWM_Dir, &setpointVelDir, Kp, Ki, Kd, QuickPID::Action::direct);
 
 // --- Variáveis para Cálculo de Velocidade Real ---
 unsigned long lastTimeEsq = 0, lastTimeDir = 0;
@@ -122,7 +121,6 @@ void setup()
   pinMode(PIN_MOTOR_R_IN4, OUTPUT);
 
   // --- Inicialização dos Encoders (Biblioteca ESP32Encoder) ---
-  ESP32Encoder::useCountMode(COUNT_MODE_FULL); // Modo de contagem para encoder quadratura
   encoderEsquerdo.attachHalfQuad(PIN_ENC_L_A, PIN_ENC_L_B);
   encoderDireito.attachFullQuad(PIN_ENC_R_A, PIN_ENC_R_B);
   encoderEsquerdo.clearCount();
@@ -406,17 +404,4 @@ void processarComandoSerial()
       break;
     }
   }
-=======
-#include "controll/Radar.hpp"
-#include "model/Motores.hpp"
-
-Radar radar;
-Motores motores;
-
-void setup() {
-}
-
-void loop() {
-
->>>>>>> b1bf3f7340d32525031ef7e48227c9d5c3ca8fa4
 }
