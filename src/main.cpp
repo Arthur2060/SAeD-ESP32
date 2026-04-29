@@ -56,6 +56,7 @@ void setup()
 
 void loop()
 {
+  delay(500);
   detectaCor();
 
  if (Serial.available())
