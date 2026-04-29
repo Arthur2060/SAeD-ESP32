@@ -19,6 +19,10 @@ class Radar {
     std::vector<float> getObstacle(float angle) {
         float distance = ultrasom.collectUltrasonicData();
 
+        if (distance >= 300) {
+            return {0, 0};
+        }
+
         return {distance * sin(angle), distance * cos(angle)};
     }
 };

@@ -20,10 +20,12 @@ public:
     {
         std::vector<std::vector<bool>> map;
 
-        for (int x = 0 ; x <= scaleX ; x++) {
+        for (int x = 0; x <= scaleX; x++)
+        {
             map.push_back({});
             std::vector<bool> targetLine = map[x];
-            for (int y = 0 ; y <= scaleY ; y++) {
+            for (int y = 0; y <= scaleY; y++)
+            {
                 map[x].push_back(false);
             }
         }
@@ -48,7 +50,9 @@ void PathCalc::setMap(std::vector<std::vector<bool>> map)
 std::vector<char> PathCalc::setTarget(int x, int y)
 {
     if (
-        !(x >= 0 && x <= sizeof(map) && y >= 0 && y <= sizeof(map[x])))
+        !(x >= 0 && x <= sizeof(map) && y >= 0 && y <= sizeof(map[x])) ||
+        (map[x][y])
+    )
     {
         // Invalid target - Alvo inválido
         return {'I', 'T'};
