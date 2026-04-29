@@ -6,6 +6,7 @@
 #include "controll/Radar.hpp"
 
 #include <vector>
+#include <random>
 
 class SAeD
 {
@@ -16,14 +17,16 @@ private:
 
     MapManager mapManager;
 
-    SAeDStateDispatch dispatchState;
-    SAeDStateMap mapState;
-    SAeDStateNewItem newItemState;
+    SAeDStateDispatch dispatchState = SAeDStateDispatch::Wait;
+    SAeDStateMap mapState = SAeDStateMap::Mapping;
+    SAeDStateNewItem newItemState = SAeDStateNewItem::Wait;
 
     const int MAX_NO_OBSTACLE_LIMIT = 3;
     int noObstacleLimit = MAX_NO_OBSTACLE_LIMIT;
 
     float currentOdometri;
+
+    std::vector<float> obstacle = {};
 
 public:
     SAeD() { this->mapManager = MapManager(10, 10, 0.3); }
@@ -42,10 +45,22 @@ public:
         case SAeDStateMap::Wait:
             break;
         case SAeDStateMap::Mapping:
-            if (noObstacleLimit >= 0) {
+            if (noObstacleLimit <= 0)
+            {
                 motores.executarGiro(360);
-            } else {
-                mapManager.setTarget({})
+            }
+            else
+            {
+                std::random_device rd;
+                std::mt19937 gen(rd());
+
+                std::uniform_int_distribution<> distr(1, sizeof(mapManager.getMap()));
+
+                int randomX = distr(gen);
+                int randomY = distr(gen);
+
+                mapManager.setTarget(randomX, randomY);
+                noObstacleLimit = MAX_NO_OBSTACLE_LIMIT;
             }
             break;
         case SAeDStateMap::Demarc:
@@ -84,12 +99,11 @@ public:
         case SAeDStateMap::Mapping:
             currentOdometri = motores.atualizarOdometria();
 
-            std::vector<float> obstacle = {};    
-
             obstacle = radar.getObstacle(currentOdometri);
 
             const bool resul = mapManager.addObstacle(obstacle[0], obstacle[1]);
             (!resul) ? noObstacleLimit -= 1 : noObstacleLimit = MAX_NO_OBSTACLE_LIMIT;
+            obstacle = {};
             break;
         case SAeDStateMap::Demarc:
             break;
