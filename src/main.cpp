@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include <Arduino.h>
 #include <ESP32Encoder.h> // Para leitura precisa dos encoders
 #include <QuickPID.h>     // Para controle PID dos motores
@@ -18,7 +19,7 @@
 #define PIN_ENC_L_A 26
 #define PIN_ENC_L_B 25
 #define PIN_ENC_R_A 33
-#define PIN_ENC_R_B 32
+#define PIN_ENC_R_B 31
 
 // ============================================================
 // 2. CONSTANTES DO ROBÔ E DA ODOMETRIA
@@ -405,4 +406,17 @@ void processarComandoSerial()
       break;
     }
   }
+=======
+#include "controll/Radar.hpp"
+#include "model/Motores.hpp"
+
+Radar radar;
+Motores motores;
+
+void setup() {
+}
+
+void loop() {
+
+>>>>>>> b1bf3f7340d32525031ef7e48227c9d5c3ca8fa4
 }
