@@ -1,38 +1,43 @@
-//Pinos de conexao do modulo
 #include "Arduino.h"
-#include "vector"
 
+//Pinos de conexao do modulo
 #define pinS0 18
 #define pinS1 19
 #define pinS2 21
 #define pinS3 22
 #define pinOut 23
-#define btnCalibra 26
 
-//Pinos dos LEDs
-#define pinoLedVerm 14
-#define pinoLedVerd 12
+//Pinos do LED RGB
+#define pinoLedVerm 12
+#define pinoLedVerd 14
 #define pinoLedAzul 27
-
 
 unsigned int R = 0;
 unsigned int G = 0;
 unsigned int B = 0;
 
-unsigned int Cor;
+// 🔴 VERMELHO
+unsigned int MRv=0, MGv=0, MBv=0;
+unsigned int mRv=999999, mGv=999999, mBv=999999;
 
-unsigned int MRvermelho = 0;
-unsigned int MGvermelho = 0;
-unsigned int MBvermelho = 0;
-unsigned int mRvermelho = 0;
-unsigned int mGvermelho = 0;
-unsigned int mBvermelho = 0;
+// 🟢 VERDE
+unsigned int MRg=0, MGg=0, MBg=0;
+unsigned int mRg=999999, mGg=999999, mBg=999999;
 
-std::vector<uint> detectaCor();
+// 🔵 AZUL
+unsigned int MRb=0, MGb=0, MBb=0;
+unsigned int mRb=999999, mGb=999999, mBb=999999;
 
 bool modoCalibracao = false;
+String corCalibrando = "";
+
 unsigned long tempoInicioCalib = 0;
-const int tempoCalibracao = 5000; // 5 segundos
+const int tempoCalibracao = 5000;
+
+// -------- FUNÇÕES --------
+void detectaCor();
+void setColor(bool r, bool g, bool b);
+void detectarCores();
 
 void setup()
 {
@@ -40,7 +45,6 @@ void setup()
   pinMode(pinS1, OUTPUT);
   pinMode(pinS2, OUTPUT);
   pinMode(pinS3, OUTPUT);
-  pinMode(btnCalibra, INPUT);
   pinMode(pinOut, INPUT);
 
   pinMode(pinoLedVerm, OUTPUT);
@@ -48,6 +52,7 @@ void setup()
   pinMode(pinoLedAzul, OUTPUT);
 
   Serial.begin(9600);
+
   digitalWrite(pinS0, HIGH);
   digitalWrite(pinS1, LOW);
 
@@ -56,103 +61,163 @@ void setup()
 
 void loop()
 {
-  delay(500);
   detectaCor();
 
- if (Serial.available())
+  // 🔹 COMANDOS SERIAL
+  if (Serial.available())
   {
     String comando = Serial.readStringUntil('\n');
     comando.trim();
 
-    if (comando == "c")
+    if (comando == "cr")
     {
-      Serial.println("Iniciando calibracao...");
+      Serial.println("Calibrando VERMELHO...");
+      corCalibrando = "vermelho";
+
+      MRv=0; MGv=0; MBv=0;
+      mRv=999999; mGv=999999; mBv=999999;
+
       modoCalibracao = true;
       tempoInicioCalib = millis();
+    }
 
-      // Zerar valores
-      MRvermelho = 0;
-      MGvermelho = 0;
-      MBvermelho = 0;
+    else if (comando == "cg")
+    {
+      Serial.println("Calibrando VERDE...");
+      corCalibrando = "verde";
 
-      mRvermelho = 999999;
-      mGvermelho = 999999;
-      mBvermelho = 999999;
+      MRg=0; MGg=0; MBg=0;
+      mRg=999999; mGg=999999; mBg=999999;
+
+      modoCalibracao = true;
+      tempoInicioCalib = millis();
+    }
+
+    else if (comando == "cb")
+    {
+      Serial.println("Calibrando AZUL...");
+      corCalibrando = "azul";
+
+      MRb=0; MGb=0; MBb=0;
+      mRb=999999; mGb=999999; mBb=999999;
+
+      modoCalibracao = true;
+      tempoInicioCalib = millis();
     }
   }
 
+  // 🔹 MODO CALIBRAÇÃO
   if (modoCalibracao)
   {
+    if (corCalibrando == "vermelho")
+    {
+      if (R > MRv) MRv = R;
+      if (G > MGv) MGv = G;
+      if (B > MBv) MBv = B;
 
-    // Atualiza máximos
-    if (R > MRvermelho) MRvermelho = R;
-    if (G > MGvermelho) MGvermelho = G;
-    if (B > MBvermelho) MBvermelho = B;
+      if (R < mRv) mRv = R;
+      if (G < mGv) mGv = G;
+      if (B < mBv) mBv = B;
+    }
 
-    // Atualiza mínimos
-    if (R < mRvermelho) mRvermelho = R;
-    if (G < mGvermelho) mGvermelho = G;
-    if (B < mBvermelho) mBvermelho = B;
+    else if (corCalibrando == "verde")
+    {
+      if (R > MRg) MRg = R;
+      if (G > MGg) MGg = G;
+      if (B > MBg) MBg = B;
 
-    // Tempo acabou?
+      if (R < mRg) mRg = R;
+      if (G < mGg) mGg = G;
+      if (B < mBg) mBg = B;
+    }
+
+    else if (corCalibrando == "azul")
+    {
+      if (R > MRb) MRb = R;
+      if (G > MGb) MGb = G;
+      if (B > MBb) MBb = B;
+
+      if (R < mRb) mRb = R;
+      if (G < mGb) mGb = G;
+      if (B < mBb) mBb = B;
+    }
+
     if (millis() - tempoInicioCalib >= tempoCalibracao)
     {
       modoCalibracao = false;
       Serial.println("Calibracao finalizada!");
-
-      Serial.print("R: "); Serial.print(mRvermelho); Serial.print(" - "); Serial.println(MRvermelho);
-      Serial.print("G: "); Serial.print(mGvermelho); Serial.print(" - "); Serial.println(MGvermelho);
-      Serial.print("B: "); Serial.print(mBvermelho); Serial.print(" - "); Serial.println(MBvermelho);
     }
 
-    return; 
-  }
-  
-  //Mostra valores no serial monitor
-  Serial.print("Vermelho :");
-  Serial.print(R);
-  
-  Serial.print(" Verde : ");
-  Serial.print(G);
-
-  Serial.print(" Azul : ");
-  Serial.print(B);
-  Serial.println();
-
-  //Verifica se a cor vermelha foi detectada
- if(( R < MRvermelho && R > mRvermelho) && 
-     ( G < MGvermelho && G > mGvermelho) &&
-     ( B < MBvermelho && B > mBvermelho))
-  {
-    Serial.println("Vermelho");
-    digitalWrite(pinoLedVerm, HIGH); //Acende o led azul
-    digitalWrite(pinoLedVerd, LOW);
-    digitalWrite(pinoLedAzul, LOW);
+    return;
   }
 
-  Serial.println();
+  // 🔹 DETECÇÃO
+  detectarCores();
 
-  //Delay para apagar os leds e reiniciar o processo
-  delay(50);
-  digitalWrite(pinoLedVerm, LOW);
-  digitalWrite(pinoLedVerd, LOW);
-  digitalWrite(pinoLedAzul, LOW);
+  // DEBUG
+  Serial.print("R: "); Serial.print(R);
+  Serial.print(" G: "); Serial.print(G);
+  Serial.print(" B: "); Serial.println(B);
+
+  delay(200);
 }
 
-// *********** Função de leitura so sensor de cor ********************
-std::vector<uint> detectaCor() {
-  //Vermelho
+// -------- LEITURA SENSOR --------
+void detectaCor()
+{
   digitalWrite(pinS2, LOW);
   digitalWrite(pinS3, LOW);
   R = pulseIn(pinOut, digitalRead(pinOut) == HIGH ? LOW : HIGH);
-  
-  //Verde
+
   digitalWrite(pinS2, HIGH);
   G = pulseIn(pinOut, digitalRead(pinOut) == HIGH ? LOW : HIGH);
 
-  //Azul
   digitalWrite(pinS2, LOW);
   digitalWrite(pinS3, HIGH);
   B = pulseIn(pinOut, digitalRead(pinOut) == HIGH ? LOW : HIGH);
- return {R, G, B};
+}
+
+// -------- DETECÇÃO DE CORES --------
+void detectarCores()
+{
+  // 🔴 Vermelho
+  if ((R >= mRv && R <= MRv) &&
+      (G >= mGv && G <= MGv) &&
+      (B >= mBv && B <= MBv))
+  {
+    Serial.println("VERMELHO");
+    setColor(1,0,0);
+    return;
+  }
+
+  // 🟢 Verde
+  if ((R >= mRg && R <= MRg) &&
+      (G >= mGg && G <= MGg) &&
+      (B >= mBg && B <= MBg))
+  {
+    Serial.println("VERDE");
+    setColor(0,1,0);
+    return;
+  }
+
+  // 🔵 Azul
+  if ((R >= mRb && R <= MRb) &&
+      (G >= mGb && G <= MGb) &&
+      (B >= mBb && B <= MBb))
+  {
+    Serial.println("AZUL");
+    setColor(0,0,1);
+    return;
+  }
+
+  // Nenhuma cor
+  setColor(0,0,0);
+}
+
+// -------- RGB --------
+void setColor(bool r, bool g, bool b)
+{
+  digitalWrite(pinoLedVerm, r);
+  digitalWrite(pinoLedVerd, g);
+  digitalWrite(pinoLedAzul, b);
 }
