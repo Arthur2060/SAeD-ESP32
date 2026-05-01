@@ -24,17 +24,17 @@
 // 2. CONSTANTES DO ROBÔ E DA ODOMETRIA
 // ============================================================
 // Parâmetros Físicos do Robô
-const float RAIO_RODA = 0.0325;       // Raio da roda (metros)
-const float DIST_ENTRE_RODAS = 0.150; // Largura entre rodas (metros)
+const float RAIO_RODA = 0.240;       // Raio da roda (metros)
+const float DIST_ENTRE_RODAS = 0.160; // Largura entre rodas (metros)
 
 // Parâmetros do Encoder (JGA25-370)
-const float PULSOS_POR_REVOLUCAO_MOTOR = 11.0; // 11 pulsos por volta do eixo do motor
-const float REDUCAO_GEARBOX = 34.0;            // Relação de redução do seu motor (exemplo)
+const float PULSOS_POR_REVOLUCAO_MOTOR = 11.0;  // 11 pulsos por volta do eixo do motor
+const float REDUCAO_GEARBOX = 35.0;            // Relação de redução do seu motor (exemplo)
 // Pulsos por volta COMPLETA da roda:
-const float PPR_RODA = PULSOS_POR_REVOLUCAO_MOTOR * REDUCAO_GEARBOX; // 374 pulsos/volta da roda
-const float CIRCUNFERENCIA_RODA = 2.0 * PI * RAIO_RODA;              // ~0.204 metros
+const float PPR_RODA = PULSOS_POR_REVOLUCAO_MOTOR * REDUCAO_GEARBOX; // 385 pulsos/volta da roda
+const float CIRCUNFERENCIA_RODA = 2.0 * PI * RAIO_RODA;              // ~1,507 metros
 // Fator de conversão de pulsos do encoder para METROS
-const float METROS_POR_PULSO = CIRCUNFERENCIA_RODA / PPR_RODA; // 0.204 / 374 = ~0.000545m
+const float METROS_POR_PULSO = CIRCUNFERENCIA_RODA / PPR_RODA; // 1,507 / 385 = ~0.003914m
 
 // Parâmetros do Movimento
 const float DISTANCIA_POR_CELULA = 0.30;  // Distância para comando 'W' ou 'S' (0.3 metros)
@@ -53,7 +53,7 @@ ESP32Encoder encoderDireito;
 float setpointVelEsq = 0.0; // Velocidade desejada (m/s)
 float inputVelEsq = 0.0;    // Velocidade real (m/s)
 float outputPWM_Esq = 0.0;  // PWM calculado (-255 a 255)
-// Ganhos PID (Ajuste os valores conforme o comportamento do seu robô!)
+// Ganhos PID (Ajustar os valores conforme o comportamento do robô!)
 float Kp = 1.5, Ki = 8.0, Kd = 0.05;
 QuickPID pidEsquerdo(&inputVelEsq, &outputPWM_Esq, &setpointVelEsq, Kp, Ki, Kd, QuickPID::Action::direct);
 
@@ -85,7 +85,7 @@ float distanciaPercorridaInicio = 0;
 float anguloPercorridoInicio = 0;
 
 // --- Variável de Controle do Giro ---
-bool direcaoGiroHorario = true; // true = Horário (Direita), false = Anti-horário
+bool direcaoGiroHorario = true; // true = Horário (Direita), false = Anti-horário(Esquerda)
 
 // --- Filtro simples para suavizar a leitura de velocidade (opcional) ---
 float velocidadeEsqFiltrada = 0;
