@@ -24,7 +24,7 @@
 // 2. CONSTANTES DO ROBÔ E DA ODOMETRIA
 // ============================================================
 // Parâmetros Físicos do Robô
-const float RAIO_RODA = 0.240;       // Raio da roda (metros)
+const float RAIO_RODA = 0.0325;       // Raio da roda (metros)
 const float DIST_ENTRE_RODAS = 0.160; // Largura entre rodas (metros)
 
 // Parâmetros do Encoder (JGA25-370)
@@ -32,9 +32,9 @@ const float PULSOS_POR_REVOLUCAO_MOTOR = 11.0;  // 11 pulsos por volta do eixo d
 const float REDUCAO_GEARBOX = 35.0;            // Relação de redução do seu motor (exemplo)
 // Pulsos por volta COMPLETA da roda:
 const float PPR_RODA = PULSOS_POR_REVOLUCAO_MOTOR * REDUCAO_GEARBOX; // 385 pulsos/volta da roda
-const float CIRCUNFERENCIA_RODA = 2.0 * PI * RAIO_RODA;              // ~1,507 metros
+const float CIRCUNFERENCIA_RODA = 2.0 * PI * RAIO_RODA;              // ~0,204 metros
 // Fator de conversão de pulsos do encoder para METROS
-const float METROS_POR_PULSO = CIRCUNFERENCIA_RODA / PPR_RODA; // 1,507 / 385 = ~0.003914m
+const float METROS_POR_PULSO = CIRCUNFERENCIA_RODA / PPR_RODA; // 0,204 / 385 = ~5,298701m
 
 // Parâmetros do Movimento
 const float DISTANCIA_POR_CELULA = 0.30;  // Distância para comando 'W' ou 'S' (0.3 metros)
@@ -109,7 +109,7 @@ void processarComandoSerial();
 // ============================================================
 void setup()
 {
-  Serial.begin(115200);
+  Serial.begin(9600);
   Serial.println("Inicializando Sistema de Robô Diferencial...");
 
   // --- Inicialização dos Pinos dos Motores ---
@@ -291,10 +291,6 @@ void atualizarOdometria()
   float deltaT = (agora - lastOdometryTime) / 1000.0;
   if (deltaT <= 0)
     return;
-
-  // Distâncias percorridas por cada roda no último intervalo
-  float distEsq = (setpointVelEsq * deltaT);
-  float distDir = (setpointVelDir * deltaT);
 
   // Atualiza a odometria usando o modelo diferencial
   if (fabs(distDir - distEsq) < 1e-6)
