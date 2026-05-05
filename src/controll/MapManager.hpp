@@ -38,15 +38,14 @@ public:
     }
 
     float getDistanciaDeQuadro();
-    float setDistanciaDeQuadro(float distancia);
+    void setDistanciaDeQuadro(float distancia);
 
     bool addObstacle(float distanceX, float distanceY);
 
     Demarcacao getDemarcacao();
 
     std::vector<std::vector<bool>> getMap();
-
-    void setNewMap(int scalex, int scaley);
+    
     void setNewMap(std::vector<std::vector<bool>> map);
     void setNewMap(int scalex, int scaley);
     void setNewMap(int *scale);
@@ -60,7 +59,7 @@ float MapManager::getDistanciaDeQuadro()
     return distanciaDeQuadro;
 }
 
-float MapManager::setDistanciaDeQuadro(float distancia)
+void MapManager::setDistanciaDeQuadro(float distancia)
 {
     if (distancia > 0)
     {
@@ -90,19 +89,6 @@ Demarcacao MapManager::getDemarcacao()
 std::vector<std::vector<bool>> MapManager::getMap()
 {
     return this->map;
-}
-
-void MapManager::setNewMap(int scalex, int scaley)
-{
-    for (int x = 0; x <= scalex; x++)
-    {
-        for (int y = 0; y <= scaley; y++)
-        {
-            this->map[x].push_back(false);
-        }
-    }
-
-    this->demarcacao;
 }
 
 void MapManager::setNewMap(std::vector<std::vector<bool>> map)

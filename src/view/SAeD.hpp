@@ -92,6 +92,7 @@ public:
 
     void secondaryLoop()
     {
+        bool resul = false;
         switch (mapState)
         {
         case SAeDStateMap::Wait:
@@ -101,7 +102,7 @@ public:
 
             obstacle = radar.getObstacle(currentOdometri);
 
-            const bool resul = mapManager.addObstacle(obstacle[0], obstacle[1]);
+            resul = mapManager.addObstacle(obstacle[0], obstacle[1]);
             (!resul) ? noObstacleLimit -= 1 : noObstacleLimit = MAX_NO_OBSTACLE_LIMIT;
             obstacle = {};
             break;

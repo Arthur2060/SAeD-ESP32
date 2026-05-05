@@ -289,7 +289,7 @@ float Motores::atualizarOdometria()
     unsigned long agora = millis();
     float deltaT = (agora - lastOdometryTime) / 1000.0;
     if (deltaT <= 0)
-        return;
+        return 0;
 
     // Distâncias percorridas por cada roda no último intervalo
     float distEsq = (setpointVelEsq * deltaT);
