@@ -1,17 +1,16 @@
 #include <Arduino.h>
-#include "view/WebIHM.hpp"
+#include "model/Motores.hpp"
 
-#define ssid     ""
-#define password ""
+Motores mot;
 
 TaskHandle_t interno;
-WebIHM       ihm;
 
 void loop2( void * pvParameters);
 
 void setup() {
     Serial.begin(9600);
-    ihm.begin(ssid, password);
+
+    mot.begin();
 
     Serial.printf("Iniciando processamento em Core %i", xPortGetCoreID);
 }
@@ -25,6 +24,9 @@ void loop() {
         0,          /* Priority of the task           */
         &interno,   /* Task handle.                   */
         0);         /* Core where the task should run */
+
+    mot.lerComandos("WWWS");
+    delay(1000);
 }
 
 void loop2( void * pvParameters) {
