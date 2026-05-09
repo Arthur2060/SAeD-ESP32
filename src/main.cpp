@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <vector>
 #include "controll/Motores.hpp"
 #include "controll/Radar.hpp"
 
@@ -36,5 +37,8 @@ void loop() {
 void loop2( void * pvParameters) {
     Serial.printf("Iniciando processamento em Core %i", xPortGetCoreID);
     for(;;) {
+        std::vector<float> obstacle = radar.getObstacle();
+
+        Serial.printf("X=%.2f, Y=%.2f", obstacle[0], obstacle[1]);
     }
 }
