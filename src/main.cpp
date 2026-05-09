@@ -25,7 +25,8 @@ void loop() {
         &interno,   /* Task handle.                   */
         0);         /* Core where the task should run */
 
-    mot.lerComandos("WWWS");
+    char* commands = "R";
+    mot.lerComandos(commands);
     delay(1000);
 }
 

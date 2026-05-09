@@ -29,16 +29,16 @@ private:
     const int CELL_DISTANCE = 0.3; // metros (distância de uma célula)
     const int GEAR_RATIO = 35;     // Razão de redução típica
 
-    int currentSpeed = 100; // Velocidade atual em %
+    int currentSpeed = 100; // %
 
     void moveForward()
     {
-        moveDistance(CELL_DISTANCE, 1); // 1 = para frente
+        moveDistance(CELL_DISTANCE, true);
     }
 
     void moveBackward()
     {
-        moveDistance(CELL_DISTANCE, -1); // -1 = para trás
+        moveDistance(CELL_DISTANCE, false);
     }
 
     void turnLeft()
@@ -56,11 +56,7 @@ private:
         rotate(360);
     }
 
-    // ============================================================
-    // CONTROLE DE MOVIMENTO LINEAR
-    // ============================================================
-
-    void moveDistance(float distance, int direction)
+    void moveDistance(float distance, bool direction)
     {
         // Calcular pulsos necessários
         // Pulsos por revolução (com gear): ENCODER_PPR * GEAR_RATIO
@@ -69,12 +65,10 @@ private:
         float pulsesPerMeter = (ENCODER_PPR * GEAR_RATIO) / (3.14159 * 0.07); // D_RODA ~= 7cm
         long targetPulses = (long)(distance * pulsesPerMeter);
 
-        // Reset encoders
         encoderLeft.setCount(0);
         encoderRight.setCount(0);
 
-        // Determinar direção
-        if (direction > 0)
+        if (direction)
         {
             setMotorDirection(left.IN1_PIN, left.IN2_PIN, 1); // Frente
             setMotorDirection(right.IN1_PIN, right.IN2_PIN, 1);
@@ -89,10 +83,8 @@ private:
         analogWrite(left.PWM_PIN, pwmValue);
         analogWrite(right.PWM_PIN, pwmValue);
 
-        // Aguardar até atingir distância
         while (abs(encoderLeft.getCount()) < targetPulses && abs(encoderRight.getCount()) < targetPulses)
         {
-            // Sincronização em malha fechada
             if (encoderLeft.getCount() > encoderRight.getCount() + 2)
             {
                 analogWrite(right.PWM_PIN, pwmValue + 5);
@@ -109,17 +101,12 @@ private:
         stopMotors();
     }
 
-    // ============================================================
-    // CONTROLE DE ROTAÇÃO
-    // ============================================================
-
     void rotate(int degrees)
     {
         // Diâmetro entre esteiras (distância entre trilhos)
         float wheelDistance = 0.20; // ~20cm - AJUSTE CONFORME SEU CARRO
         float arcDistance = (wheelDistance * 3.14159 * abs(degrees)) / 360.0;
 
-        // Reset encoders
         encoderLeft.setCount(0);
         encoderRight.setCount(0);
 
@@ -128,13 +115,12 @@ private:
 
         if (degrees > 0)
         {
-            // Horário: esquerda frente, direita trás
-            setMotorDirection(left.IN1_PIN, left.IN2_PIN, 1); // Frente
+            setMotorDirection(left.IN1_PIN, left.IN2_PIN, 1);
             setMotorDirection(right.IN1_PIN, right.IN2_PIN, 0);
         }
         else
         {
-            setMotorDirection(left.IN1_PIN, left.IN2_PIN, 0); // Trás
+            setMotorDirection(left.IN1_PIN, left.IN2_PIN, 0);
             setMotorDirection(right.IN1_PIN, right.IN2_PIN, 1);
         }
 
@@ -149,10 +135,6 @@ private:
 
         stopMotors();
     }
-
-    // ============================================================
-    // FUNÇÕES AUXILIARES
-    // ============================================================
 
     void setMotorDirection(int in1, int in2, bool direction)
     {
@@ -202,14 +184,12 @@ public:
         pinMode(right.IN1_PIN, OUTPUT);
         pinMode(right.IN2_PIN, OUTPUT);
 
-        // Configurar encoders
         encoderLeft.attachHalfQuad(left.ENC_PIN_1, left.ENC_PIN_2);
         encoderRight.attachHalfQuad(right.ENC_PIN_1, right.ENC_PIN_2);
 
         encoderLeft.setCount(0);
         encoderRight.setCount(0);
 
-        // Motor parado inicialmente
         stopMotors();
     }
 
