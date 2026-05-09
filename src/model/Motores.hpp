@@ -33,31 +33,26 @@ private:
 
     void moveForward()
     {
-        Serial.println(">> MOVENDO PARA FRENTE");
         moveDistance(CELL_DISTANCE, 1); // 1 = para frente
     }
 
     void moveBackward()
     {
-        Serial.println(">> MOVENDO PARA TRÁS");
         moveDistance(CELL_DISTANCE, -1); // -1 = para trás
     }
 
     void turnLeft()
     {
-        Serial.println(">> VIRANDO 90° ANTI-HORÁRIO");
         rotate(90);
     }
 
     void turnRight()
     {
-        Serial.println(">> VIRANDO 90° HORÁRIO");
         rotate(-90);
     }
 
     void spin360()
     {
-        Serial.println(">> RODANDO 360°");
         rotate(360);
     }
 
@@ -112,10 +107,6 @@ private:
         }
 
         stopMotors();
-        Serial.print("Movimento concluído. Pulsos - Esq: ");
-        Serial.print(encoderLeft.getCount());
-        Serial.print(" | Dir: ");
-        Serial.println(encoderRight.getCount());
     }
 
     // ============================================================
@@ -157,42 +148,15 @@ private:
         }
 
         stopMotors();
-        Serial.println("Rotação concluída!");
-    }
-
-    // ============================================================
-    // CONTROLE DE VELOCIDADE
-    // ============================================================
-
-    void adjustSpeed()
-    {
-        Serial.println("Digite velocidade (0-100%):");
-        while (!Serial.available())
-            ;
-
-        String speedStr = Serial.readStringUntil('\n');
-        int newSpeed = speedStr.toInt();
-
-        if (newSpeed >= 0 && newSpeed <= 100)
-        {
-            currentSpeed = newSpeed;
-            Serial.print("Velocidade ajustada para: ");
-            Serial.print(currentSpeed);
-            Serial.println("%");
-        }
-        else
-        {
-            Serial.println("Velocidade inválida! Use 0-100");
-        }
     }
 
     // ============================================================
     // FUNÇÕES AUXILIARES
     // ============================================================
 
-    void setMotorDirection(int in1, int in2, int direction)
+    void setMotorDirection(int in1, int in2, bool direction)
     {
-        if (direction == 1)
+        if (direction)
         {
             digitalWrite(in1, HIGH);
             digitalWrite(in2, LOW);
@@ -208,18 +172,6 @@ private:
     {
         analogWrite(left.PWM_PIN, 0);
         analogWrite(right.PWM_PIN, 0);
-    }
-
-    void printHelp()
-    {
-        Serial.println("\n=== COMANDOS DISPONÍVEIS ===");
-        Serial.println("W - Mover para frente (1 célula = 0.3m)");
-        Serial.println("S - Mover para trás");
-        Serial.println("A - Virar 90° anti-horário");
-        Serial.println("D - Virar 90° horário");
-        Serial.println("R - Rodar 360°");
-        Serial.println("V - Ajustar velocidade (0-100%)");
-        Serial.println("H - Mostrar ajuda");
     }
 
 public:
@@ -282,16 +234,18 @@ public:
             case 'R':
                 spin360();
                 break;
-            case 'V':
-                adjustSpeed();
-                break;
-            case 'H':
-                printHelp();
-                break;
             default:
                 Serial.println("Comando inválido!");
             }
             delay(1000);
+        }
+    }
+
+    void setSpeed(int newSpeed)
+    {
+        if (newSpeed >= 0 && newSpeed <= 100)
+        {
+            currentSpeed = newSpeed;
         }
     }
 };
