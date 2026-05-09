@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "model/Motores.hpp"
+#include "controll/Motores.hpp"
 
 Motores mot;
 
