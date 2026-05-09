@@ -16,11 +16,6 @@ private:
 
     void configureCompass()
     {
-        if (!testCompass())
-        {
-            Serial.println("Error, compass not found!");
-        }
-
         compass.setMode(QMC5883P_MODE_NORMAL);
         compass.setODR(QMC5883P_ODR_50HZ);
         compass.setOSR(QMC5883P_OSR_4);
@@ -36,8 +31,6 @@ float Bussola::collectCompassData()
     {
         int16_t x, y, z;
         compass.getRawMagnetic(&x, &y, &z);
-
-        Serial.printf("X: %f, Y: %f, Z: %f\n", (float)x, (float)y, (float)z);
         return z;
     }
 

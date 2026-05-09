@@ -1,7 +1,9 @@
 #include <Arduino.h>
 #include "controll/Motores.hpp"
+#include "controll/Radar.hpp"
 
 Motores mot;
+Radar radar;
 
 TaskHandle_t interno;
 
@@ -11,6 +13,7 @@ void setup() {
     Serial.begin(9600);
 
     mot.begin();
+    radar.begin();
 
     Serial.printf("Iniciando processamento em Core %i", xPortGetCoreID);
 }
