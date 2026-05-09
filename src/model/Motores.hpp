@@ -2,23 +2,20 @@
 #include <ESP32Encoder.h>
 #include <string.h>
 
+struct Motor
+{
+    int PWM_PIN;
+    int IN1_PIN;
+    int IN2_PIN;
+
+    int ENC_PIN_1;
+    int ENC_PIN_2;
+};
+
 class Motores
 {
 private:
-    // Pinos dos Motores
-    const int MOTOR_LEFT_IN1 = 2;
-    const int MOTOR_LEFT_IN2 = 4;
-    const int MOTOR_LEFT_PWM = 27;
-
-    const int MOTOR_RIGHT_PWM = 13;
-    const int MOTOR_RIGHT_IN1 = 18;
-    const int MOTOR_RIGHT_IN2 = 19;
-
-    const int MOTOR_LEFT_ENC_A = 26;
-    const int MOTOR_LEFT_ENC_B = 25;
-
-    const int MOTOR_RIGHT_ENC_A = 33;
-    const int MOTOR_RIGHT_ENC_B = 32;
+    Motor left, right;
 
     // Encoders
     ESP32Encoder encoderLeft;
@@ -84,18 +81,18 @@ private:
         // Determinar direção
         if (direction > 0)
         {
-            setMotorDirection(MOTOR_LEFT_IN1, MOTOR_LEFT_IN2, 1); // Frente
-            setMotorDirection(MOTOR_RIGHT_IN1, MOTOR_RIGHT_IN2, 1);
+            setMotorDirection(left.IN1_PIN, left.IN2_PIN, 1); // Frente
+            setMotorDirection(right.IN1_PIN, right.IN2_PIN, 1);
         }
         else
         {
-            setMotorDirection(MOTOR_LEFT_IN1, MOTOR_LEFT_IN2, 0); // Trás
-            setMotorDirection(MOTOR_RIGHT_IN1, MOTOR_RIGHT_IN2, 0);
+            setMotorDirection(left.IN1_PIN, left.IN2_PIN, 0); // Trás
+            setMotorDirection(right.IN1_PIN, right.IN2_PIN, 0);
         }
 
         int pwmValue = map(currentSpeed, 0, 100, MIN_PWM, MAX_PWM);
-        analogWrite(MOTOR_LEFT_PWM, pwmValue);
-        analogWrite(MOTOR_RIGHT_PWM, pwmValue);
+        analogWrite(left.PWM_PIN, pwmValue);
+        analogWrite(right.PWM_PIN, pwmValue);
 
         // Aguardar até atingir distância
         while (abs(encoderLeft.getCount()) < targetPulses && abs(encoderRight.getCount()) < targetPulses)
@@ -103,13 +100,13 @@ private:
             // Sincronização em malha fechada
             if (encoderLeft.getCount() > encoderRight.getCount() + 2)
             {
-                analogWrite(MOTOR_RIGHT_PWM, pwmValue + 5);
-                analogWrite(MOTOR_LEFT_PWM, pwmValue - 5);
+                analogWrite(right.PWM_PIN, pwmValue + 5);
+                analogWrite(left.PWM_PIN, pwmValue - 5);
             }
             else if (encoderRight.getCount() > encoderLeft.getCount() + 2)
             {
-                analogWrite(MOTOR_LEFT_PWM, pwmValue + 5);
-                analogWrite(MOTOR_RIGHT_PWM, pwmValue - 5);
+                analogWrite(right.PWM_PIN, pwmValue - 5);
+                analogWrite(left.PWM_PIN, pwmValue + 5);
             }
             delay(10);
         }
@@ -141,19 +138,18 @@ private:
         if (degrees > 0)
         {
             // Horário: esquerda frente, direita trás
-            setMotorDirection(MOTOR_LEFT_IN1, MOTOR_LEFT_IN2, 1);
-            setMotorDirection(MOTOR_RIGHT_IN1, MOTOR_RIGHT_IN2, 0);
+            setMotorDirection(left.IN1_PIN, left.IN2_PIN, 1); // Frente
+            setMotorDirection(right.IN1_PIN, right.IN2_PIN, 0);
         }
         else
         {
-            // Anti-horário: direita frente, esquerda trás
-            setMotorDirection(MOTOR_LEFT_IN1, MOTOR_LEFT_IN2, 0);
-            setMotorDirection(MOTOR_RIGHT_IN1, MOTOR_RIGHT_IN2, 1);
+            setMotorDirection(left.IN1_PIN, left.IN2_PIN, 0); // Trás
+            setMotorDirection(right.IN1_PIN, right.IN2_PIN, 1);
         }
 
         int pwmValue = map(currentSpeed, 0, 100, MIN_PWM, MAX_PWM);
-        analogWrite(MOTOR_LEFT_PWM, pwmValue);
-        analogWrite(MOTOR_RIGHT_PWM, pwmValue);
+        analogWrite(left.PWM_PIN, pwmValue);
+        analogWrite(right.PWM_PIN, pwmValue);
 
         while (abs(encoderLeft.getCount()) < targetPulses || abs(encoderRight.getCount()) < targetPulses)
         {
@@ -210,8 +206,8 @@ private:
 
     void stopMotors()
     {
-        analogWrite(MOTOR_LEFT_PWM, 0);
-        analogWrite(MOTOR_RIGHT_PWM, 0);
+        analogWrite(left.PWM_PIN, 0);
+        analogWrite(right.PWM_PIN, 0);
     }
 
     void printHelp()
@@ -227,21 +223,37 @@ private:
     }
 
 public:
-    Motores() {}
+    Motores()
+    {
+        left.PWM_PIN = 27;
+        left.IN1_PIN = 2;
+        left.IN2_PIN = 4;
+
+        left.ENC_PIN_1 = 26;
+        left.ENC_PIN_2 = 25;
+
+        right.PWM_PIN = 13;
+        right.IN1_PIN = 18;
+        right.IN2_PIN = 19;
+
+        right.ENC_PIN_1 = 33;
+        right.ENC_PIN_2 = 32;
+    }
 
     void begin()
     {
-        pinMode(MOTOR_LEFT_IN1, OUTPUT);
-        pinMode(MOTOR_LEFT_IN2, OUTPUT);
-        pinMode(MOTOR_LEFT_PWM, OUTPUT);
+        pinMode(left.PWM_PIN, OUTPUT);
+        pinMode(left.IN1_PIN, OUTPUT);
+        pinMode(left.IN2_PIN, OUTPUT);
 
-        pinMode(MOTOR_RIGHT_IN1, OUTPUT);
-        pinMode(MOTOR_RIGHT_IN2, OUTPUT);
-        pinMode(MOTOR_RIGHT_PWM, OUTPUT);
+        pinMode(right.PWM_PIN, OUTPUT);
+        pinMode(right.IN1_PIN, OUTPUT);
+        pinMode(right.IN2_PIN, OUTPUT);
 
         // Configurar encoders
-        encoderLeft.attachHalfQuad(MOTOR_LEFT_ENC_A, MOTOR_LEFT_ENC_B);
-        encoderRight.attachHalfQuad(MOTOR_RIGHT_ENC_A, MOTOR_RIGHT_ENC_B);
+        encoderLeft.attachHalfQuad(left.ENC_PIN_1, left.ENC_PIN_2);
+        encoderRight.attachHalfQuad(right.ENC_PIN_1, right.ENC_PIN_2);
+
         encoderLeft.setCount(0);
         encoderRight.setCount(0);
 
