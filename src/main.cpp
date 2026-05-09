@@ -25,7 +25,7 @@ void loop() {
         &interno,   /* Task handle.                   */
         0);         /* Core where the task should run */
 
-    char* commands = "R";
+    char * commands = "R";
     mot.lerComandos(commands);
     delay(1000);
 }
