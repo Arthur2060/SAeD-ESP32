@@ -23,25 +23,21 @@ public:
 
     std::vector<double> getRawSensors()
     {
-        double distance = ultrasom.collectUltrasonicData();
+        double distance = 3.65 * ultrasom.collectUltrasonicData();
         double angle = bussola.collectCompassData();
-
-        distance /= 3.65;
         
         return {distance, angle};
     }
     
     std::vector<double> getObstacle()
     {
-        double distance = ultrasom.collectUltrasonicData();
+        double distance = 3.65 * ultrasom.collectUltrasonicData();
         int angle = bussola.collectCompassData();
         
         if (distance >= 300)
         {
             return {0, 0};
         }
-        
-        distance /= 3.65;
         
         return {distance * sin(angle), distance * cos(angle)};
     }
@@ -59,9 +55,7 @@ public:
     
     std::vector<double> getObstacle(int angle)
     {
-        double distance = ultrasom.collectUltrasonicData();
-        
-        distance /= 3.65;
+        double distance = 3.65 * ultrasom.collectUltrasonicData();
         
         if (distance >= 300)
         {
