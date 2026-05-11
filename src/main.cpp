@@ -11,8 +11,8 @@ void setup() {
 
 void loop() {
 
-    std::vector<float> obstacle = radar.getRawSensors();
+    std::vector<double> obstacle = radar.getRawSensors();
 
-    Serial.printf("Distance=%.2f, Angles { X=%.2f, Y=%.2f, Z=%.2f }\n", obstacle[0], obstacle[1], obstacle[2], obstacle[3]);
+    Serial.printf("Distance=%.2f, Angles=%.2f\n", obstacle[0], obstacle[1]);
     delay(300);
 }

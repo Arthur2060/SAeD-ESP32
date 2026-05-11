@@ -21,7 +21,7 @@ public:
         this->minDistance = minDistance;
     }
 
-    long collectUltrasonicData()
+    double collectUltrasonicData()
     {
         pinMode(trigger, OUTPUT);
         digitalWrite(trigger, LOW);
@@ -31,7 +31,7 @@ public:
         digitalWrite(trigger, LOW);
         pinMode(echo, INPUT);
 
-        long pulse = pulseIn(echo, HIGH) / 100;
+        double pulse = pulseIn(echo, HIGH) / 100;
 
         if (pulse > minDistance) {
             return pulse;

@@ -21,42 +21,48 @@ public:
         ultrasom.begin(trigger, echo);
     }
 
-    std::vector<float> getRawSensors()
+    std::vector<double> getRawSensors()
     {
-        float distance = ultrasom.collectUltrasonicData();
-        float angle = bussola.collectCompassData();
+        double distance = ultrasom.collectUltrasonicData();
+        double angle = bussola.collectCompassData();
 
+        distance /= 3.65;
+        
         return {distance, angle};
     }
-
-    std::vector<float> getObstacle()
+    
+    std::vector<double> getObstacle()
     {
-        float distance = ultrasom.collectUltrasonicData();
-        float angle = bussola.collectCompassData();
-
+        double distance = ultrasom.collectUltrasonicData();
+        int angle = bussola.collectCompassData();
+        
         if (distance >= 300)
         {
             return {0, 0};
         }
-
+        
+        distance /= 3.65;
+        
         return {distance * sin(angle), distance * cos(angle)};
     }
-
-    std::vector<float> getObstacle(float distance, float angle)
+    
+    std::vector<double> getObstacle(double distance, int angle)
     {
-
+        
         if (distance >= 300)
         {
             return {0, 0};
         }
-
-        return {distance * sin(angle), distance * cos(angle)};
+        
+        return {(distance * sin(angle)), (distance * cos(angle))};
     }
-
-    std::vector<float> getObstacle(float angle)
+    
+    std::vector<double> getObstacle(int angle)
     {
-        float distance = ultrasom.collectUltrasonicData();
-
+        double distance = ultrasom.collectUltrasonicData();
+        
+        distance /= 3.65;
+        
         if (distance >= 300)
         {
             return {0, 0};
