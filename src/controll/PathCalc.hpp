@@ -36,6 +36,14 @@ public:
     std::vector<char> moveToTarget();
     std::vector<char> setTarget(int *target);
     std::vector<char> setTarget(int x, int y);
+    void setCurrentCell(int x, int y) {
+        currentCell[0] = x;
+        currentCell[1] = y;
+    }
+
+    std::vector<int> getCurrentCell() {
+        return {currentCell[0], currentCell[1]};
+    }
 
     void setMap(std::vector<std::vector<bool>> map);
 };

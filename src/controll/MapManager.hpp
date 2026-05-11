@@ -45,10 +45,13 @@ public:
     Demarcacao getDemarcacao();
 
     std::vector<std::vector<bool>> getMap();
-    
+
     void setNewMap(std::vector<std::vector<bool>> map);
     void setNewMap(int scalex, int scaley);
     void setNewMap(int *scale);
+    void setCurrentCell(int x, int y) {
+        pathCalc.setCurrentCell(x, y);
+    }
 
     std::vector<char> setTarget(int x, int y);
     std::vector<char> setTarget(int *coordinates);
@@ -69,8 +72,8 @@ void MapManager::setDistanciaDeQuadro(float distancia)
 
 bool MapManager::addObstacle(float distanceX, float distanceY)
 {
-    float x = distanceX / distanciaDeQuadro;
-    float y = distanceY / distanciaDeQuadro;
+    float x = pathCalc.getCurrentCell()[0] + (distanceX / distanciaDeQuadro);
+    float y = pathCalc.getCurrentCell()[1] + (distanceY / distanciaDeQuadro);
 
     if (!map[x][y])
     {
