@@ -3,45 +3,62 @@
 #include <vector>
 #include <cmath>
 
-class Radar {
-    private:
-        Ultrasom ultrasom;
-        Bussola bussola;
+class Radar
+{
+private:
+    Ultrasom ultrasom;
+    Bussola bussola;
 
-    public:
-        void begin() {
-            ultrasom.begin(14, 13);
-            bussola.begin();
-        }
+public:
+    void begin()
+    {
+        ultrasom.begin(14, 13);
+        bussola.begin();
+    }
 
-        void begin(int trigger, int echo) {
-            ultrasom.begin(trigger, echo);
-        }
+    void begin(int trigger, int echo)
+    {
+        ultrasom.begin(trigger, echo);
+    }
 
-    std::vector<float> getObstacle() {
+    std::vector<float> getRawSensors()
+    {
         float distance = ultrasom.collectUltrasonicData();
         float angle = bussola.collectCompassData();
 
-        if (distance >= 300) {
+        return {distance, angle};
+    }
+
+    std::vector<float> getObstacle()
+    {
+        float distance = ultrasom.collectUltrasonicData();
+        float angle = bussola.collectCompassData();
+
+        if (distance >= 300)
+        {
             return {0, 0};
         }
 
         return {distance * sin(angle), distance * cos(angle)};
     }
 
-    std::vector<float> getObstacle(float distance, float angle) {
+    std::vector<float> getObstacle(float distance, float angle)
+    {
 
-        if (distance >= 300) {
+        if (distance >= 300)
+        {
             return {0, 0};
         }
 
         return {distance * sin(angle), distance * cos(angle)};
     }
 
-    std::vector<float> getObstacle(float angle) {
+    std::vector<float> getObstacle(float angle)
+    {
         float distance = ultrasom.collectUltrasonicData();
 
-        if (distance >= 300) {
+        if (distance >= 300)
+        {
             return {0, 0};
         }
 

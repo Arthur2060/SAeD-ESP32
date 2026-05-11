@@ -1,4 +1,4 @@
-#include <Adafruit_QMC5883P.h>
+#include <QMC5883LCompass.h>
 #include <Adafruit_Sensor.h>
 
 class Bussola
@@ -7,41 +7,21 @@ public:
     void begin() {
         configureCompass();
     }
-
-    bool testCompass();
     float collectCompassData();
 
 private:
-    Adafruit_QMC5883P compass;
+    QMC5883LCompass compass;
 
     void configureCompass()
     {
-        compass.setMode(QMC5883P_MODE_NORMAL);
-        compass.setODR(QMC5883P_ODR_50HZ);
-        compass.setOSR(QMC5883P_OSR_4);
-        compass.setDSR(QMC5883P_DSR_2);
-        compass.setRange(QMC5883P_RANGE_8G);
-        compass.setSetResetMode(QMC5883P_SETRESET_ON);
+        compass.init();
     }
 };
 
 float Bussola::collectCompassData()
 {
-    if (compass.isDataReady())
-    {
-        int16_t x, y, z;
-        compass.getRawMagnetic(&x, &y, &z);
-        return z;
-    }
-
-    return 0;
-}
-
-bool Bussola::testCompass()
-{
-    if (!compass.begin())
-    {
-        return false;
-    }
-    return true;
+    compass.read();
+    float x;
+    x = compass.getAzimuth();
+    return x;
 }
