@@ -1,6 +1,6 @@
-#include "model/Motores.hpp"
 #include "model/Color.hpp"
 
+#include "controll/Motores.hpp"
 #include "controll/MapManager.hpp"
 #include "controll/SAeDStateMachine.hpp"
 #include "controll/Radar.hpp"
@@ -18,18 +18,21 @@ private:
     MapManager mapManager;
 
     SAeDStateDispatch dispatchState = SAeDStateDispatch::Wait;
-    SAeDStateMap mapState = SAeDStateMap::Mapping;
+    SAeDStateMap mapState = SAeDStateMap::Wait;
     SAeDStateNewItem newItemState = SAeDStateNewItem::Wait;
 
     const int MAX_NO_OBSTACLE_LIMIT = 3;
     int noObstacleLimit = MAX_NO_OBSTACLE_LIMIT;
 
-    float currentOdometri;
+    double currentOdometri;
 
-    std::vector<float> obstacle = {};
+    std::vector<double> obstacle = {};
 
 public:
     SAeD() { this->mapManager = MapManager(10, 10, 0.3); }
+    SAeD(int scaleX, int scaleY, float cellScale) { 
+        this->mapManager = MapManager(scaleX, scaleY, cellScale); 
+    }
 
     void begin()
     {
@@ -47,7 +50,7 @@ public:
         case SAeDStateMap::Mapping:
             if (noObstacleLimit <= 0)
             {
-                motores.executarGiro(360);
+                motores.lerComandos("RRR");
             }
             else
             {
@@ -98,10 +101,9 @@ public:
         case SAeDStateMap::Wait:
             break;
         case SAeDStateMap::Mapping:
-            currentOdometri = motores.atualizarOdometria();
+            obstacle = radar.getObstacle();
 
-            obstacle = radar.getObstacle(currentOdometri);
-
+            if (obstacle[0] == 0 && obstacle[1] == 0) return;
             resul = mapManager.addObstacle(obstacle[0], obstacle[1]);
             (!resul) ? noObstacleLimit -= 1 : noObstacleLimit = MAX_NO_OBSTACLE_LIMIT;
             obstacle = {};
@@ -131,5 +133,19 @@ public:
         case SAeDStateNewItem::Stock:
             break;
         }
+    }
+
+    std::vector<std::vector<bool>> getMap() { return mapManager.getMap(); }
+
+    std::vector<char> setTarget(int* target) {
+        newItemState = SAeDStateNewItem::GetNew;
+        return mapManager.setTarget(target);
+    }
+
+    void setNewMap(int* dimensions, int* initial) {
+        mapManager.setNewMap(dimensions);
+        mapManager.setCurrentCell(initial[0], initial[1]);
+
+        mapState = SAeDStateMap::Mapping;
     }
 };

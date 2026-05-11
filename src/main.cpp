@@ -1,18 +1,15 @@
 #include <Arduino.h>
 #include <vector>
-#include "controll/Radar.hpp"
+#include "view/WebIHM.hpp"
 
-Radar radar;
+#define SSID "Arthur"
+#define PASSWORD "Arthur1705"
+
+WebIHM ihm;
 
 void setup() {
     Serial.begin(9600);
-    radar.begin();
+    ihm.begin(SSID, PASSWORD);
 }
 
-void loop() {
-
-    std::vector<double> obstacle = radar.getRawSensors();
-
-    Serial.printf("Distance=%.2f, Angles=%.2f\n", obstacle[0], obstacle[1]);
-    delay(300);
-}
+void loop() {}

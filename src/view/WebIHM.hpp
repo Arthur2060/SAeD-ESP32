@@ -1,7 +1,7 @@
 #include "ESPAsyncWebServer.h"
 #include "AsyncTCP.h"
 #include "ArduinoJson.h"
-#include "controll/MapManager.hpp"
+#include "SAeD.hpp"
 #include <WiFi.h>
 
 AsyncWebServer server(80);
@@ -10,18 +10,11 @@ AsyncWebSocket ws("/ws");
 class WebIHM
 {
 private:
-    MapManager mapManager;
+    SAeD core;
     IPAddress ip;
 
 public:
-    WebIHM()
-    {
-        this->mapManager = MapManager(10, 10, 0.3f);
-    }
-    WebIHM(MapManager MapManager)
-    {
-        this->mapManager = mapManager;
-    }
+    WebIHM() {}
 
     void begin(char *ssid, char *password)
     {
@@ -60,7 +53,7 @@ public:
     // Envia o contêudo do mapa atual
     void enviarMapa()
     {
-        std::vector<std::vector<bool>> map = mapManager.getMap();
+        std::vector<std::vector<bool>> map = core.getMap();
 
         JsonDocument content;
         JsonArray mapJson = content.to<JsonArray>();
@@ -83,7 +76,7 @@ public:
                   {
                 int target[2] = {request->getAttribute("x", 0.0), request->getAttribute("y", 0.0)};
                 
-                std::vector<char> path = mapManager.setTarget(target);
+                std::vector<char> path = core.setTarget(target);
                 JsonDocument doc;
                 JsonArray pathJson = doc.to<JsonArray>();
 
@@ -98,6 +91,6 @@ public:
                       int dimensions[2] = {request->getAttribute("scaleX", 0.0), request->getAttribute("scaleY", 0.0)};
                       int initial[2] = {request->getAttribute("initialX", 0.0), request->getAttribute("initialY", 0.0)};
 
-                      mapManager.setNewMap(dimensions); });
+                      core.setNewMap(dimensions, initial); });
     }
 };
