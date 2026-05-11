@@ -78,7 +78,7 @@ std::vector<char> PathCalc::setTarget(int *target)
         !(target[0] >= 0 && target[0] <= sizeof(map) &&
           target[1] >= 0 && target[1] <= sizeof(map[target[0]])))
     {
-        // Invalid target - Alvo inválido
+        // Invalid Target - Alvo inválido
         return {'I', 'T'};
     }
 
@@ -94,7 +94,7 @@ std::vector<char> PathCalc::moveToTarget()
         targetCell[0] == currentCell[0] &&
         targetCell[1] == currentCell[1])
     {
-        // Alredy in Target - Já estou no alvo
+        // Alredy In Target - Já estou no alvo
         return {'A', 'I', 'T'};
     }
 

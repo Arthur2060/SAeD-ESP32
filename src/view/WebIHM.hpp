@@ -95,7 +95,8 @@ public:
 
         server.on("/map", HTTP_POST, [this](AsyncWebServerRequest *request)
                   {
-                      int dimensions[2] = {request->getAttribute("x", 0.0), request->getAttribute("y", 0.0)};
+                      int dimensions[2] = {request->getAttribute("scaleX", 0.0), request->getAttribute("scaleY", 0.0)};
+                      int initial[2] = {request->getAttribute("initialX", 0.0), request->getAttribute("initialY", 0.0)};
 
                       mapManager.setNewMap(dimensions); });
     }
