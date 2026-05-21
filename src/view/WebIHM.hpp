@@ -5,7 +5,6 @@
 #include <WiFi.h>
 
 AsyncWebServer server(80);
-AsyncWebSocket ws("/ws");
 
 class WebIHM
 {
@@ -27,8 +26,6 @@ public:
 
         ip = WiFi.localIP();
 
-        server.addHandler(&ws);
-
         defineRoutes();
 
         server.begin();
@@ -41,38 +38,39 @@ public:
     }
 
     // Envia algum contêudo no formato JSON para todos os clientes conectados
-    void sendSomething(JsonDocument content)
+    String sendSomething(JsonDocument content)
     {
         String payload;
 
         serializeJson(content, payload);
 
-        ws.textAll(payload);
+        return payload;
     }
 
     // Envia o contêudo do mapa atual
-    void enviarMapa()
-    {
-        std::vector<std::vector<bool>> map = core.getMap();
-
-        JsonDocument content;
-        JsonArray mapJson = content.to<JsonArray>();
-
-        for (int c = 0; c <= sizeof(map); c++)
-        {
-            JsonArray targetLine = mapJson.add<JsonArray>();
-            for (int d = 0; d <= sizeof(map[c]); d++)
-            {
-                targetLine.add(map[c][d]);
-            }
-        }
-
-        sendSomething(content);
-    }
 
     void defineRoutes()
     {
-        server.on("/target", HTTP_POST, [this](AsyncWebServerRequest *request)
+        server.on("/map", HTTP_GET, [this](AsyncWebServerRequest *request)
+                  {
+
+            std::vector<std::vector<bool>> map = core.getMap();
+    
+            JsonDocument content;
+            JsonArray mapJson = content.to<JsonArray>();
+    
+            for (int c = 0; c <= sizeof(map); c++)
+            {
+                JsonArray targetLine = mapJson.add<JsonArray>();
+                for (int d = 0; d <= sizeof(map[c]); d++)
+                {
+                    targetLine.add(map[c][d]);
+                }
+            }
+    
+            request->send(200, "text/html", sendSomething(content)); });
+
+        server.on("/target", HTTP_PUT, [this](AsyncWebServerRequest *request)
                   {
                 int target[2] = {request->getAttribute("x", 0.0), request->getAttribute("y", 0.0)};
                 
@@ -84,7 +82,7 @@ public:
                     pathJson.add(step);
                 }
                 
-                sendSomething(doc); });
+                request->send(200, "text/html", sendSomething(doc)); });
 
         server.on("/map", HTTP_POST, [this](AsyncWebServerRequest *request)
                   {
