@@ -30,8 +30,9 @@ private:
 
 public:
     SAeD() { this->mapManager = MapManager(10, 10, 0.3); }
-    SAeD(int scaleX, int scaleY, float cellScale) { 
-        this->mapManager = MapManager(scaleX, scaleY, cellScale); 
+    SAeD(int scaleX, int scaleY, float cellScale)
+    {
+        this->mapManager = MapManager(scaleX, scaleY, cellScale);
     }
 
     void begin()
@@ -103,7 +104,8 @@ public:
         case SAeDStateMap::Mapping:
             obstacle = radar.getObstacle();
 
-            if (obstacle[0] == 0 && obstacle[1] == 0) return;
+            if (obstacle[0] == 0 && obstacle[1] == 0)
+                return;
             resul = mapManager.addObstacle(obstacle[0], obstacle[1]);
             (!resul) ? noObstacleLimit -= 1 : noObstacleLimit = MAX_NO_OBSTACLE_LIMIT;
             obstacle = {};
@@ -137,15 +139,22 @@ public:
 
     std::vector<std::vector<bool>> getMap() { return mapManager.getMap(); }
 
-    std::vector<char> setTarget(int* target) {
+    std::vector<char> setTarget(int *target)
+    {
         newItemState = SAeDStateNewItem::GetNew;
         return mapManager.setTarget(target);
     }
 
-    void setNewMap(int* dimensions, int* initial) {
+    void setNewMap(int *dimensions, int *initial)
+    {
         mapManager.setNewMap(dimensions);
         mapManager.setCurrentCell(initial[0], initial[1]);
 
         mapState = SAeDStateMap::Mapping;
+    }
+
+    std::vector<int> getCurrentPosition()
+    {
+        return mapManager.getCurrentCell();
     }
 };

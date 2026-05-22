@@ -70,6 +70,13 @@ public:
     
             request->send(200, "text/html", sendSomething(content)); });
 
+        server.on("/map", HTTP_POST, [this](AsyncWebServerRequest *request)
+                  {
+                    int dimensions[2] = {request->getAttribute("scaleX", 0.0), request->getAttribute("scaleY", 0.0)};
+                    int initial[2] = {request->getAttribute("initialX", 0.0), request->getAttribute("initialY", 0.0)};
+            
+                    core.setNewMap(dimensions, initial); });
+
         server.on("/target", HTTP_PUT, [this](AsyncWebServerRequest *request)
                   {
                 int target[2] = {request->getAttribute("x", 0.0), request->getAttribute("y", 0.0)};
@@ -84,11 +91,16 @@ public:
                 
                 request->send(200, "text/html", sendSomething(doc)); });
 
-        server.on("/map", HTTP_POST, [this](AsyncWebServerRequest *request)
+        server.on("/current", HTTP_GET, [this](AsyncWebServerRequest *request)
                   {
-                      int dimensions[2] = {request->getAttribute("scaleX", 0.0), request->getAttribute("scaleY", 0.0)};
-                      int initial[2] = {request->getAttribute("initialX", 0.0), request->getAttribute("initialY", 0.0)};
 
-                      core.setNewMap(dimensions, initial); });
+            std::vector<int> position = core.getCurrentPosition();
+
+            JsonDocument doc;
+
+            doc["x"] = position[0];
+            doc["y"] = position[1];
+
+            request->send(200, "text/html", sendSomething(doc)); });
     }
 };

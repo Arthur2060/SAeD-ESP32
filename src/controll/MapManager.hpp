@@ -49,12 +49,14 @@ public:
     void setNewMap(std::vector<std::vector<bool>> map);
     void setNewMap(int scalex, int scaley);
     void setNewMap(int *scale);
-    void setCurrentCell(int x, int y) {
+    void setCurrentCell(int x, int y)
+    {
         pathCalc.setCurrentCell(x, y);
     }
 
     std::vector<char> setTarget(int x, int y);
     std::vector<char> setTarget(int *coordinates);
+    std::vector<int> getCurrentCell();
 };
 
 float MapManager::getDistanciaDeQuadro()
@@ -134,4 +136,9 @@ std::vector<char> MapManager::setTarget(int x, int y)
 std::vector<char> MapManager::setTarget(int *coordinates)
 {
     return pathCalc.setTarget(coordinates);
+}
+
+std::vector<int> MapManager::getCurrentCell()
+{
+    return pathCalc.getCurrentCell();
 }
