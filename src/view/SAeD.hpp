@@ -7,6 +7,9 @@
 
 #include <vector>
 #include <random>
+#include <string>
+
+std::string spinCommand = "RRR";
 
 class SAeD
 {
@@ -42,7 +45,18 @@ public:
         color.begin();
     }
 
-    void principalLoop()
+    void setNewMap(int *dimensions, int *initial);
+    void principalLoop();
+    void secondaryLoop();
+    
+    std::vector<std::vector<bool>> getMap() { return mapManager.getMap(); }
+    
+    std::vector<char> setTarget(int *target);
+    std::vector<int> getCurrentPosition();
+    std::vector<int> getTargetPosition();
+};
+
+void SAeD::principalLoop()
     {
         switch (mapState)
         {
@@ -51,7 +65,7 @@ public:
         case SAeDStateMap::Mapping:
             if (noObstacleLimit <= 0)
             {
-                motores.lerComandos("RRR");
+                motores.lerComandos(spinCommand);
             }
             else
             {
@@ -94,67 +108,68 @@ public:
         }
     }
 
-    void secondaryLoop()
+void SAeD::secondaryLoop()
+{
+    bool resul = false;
+    switch (mapState)
     {
-        bool resul = false;
-        switch (mapState)
-        {
-        case SAeDStateMap::Wait:
-            break;
-        case SAeDStateMap::Mapping:
-            obstacle = radar.getObstacle();
+    case SAeDStateMap::Wait:
+        break;
+    case SAeDStateMap::Mapping:
+        obstacle = radar.getObstacle();
 
-            if (obstacle[0] == 0 && obstacle[1] == 0)
-                return;
-            resul = mapManager.addObstacle(obstacle[0], obstacle[1]);
-            (!resul) ? noObstacleLimit -= 1 : noObstacleLimit = MAX_NO_OBSTACLE_LIMIT;
-            obstacle = {};
-            break;
-        case SAeDStateMap::Demarc:
-            break;
-        }
-
-        switch (dispatchState)
-        {
-        case SAeDStateDispatch::Wait:
-            break;
-        case SAeDStateDispatch::GetFromStock:
-            break;
-        case SAeDStateDispatch::Dispatch:
-            break;
-        }
-
-        switch (newItemState)
-        {
-        case SAeDStateNewItem::Wait:
-            break;
-        case SAeDStateNewItem::GetNew:
-            break;
-        case SAeDStateNewItem::Analise:
-            break;
-        case SAeDStateNewItem::Stock:
-            break;
-        }
+        if (obstacle[0] == 0 && obstacle[1] == 0)
+            return;
+        resul = mapManager.addObstacle(obstacle[0], obstacle[1]);
+        (!resul) ? noObstacleLimit -= 1 : noObstacleLimit = MAX_NO_OBSTACLE_LIMIT;
+        obstacle = {};
+        break;
+    case SAeDStateMap::Demarc:
+        break;
     }
 
-    std::vector<std::vector<bool>> getMap() { return mapManager.getMap(); }
-
-    std::vector<char> setTarget(int *target)
+    switch (dispatchState)
     {
-        newItemState = SAeDStateNewItem::GetNew;
-        return mapManager.setTarget(target);
+    case SAeDStateDispatch::Wait:
+        break;
+    case SAeDStateDispatch::GetFromStock:
+        break;
+    case SAeDStateDispatch::Dispatch:
+        break;
     }
 
-    void setNewMap(int *dimensions, int *initial)
+    switch (newItemState)
     {
-        mapManager.setNewMap(dimensions);
-        mapManager.setCurrentCell(initial[0], initial[1]);
-
-        mapState = SAeDStateMap::Mapping;
+    case SAeDStateNewItem::Wait:
+        break;
+    case SAeDStateNewItem::GetNew:
+        break;
+    case SAeDStateNewItem::Analise:
+        break;
+    case SAeDStateNewItem::Stock:
+        break;
     }
+}
 
-    std::vector<int> getCurrentPosition()
-    {
-        return mapManager.getCurrentCell();
-    }
-};
+std::vector<char> SAeD::setTarget(int *target)
+{
+    return mapManager.setTarget(target);
+}
+
+void SAeD::setNewMap(int *dimensions, int *initial)
+{
+    mapManager.setNewMap(dimensions);
+    mapManager.setCurrentCell(initial[0], initial[1]);
+    
+    mapState = SAeDStateMap::Mapping;
+}
+
+std::vector<int> SAeD::getCurrentPosition()
+{
+    return mapManager.getCurrentCell();
+}
+
+std::vector<int> SAeD::getTargetPosition()
+{
+    return mapManager.getTarget();
+}

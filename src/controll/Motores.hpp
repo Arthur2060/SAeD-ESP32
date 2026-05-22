@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <ESP32Encoder.h>
-#include <string.h>
+#include <string>
 
 struct Motor
 {
@@ -193,9 +193,9 @@ public:
         stopMotors();
     }
 
-    void lerComandos(char *commands)
+    void lerComandos(std::string commands)
     {
-        for (int c = 0; c <= strlen(commands); c++)
+        for (int c = 0; c <= commands.length(); c++)
         {
             switch (commands[c])
             {

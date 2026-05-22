@@ -4,11 +4,11 @@
 class PathCalc
 {
 private:
-    int currentCell[2] = {0, 0};
-    int targetCell[2] = {0, 0};
     std::vector<std::vector<bool>> map;
-
+    int targetCell[2] = {0, 0};
+    
 public:
+    int currentCell[2] = {0, 0};
     PathCalc() {}
 
     PathCalc(std::vector<std::vector<bool>> map)
@@ -33,17 +33,10 @@ public:
         this->map = map;
     }
 
+    std::vector<int> getTarget();
     std::vector<char> moveToTarget();
     std::vector<char> setTarget(int *target);
     std::vector<char> setTarget(int x, int y);
-    void setCurrentCell(int x, int y) {
-        currentCell[0] = x;
-        currentCell[1] = y;
-    }
-
-    std::vector<int> getCurrentCell() {
-        return {currentCell[0], currentCell[1]};
-    }
 
     void setMap(std::vector<std::vector<bool>> map);
 };
@@ -55,12 +48,16 @@ void PathCalc::setMap(std::vector<std::vector<bool>> map)
     this->currentCell[1] = 0;
 }
 
+std::vector<int> PathCalc::getTarget()
+{
+    return {targetCell[0], targetCell[1]};
+}
+
 std::vector<char> PathCalc::setTarget(int x, int y)
 {
     if (
         !(x >= 0 && x <= sizeof(map) && y >= 0 && y <= sizeof(map[x])) ||
-        (map[x][y])
-    )
+        (map[x][y]))
     {
         // Invalid target - Alvo inválido
         return {'I', 'T'};
@@ -101,7 +98,7 @@ std::vector<char> PathCalc::moveToTarget()
     int diference[2] = {currentCell[0] - targetCell[0], currentCell[1] - targetCell[1]};
     std::vector<char> path;
 
-    for (int c = 0; c <= sizeof(diference); c++)
+    for (int c = 0; c < (int) (sizeof(diference) / sizeof(diference[0])); c++)
     {
         int workNumber = diference[c];
         char workChar;
@@ -122,7 +119,7 @@ std::vector<char> PathCalc::moveToTarget()
             workNumber--;
         } while (workNumber > 0);
 
-        currentCell[c] += workNumber;
+        currentCell[c] += targetCell[c];
     }
 
     return path;

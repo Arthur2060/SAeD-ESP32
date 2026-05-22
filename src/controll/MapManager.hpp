@@ -51,12 +51,14 @@ public:
     void setNewMap(int *scale);
     void setCurrentCell(int x, int y)
     {
-        pathCalc.setCurrentCell(x, y);
+        pathCalc.currentCell[0] = x;
+        pathCalc.currentCell[1] = y;
     }
 
     std::vector<char> setTarget(int x, int y);
     std::vector<char> setTarget(int *coordinates);
     std::vector<int> getCurrentCell();
+    std::vector<int> getTarget();
 };
 
 float MapManager::getDistanciaDeQuadro()
@@ -74,8 +76,8 @@ void MapManager::setDistanciaDeQuadro(float distancia)
 
 bool MapManager::addObstacle(float distanceX, float distanceY)
 {
-    float x = pathCalc.getCurrentCell()[0] + (distanceX / distanciaDeQuadro);
-    float y = pathCalc.getCurrentCell()[1] + (distanceY / distanciaDeQuadro);
+    float x = pathCalc.currentCell[0] + (distanceX / distanciaDeQuadro);
+    float y = pathCalc.currentCell[1] + (distanceY / distanciaDeQuadro);
 
     if (!map[x][y])
     {
@@ -140,5 +142,10 @@ std::vector<char> MapManager::setTarget(int *coordinates)
 
 std::vector<int> MapManager::getCurrentCell()
 {
-    return pathCalc.getCurrentCell();
+    return {pathCalc.currentCell[0], pathCalc.currentCell[1]};
+}
+
+std::vector<int> MapManager::getTarget()
+{
+    return pathCalc.getTarget();
 }

@@ -56,40 +56,61 @@ public:
 
             std::vector<std::vector<bool>> map = core.getMap();
     
-            JsonDocument content;
-            JsonArray mapJson = content.to<JsonArray>();
+            JsonDocument doc;
+
+            doc["scaleX"] = map.size();
+            doc["scaleY"] = map[0].size();
     
-            for (int c = 0; c <= sizeof(map); c++)
-            {
-                JsonArray targetLine = mapJson.add<JsonArray>();
-                for (int d = 0; d <= sizeof(map[c]); d++)
-                {
-                    targetLine.add(map[c][d]);
-                }
-            }
-    
-            request->send(200, "text/html", sendSomething(content)); });
+            request->send(200, "text/html", sendSomething(doc)); });
 
         server.on("/map", HTTP_POST, [this](AsyncWebServerRequest *request)
                   {
-                    int dimensions[2] = {request->getAttribute("scaleX", 0.0), request->getAttribute("scaleY", 0.0)};
-                    int initial[2] = {request->getAttribute("initialX", 0.0), request->getAttribute("initialY", 0.0)};
+                    int dimensions[2] = {};
+
+
+                    if (request->hasParam("scaleX")){
+                        dimensions[0] = request->getParam("scaleX")->value().toInt();
+                    }
+
+                    if (request->hasParam("scaleY")){
+                        dimensions[1] = request->getParam("scaleY")->value().toInt();
+                    }
+
+                    int initial[2] = {};
+
+                    if (request->hasParam("initialX")){
+                        initial[0] = request->getParam("initialX")->value().toInt();
+                    }
+
+                    if (request->hasParam("initialY")){
+                        initial[1] = request->getParam("initialY")->value().toInt();
+                    }
             
-                    core.setNewMap(dimensions, initial); });
+                    core.setNewMap(dimensions, initial); 
+                    
+                    request->send(201, "application/json", "Mapa criado com exito!"); });
+
+        server.on("/target", HTTP_GET, [this](AsyncWebServerRequest *request)
+                  {
+            JsonDocument doc;
+            std::vector<int> target = core.getTargetPosition();
+
+            doc["x"] = target[0];
+            doc["y"] = target[1];
+            
+            request->send(200, "application/json", sendSomething(doc)); });
 
         server.on("/target", HTTP_PUT, [this](AsyncWebServerRequest *request)
                   {
-                int target[2] = {request->getAttribute("x", 0.0), request->getAttribute("y", 0.0)};
-                
-                std::vector<char> path = core.setTarget(target);
-                JsonDocument doc;
-                JsonArray pathJson = doc.to<JsonArray>();
+                      JsonDocument doc;
 
-                for (char step : path) {
-                    pathJson.add(step);
-                }
+                      int target[2] = {2, 5};
                 
-                request->send(200, "text/html", sendSomething(doc)); });
+                        std::vector<char> path = core.setTarget(target);
+                        doc["path"] = path;
+
+                
+                    request->send(200, "application/json", sendSomething(doc)); });
 
         server.on("/current", HTTP_GET, [this](AsyncWebServerRequest *request)
                   {
@@ -101,6 +122,6 @@ public:
             doc["x"] = position[0];
             doc["y"] = position[1];
 
-            request->send(200, "text/html", sendSomething(doc)); });
+            request->send(200, "application/json", sendSomething(doc)); });
     }
 };
