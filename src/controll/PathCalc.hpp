@@ -103,14 +103,25 @@ std::vector<char> PathCalc::moveToTarget()
         int workNumber = diference[c];
         char workChar;
 
+        if (c == 1) {
+            if (workNumber < 1)
+            {
+                path.push_back('A');
+            }
+            else
+            {
+                path.push_back('D');
+            }
+        }
+
         if (workNumber < 1)
         {
             workNumber *= -1;
-            (c == 0) ? workChar = 'S' : workChar = 'A';
+            workChar = 'S';
         }
         else
         {
-            (c == 0) ? workChar = 'W' : workChar = 'D';
+            workChar = 'W';
         }
 
         do
