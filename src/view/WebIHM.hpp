@@ -47,12 +47,9 @@ public:
         return payload;
     }
 
-    // Envia o contêudo do mapa atual
-
     void defineRoutes()
     {
-        server.on("/map", HTTP_GET, [this](AsyncWebServerRequest *request)
-                  {
+        server.on("/map", HTTP_GET, [this](AsyncWebServerRequest *request) {
 
             std::vector<std::vector<bool>> map = core.getMap();
     
@@ -63,58 +60,22 @@ public:
     
             request->send(200, "text/html", sendSomething(doc)); });
 
-        server.on("/map", HTTP_POST, [this](AsyncWebServerRequest *request)
-                  {
-                    int dimensions[2] = {};
-
-
-                    if (request->hasParam("scaleX")){
-                        dimensions[0] = request->getParam("scaleX")->value().toInt();
-                    }
-
-                    if (request->hasParam("scaleY")){
-                        dimensions[1] = request->getParam("scaleY")->value().toInt();
-                    }
-
-                    int initial[2] = {};
-
-                    if (request->hasParam("initialX")){
-                        initial[0] = request->getParam("initialX")->value().toInt();
-                    }
-
-                    if (request->hasParam("initialY")){
-                        initial[1] = request->getParam("initialY")->value().toInt();
-                    }
+        server.on("/received", HTTP_POST, [this](AsyncWebServerRequest *request) {
             
-                    core.setNewMap(dimensions, initial); 
-                    
-                    request->send(201, "application/json", "Mapa criado com exito!"); });
+        });
 
-        server.on("/target", HTTP_GET, [this](AsyncWebServerRequest *request)
-                  {
+        server.on("/target", HTTP_GET, [this](AsyncWebServerRequest *request) {
+            std::vector<int> position = core.getTargetPosition();
+
             JsonDocument doc;
-            std::vector<int> target = core.getTargetPosition();
 
-            doc["x"] = target[0];
-            doc["y"] = target[1];
-            
-            request->send(200, "application/json", sendSomething(doc)); });
+            doc["x"] = position[0];
+            doc["y"] = position[1];
 
-        server.on("/target", HTTP_PUT, [this](AsyncWebServerRequest *request)
-                  {
-                      JsonDocument doc;
+            request->send(200, "application/json", sendSomething(doc)); 
+        });
 
-                      int target[2] = {2, 5};
-                
-                        std::vector<char> path = core.setTarget(target);
-                        doc["path"] = path;
-
-                
-                    request->send(200, "application/json", sendSomething(doc)); });
-
-        server.on("/current", HTTP_GET, [this](AsyncWebServerRequest *request)
-                  {
-
+        server.on("/current", HTTP_GET, [this](AsyncWebServerRequest *request) {
             std::vector<int> position = core.getCurrentPosition();
 
             JsonDocument doc;
@@ -122,6 +83,7 @@ public:
             doc["x"] = position[0];
             doc["y"] = position[1];
 
-            request->send(200, "application/json", sendSomething(doc)); });
+            request->send(200, "application/json", sendSomething(doc)); 
+        });
     }
 };

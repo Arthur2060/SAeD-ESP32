@@ -9,8 +9,11 @@ WebIHM ihm;
 
 void setup() {
     Serial.begin(9600);
+    Serial.println("Monitor serial iniciado...");
     ihm.begin(SSID, PASSWORD);
+    Serial.println("Servido iniciado...");
 
+    Serial.print("IP do servidor: ");
     Serial.println(ihm.getIp());
 }
 

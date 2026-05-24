@@ -10,13 +10,17 @@ struct area
 class Demarcacao {
     private:
         std::vector<std::vector<bool>> map;
-        std::vector<area> areas;
-
+        
     public:
+        std::vector<area> areas;
+        int recieveingCell[2] = {};
+
         Demarcacao() {}
 
-        Demarcacao(std::vector<std::vector<bool>> map) {
+        Demarcacao(std::vector<std::vector<bool>> map, int rc1, int rc2) {
             this->map = map;
+            this->recieveingCell[0] = rc1;
+            this->recieveingCell[1] = rc2;
         }
 
         Demarcacao(int scaleX, int scaleY)

@@ -193,9 +193,9 @@ public:
         stopMotors();
     }
 
-    void lerComandos(std::string commands)
+    bool lerComandos(std::vector<char> commands)
     {
-        for (int c = 0; c <= commands.length(); c++)
+        for (int c = 0; c <= commands.size(); c++)
         {
             switch (commands[c])
             {
@@ -216,9 +216,11 @@ public:
                 break;
             default:
                 Serial.println("Comando inválido!");
+                return false;
             }
-            delay(1000);
         }
+
+        return true;
     }
 
     void setSpeed(int newSpeed)

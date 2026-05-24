@@ -9,7 +9,7 @@
 #include <random>
 #include <string>
 
-std::string spinCommand = "RRR";
+std::vector<char> spinCommand = {'R', 'R', 'R'};
 
 class SAeD
 {
@@ -48,7 +48,8 @@ public:
     void setNewMap(int *dimensions, int *initial);
     void principalLoop();
     void secondaryLoop();
-    
+    void received();
+
     std::vector<std::vector<bool>> getMap() { return mapManager.getMap(); }
     
     std::vector<char> setTarget(int *target);
@@ -148,6 +149,16 @@ void SAeD::secondaryLoop()
         break;
     case SAeDStateNewItem::Stock:
         break;
+    }
+}
+
+void SAeD::received() {
+    std::vector<char> path = setTarget(mapManager.getDemarcacao().recieveingCell);
+    newItemState = SAeDTransitionNewItem[newItemState];
+    bool resp = motores.lerComandos(path);
+
+    if (resp) {
+        newItemState = SAeDTransitionNewItem[newItemState];
     }
 }
 

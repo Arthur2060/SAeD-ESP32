@@ -26,7 +26,7 @@ public:
         }
 
         this->distanciaDeQuadro = distanciaDeQuadro;
-        this->demarcacao = Demarcacao(map);
+        this->demarcacao = Demarcacao(map, 2, 3);
         this->pathCalc = PathCalc(map);
     }
 
@@ -34,7 +34,7 @@ public:
     {
         this->map = map;
         this->distanciaDeQuadro = distanciaDeQuadro;
-        this->demarcacao = Demarcacao(map);
+        this->demarcacao = Demarcacao(map, 2, 3);
     }
 
     float getDistanciaDeQuadro();
