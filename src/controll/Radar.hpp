@@ -12,7 +12,7 @@ private:
 public:
     void begin()
     {
-        ultrasom.begin(14, 13);
+        ultrasom.begin(12, 14);
         bussola.begin();
     }
 
