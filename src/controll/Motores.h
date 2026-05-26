@@ -2,7 +2,6 @@
 #include <ESP32Encoder.h>
 #include <vector>
 #include <string>
-#include "model/Bussola.hpp"
 
 struct Motor
 {
@@ -18,7 +17,6 @@ class Motores
 {
 private:
     Motor left, right;
-    Bussola bussola;
 
     // Encoders
     ESP32Encoder encoderLeft;
@@ -27,13 +25,16 @@ private:
     // Constantes do Sistema
     const int MAX_RPM = 170;
     const int MAX_PWM = 255;
-    const int MIN_PWM = 50;        // Mínimo diferente de zero
-    const int ENCODER_PPR = 11;    // Pulsos por revolução do motor
-    const int CELL_DISTANCE = 0.3; // metros (distância de uma célula)
-    const int GEAR_RATIO = 35;     // Razão de redução típica
+    const int MIN_PWM = 50;                // Mínimo diferente de zero
+    const int ENCODER_PPR = 47;            // Pulsos por revolução do encoder
+    const float ENCODER_MULTIPLIER = 2.0f; // attachHalfQuad conta duas transições por pulso
+    const int CELL_DISTANCE = 0.3;         // metros (distância de uma célula)
+    const int GEAR_RATIO = 35;             // Razão de redução típica
+    const float WHEEL_DIAMETER = 0.07f;    // metros (~7cm)
+    const float TRACK_WIDTH = 0.225f;       // metros (~20cm entre as rodas)
 
     int currentSpeed = 100; // %
-    int currentDegrees = 0; // %
+    int currentDegrees = 0;
 
     void moveForward()
     {
@@ -63,28 +64,25 @@ private:
     void moveDistance(float distance, bool direction)
     {
         // Calcular pulsos necessários
-        // Pulsos por revolução (com gear): ENCODER_PPR * GEAR_RATIO
-        // Distância por pulso: π * D_RODA / (ENCODER_PPR * GEAR_RATIO)
-
-        float pulsesPerMeter = (ENCODER_PPR * GEAR_RATIO) / (3.14159 * 0.07); // D_RODA ~= 7cm
-        long targetPulses = (long)(distance * pulsesPerMeter);
+        // Pulsos por revolução do motor no eixo de saída: ENCODER_PPR * GEAR_RATIO * ENCODER_MULTIPLIER
+        const float pulsesPerMeter = (ENCODER_PPR * ENCODER_MULTIPLIER * GEAR_RATIO) / (PI * WHEEL_DIAMETER);
+        const long targetPulses = (long)(distance * pulsesPerMeter);
 
         encoderLeft.setCount(0);
         encoderRight.setCount(0);
 
         if (direction)
         {
-            setMotorDirection(left.IN1_PIN, left.IN2_PIN, 1); // Frente
-            setMotorDirection(right.IN1_PIN, right.IN2_PIN, 1);
+            setMotorDirection(left.IN1_PIN, left.IN2_PIN, true); // Frente
+            setMotorDirection(right.IN1_PIN, right.IN2_PIN, true);
         }
         else
         {
-            setMotorDirection(left.IN1_PIN, left.IN2_PIN, 0); // Trás
-            setMotorDirection(right.IN1_PIN, right.IN2_PIN, 0);
+            setMotorDirection(left.IN1_PIN, left.IN2_PIN, false); // Trás
+            setMotorDirection(right.IN1_PIN, right.IN2_PIN, false);
         }
 
-        int pwmValue = map(currentSpeed, 0, 100, MIN_PWM, MAX_PWM);
-
+        const int pwmValue = map(currentSpeed, 0, 100, MIN_PWM, MAX_PWM);
         ledcWrite(left.PWM_PIN, pwmValue);
         ledcWrite(right.PWM_PIN, pwmValue);
 
@@ -92,17 +90,21 @@ private:
         int accumulatorRight = pwmValue;
 
         delay(1000);
-        while (abs(encoderLeft.getCount()) < targetPulses && abs(encoderRight.getCount()) < targetPulses)
+        while (abs(encoderLeft.getCount()) < targetPulses || abs(encoderRight.getCount()) < targetPulses)
         {
-            if (encoderLeft.getCount() > encoderRight.getCount() + 2 && accumulatorRight > 5 && accumulatorLeft < 100)
+            if (encoderLeft.getCount() > encoderRight.getCount() + 2 && accumulatorRight < MAX_PWM && accumulatorLeft > MIN_PWM)
             {
-                ledcWrite(right.PWM_PIN, accumulatorRight += 5);
-                ledcWrite(left.PWM_PIN, accumulatorLeft -= 5);
+                accumulatorRight += 5;
+                accumulatorLeft -= 5;
+                ledcWrite(right.PWM_PIN, accumulatorRight);
+                ledcWrite(left.PWM_PIN, accumulatorLeft);
             }
-            else if (encoderRight.getCount() > encoderLeft.getCount() + 2 && accumulatorRight > 5 && accumulatorLeft < 100)
+            else if (encoderRight.getCount() > encoderLeft.getCount() + 2 && accumulatorLeft < MAX_PWM && accumulatorRight > MIN_PWM)
             {
-                ledcWrite(right.PWM_PIN, accumulatorRight -= 5);
-                ledcWrite(left.PWM_PIN, accumulatorLeft += 5);
+                accumulatorRight -= 5;
+                accumulatorLeft += 5;
+                ledcWrite(right.PWM_PIN, accumulatorRight);
+                ledcWrite(left.PWM_PIN, accumulatorLeft);
             }
 
             delay(10);
@@ -115,64 +117,70 @@ private:
 
     void rotate(int degrees)
     {
-        /*
-        Diâmetro entre esteiras (distância entre trilhos)
-        float wheelDistance = 0.20; // ~20cm - AJUSTE CONFORME SEU CARRO
-        float arcDistance = (wheelDistance * 3.14159 * abs(degrees)) / 360.0;
+        const float arcDistance = (TRACK_WIDTH * PI * abs(degrees)) / 360.0f;
+        const float pulsesPerMeter = (ENCODER_PPR * ENCODER_MULTIPLIER * GEAR_RATIO) / (PI * WHEEL_DIAMETER);
+        const long targetPulses = (long)(arcDistance * pulsesPerMeter);
 
         encoderLeft.setCount(0);
         encoderRight.setCount(0);
 
-        float pulsesPerMeter = (ENCODER_PPR * GEAR_RATIO) / (3.14159 * 0.07);
-        long targetPulses = (long)(arcDistance * pulsesPerMeter);
-        */
-
-        currentDegrees += degrees;
-
-        if (currentDegrees > 0)
+        if (degrees > 0)
         {
-            setMotorDirection(left.IN1_PIN, left.IN2_PIN, 1);
-            setMotorDirection(right.IN1_PIN, right.IN2_PIN, 0);
+            // Giro para a esquerda: roda esquerda para trás, roda direita para frente
+            setMotorDirection(left.IN1_PIN, left.IN2_PIN, false);
+            setMotorDirection(right.IN1_PIN, right.IN2_PIN, true);
+
+            int sum = currentDegrees + degrees;
+
+            if (sum > 360) {
+                int dif = 360 - currentDegrees;
+                sum -= dif;
+                currentDegrees = sum;
+            }
         }
         else
         {
-            setMotorDirection(left.IN1_PIN, left.IN2_PIN, 0);
-            setMotorDirection(right.IN1_PIN, right.IN2_PIN, 1);
+            // Giro para a direita: roda esquerda para frente, roda direita para trás
+            setMotorDirection(left.IN1_PIN, left.IN2_PIN, true);
+            setMotorDirection(right.IN1_PIN, right.IN2_PIN, false);
+
+            int sub = currentDegrees - degrees;
+
+            if (sub < 0) {
+                currentDegrees = abs(sub);
+            }
         }
 
-        int pwmValue = map(currentSpeed, 0, 100, MIN_PWM, MAX_PWM);
-        ledcWrite(left.PWM_PIN, pwmValue);
-        ledcWrite(right.PWM_PIN, pwmValue);
+        int pwmLeft = map(currentSpeed, 0, 100, MIN_PWM, MAX_PWM);
+        int pwmRight = pwmLeft;
+        ledcWrite(left.PWM_PIN, pwmLeft);
+        ledcWrite(right.PWM_PIN, pwmRight);
 
-        while (bussola.collectCompassData() != currentDegrees)
+        unsigned long startMillis = millis();
+        const unsigned long timeout = 5000;
+
+        while (abs(encoderLeft.getCount()) < targetPulses || abs(encoderRight.getCount()) < targetPulses)
         {
-            delay(10);
-        }
+            if (millis() - startMillis > timeout)
+            {
+                break;
+            }
 
-        stopMotors();
-    }
+            if (abs(encoderLeft.getCount()) > abs(encoderRight.getCount()) + 2 && pwmRight < MAX_PWM && pwmLeft > MIN_PWM)
+            {
+                pwmRight += 5;
+                pwmLeft -= 5;
+                ledcWrite(right.PWM_PIN, pwmRight);
+                ledcWrite(left.PWM_PIN, pwmLeft);
+            }
+            else if (abs(encoderRight.getCount()) > abs(encoderLeft.getCount()) + 2 && pwmLeft < MAX_PWM && pwmRight > MIN_PWM)
+            {
+                pwmRight -= 5;
+                pwmLeft += 5;
+                ledcWrite(right.PWM_PIN, pwmRight);
+                ledcWrite(left.PWM_PIN, pwmLeft);
+            }
 
-    void centralize()
-    {
-        currentDegrees = 0;
-
-        if (currentDegrees > 0)
-        {
-            setMotorDirection(left.IN1_PIN, left.IN2_PIN, 1);
-            setMotorDirection(right.IN1_PIN, right.IN2_PIN, 0);
-        }
-        else
-        {
-            setMotorDirection(left.IN1_PIN, left.IN2_PIN, 0);
-            setMotorDirection(right.IN1_PIN, right.IN2_PIN, 1);
-        }
-
-        int pwmValue = map(currentSpeed, 0, 100, MIN_PWM, MAX_PWM);
-        ledcWrite(left.PWM_PIN, pwmValue);
-        ledcWrite(right.PWM_PIN, pwmValue);
-
-        while (bussola.collectCompassData() != currentDegrees)
-        {
             delay(10);
         }
 
@@ -235,9 +243,7 @@ public:
         encoderLeft.setCount(0);
         encoderRight.setCount(0);
 
-        centralize();
         stopMotors();
-        bussola.begin();
     }
 
     bool lerComandos(std::vector<char> commands)

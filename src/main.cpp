@@ -1,19 +1,32 @@
 #include <Arduino.h>
 #include <vector>
 #include <string>
-#include "model/Bussola.h"
+#include "controll/Motores.h"
 
-Bussola bussola;
+Motores motores;
 
 std::vector<char> testCommands = {'W', 'S', 'D', 'A'};
 
 void setup()
 {
     Serial.begin(9600);
-    bussola.begin();
+    motores.begin();
 }
 
 void loop()
 {
-    Serial.printf("angle=%.2f\n", bussola.collectCompassData());
+    Serial.println("Girando");
+
+    delay(2000);
+
+    motores.lerComandos({
+        'W',
+        'D',
+        'W',
+        'D',
+        'W',
+        'D',
+        'W',
+        'D',
+    });
 }
