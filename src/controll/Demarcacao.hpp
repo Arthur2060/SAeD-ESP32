@@ -4,6 +4,7 @@ struct area
 {
     int startCell[2];
     int endCell[2];
+    std::vector<uint> color;
     char* name;
 };
 
@@ -40,7 +41,8 @@ class Demarcacao {
             this->map = map;
         }
 
-        bool setNewArea(int* initialCell, int* finalCell, char* name) {
+        bool setNewArea(std::vector<uint> initialCell, std::vector<uint> finalCell, std::vector<uint> color, char *name)
+        {
             if (
                 initialCell[0] < 0 ||
                 initialCell[1] < 0 ||
@@ -65,6 +67,8 @@ class Demarcacao {
             newArea.endCell[0] = finalCell[0];
             newArea.endCell[1] = finalCell[1];
             
+            newArea.color = color;
+
             areas.push_back(newArea);
             return true;
         }

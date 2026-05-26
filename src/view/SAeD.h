@@ -1,6 +1,6 @@
 #include "model/Color.hpp"
 
-#include "controll/Motores.hpp"
+#include "controll/Motores.h"
 #include "controll/MapManager.hpp"
 #include "controll/SAeDStateMachine.hpp"
 #include "controll/Radar.hpp"
@@ -32,7 +32,11 @@ private:
     std::vector<double> obstacle = {};
 
 public:
-    SAeD() { this->mapManager = MapManager(10, 10, 0.3); }
+    SAeD() { 
+        this->mapManager = MapManager(10, 10, 0.3);
+
+        this->mapManager.getDemarcacao().setNewArea({9, 9}, {10, 10}, {255, 255, 255}, "white");
+    }
     SAeD(int scaleX, int scaleY, float cellScale)
     {
         this->mapManager = MapManager(scaleX, scaleY, cellScale);
@@ -49,6 +53,7 @@ public:
     void principalLoop();
     void secondaryLoop();
     void received();
+    void analise();
 
     std::vector<std::vector<bool>> getMap() { return mapManager.getMap(); }
     
@@ -160,6 +165,26 @@ void SAeD::received() {
     if (resp) {
         newItemState = SAeDTransitionNewItem[newItemState];
     }
+}
+
+void SAeD::analise() {
+    std::vector<uint> cor = color.detectaCor();
+
+    for (int c = 0 ; c < mapManager.getDemarcacao().areas.size() ; c++) {
+        if (
+            cor[0] == mapManager.getDemarcacao().areas[c].color[0] &&
+            cor[1] == mapManager.getDemarcacao().areas[c].color[1] &&
+            cor[2] == mapManager.getDemarcacao().areas[c].color[2])
+        {
+            int* startCell = mapManager.getDemarcacao().areas[c].startCell;
+
+            mapManager.setTarget(startCell[0] - 1, startCell[1] + 1);
+            newItemState = SAeDTransitionNewItem[newItemState];
+            return;
+        }
+    }
+    newItemState = SAeDTransitionNewItem[newItemState];
+    newItemState = SAeDTransitionNewItem[newItemState];
 }
 
 std::vector<char> SAeD::setTarget(int *target)
