@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include <ESP32Encoder.h>
+#include <vector>
 #include <string>
+#include "Radar.hpp"
 
 struct Motor
 {
@@ -16,6 +18,7 @@ class Motores
 {
 private:
     Motor left, right;
+    Radar radar;
 
     // Encoders
     ESP32Encoder encoderLeft;
@@ -30,6 +33,7 @@ private:
     const int GEAR_RATIO = 35;     // Razão de redução típica
 
     int currentSpeed = 100; // %
+    int currentDegrees = 0; // %
 
     void moveForward()
     {
@@ -80,30 +84,39 @@ private:
         }
 
         int pwmValue = map(currentSpeed, 0, 100, MIN_PWM, MAX_PWM);
-        analogWrite(left.PWM_PIN, pwmValue);
-        analogWrite(right.PWM_PIN, pwmValue);
 
+        ledcWrite(left.PWM_PIN, pwmValue);
+        ledcWrite(right.PWM_PIN, pwmValue);
+
+        int accumulatorLeft = pwmValue;
+        int accumulatorRight = pwmValue;
+
+        delay(1000);
         while (abs(encoderLeft.getCount()) < targetPulses && abs(encoderRight.getCount()) < targetPulses)
         {
-            if (encoderLeft.getCount() > encoderRight.getCount() + 2)
+            if (encoderLeft.getCount() > encoderRight.getCount() + 2 && accumulatorRight > 5 && accumulatorLeft < 100)
             {
-                analogWrite(right.PWM_PIN, pwmValue + 5);
-                analogWrite(left.PWM_PIN, pwmValue - 5);
+                ledcWrite(right.PWM_PIN, accumulatorRight += 5);
+                ledcWrite(left.PWM_PIN, accumulatorLeft -= 5);
             }
-            else if (encoderRight.getCount() > encoderLeft.getCount() + 2)
+            else if (encoderRight.getCount() > encoderLeft.getCount() + 2 && accumulatorRight > 5 && accumulatorLeft < 100)
             {
-                analogWrite(right.PWM_PIN, pwmValue - 5);
-                analogWrite(left.PWM_PIN, pwmValue + 5);
+                ledcWrite(right.PWM_PIN, accumulatorRight -= 5);
+                ledcWrite(left.PWM_PIN, accumulatorLeft += 5);
             }
+
             delay(10);
         }
+
+        delay(1000);
 
         stopMotors();
     }
 
     void rotate(int degrees)
     {
-        // Diâmetro entre esteiras (distância entre trilhos)
+        /*
+        Diâmetro entre esteiras (distância entre trilhos)
         float wheelDistance = 0.20; // ~20cm - AJUSTE CONFORME SEU CARRO
         float arcDistance = (wheelDistance * 3.14159 * abs(degrees)) / 360.0;
 
@@ -112,8 +125,11 @@ private:
 
         float pulsesPerMeter = (ENCODER_PPR * GEAR_RATIO) / (3.14159 * 0.07);
         long targetPulses = (long)(arcDistance * pulsesPerMeter);
+        */
 
-        if (degrees > 0)
+        currentDegrees = degrees;
+
+        if (currentDegrees > 0)
         {
             setMotorDirection(left.IN1_PIN, left.IN2_PIN, 1);
             setMotorDirection(right.IN1_PIN, right.IN2_PIN, 0);
@@ -125,10 +141,37 @@ private:
         }
 
         int pwmValue = map(currentSpeed, 0, 100, MIN_PWM, MAX_PWM);
-        analogWrite(left.PWM_PIN, pwmValue);
-        analogWrite(right.PWM_PIN, pwmValue);
+        ledcWrite(left.PWM_PIN, pwmValue);
+        ledcWrite(right.PWM_PIN, pwmValue);
 
-        while (abs(encoderLeft.getCount()) < targetPulses || abs(encoderRight.getCount()) < targetPulses)
+        while (radar.getRawSensors()[1] != currentDegrees)
+        {
+            delay(10);
+        }
+
+        stopMotors();
+    }
+
+    void centralize()
+    {
+        currentDegrees = 0;
+
+        if (currentDegrees > 0)
+        {
+            setMotorDirection(left.IN1_PIN, left.IN2_PIN, 1);
+            setMotorDirection(right.IN1_PIN, right.IN2_PIN, 0);
+        }
+        else
+        {
+            setMotorDirection(left.IN1_PIN, left.IN2_PIN, 0);
+            setMotorDirection(right.IN1_PIN, right.IN2_PIN, 1);
+        }
+
+        int pwmValue = map(currentSpeed, 0, 100, MIN_PWM, MAX_PWM);
+        ledcWrite(left.PWM_PIN, pwmValue);
+        ledcWrite(right.PWM_PIN, pwmValue);
+
+        while (radar.getRawSensors()[1] != currentDegrees)
         {
             delay(10);
         }
@@ -152,14 +195,14 @@ private:
 
     void stopMotors()
     {
-        analogWrite(left.PWM_PIN, 0);
-        analogWrite(right.PWM_PIN, 0);
+        ledcWrite(left.PWM_PIN, 0);
+        ledcWrite(right.PWM_PIN, 0);
     }
 
 public:
     Motores()
     {
-        left.PWM_PIN = 27;
+        left.PWM_PIN = 15;
         left.IN1_PIN = 2;
         left.IN2_PIN = 4;
 
@@ -176,11 +219,13 @@ public:
 
     void begin()
     {
-        pinMode(left.PWM_PIN, OUTPUT);
+        ledcSetup(left.PWM_PIN, 1000, 8);
+        ledcAttachPin(left.PWM_PIN, left.PWM_PIN);
         pinMode(left.IN1_PIN, OUTPUT);
         pinMode(left.IN2_PIN, OUTPUT);
 
-        pinMode(right.PWM_PIN, OUTPUT);
+        ledcSetup(right.PWM_PIN, 1000, 8);
+        ledcAttachPin(right.PWM_PIN, right.PWM_PIN);
         pinMode(right.IN1_PIN, OUTPUT);
         pinMode(right.IN2_PIN, OUTPUT);
 
@@ -190,12 +235,14 @@ public:
         encoderLeft.setCount(0);
         encoderRight.setCount(0);
 
+        centralize();
         stopMotors();
+        radar.begin();
     }
 
     bool lerComandos(std::vector<char> commands)
     {
-        for (int c = 0; c <= commands.size(); c++)
+        for (int c = 0; c < commands.size(); c++)
         {
             switch (commands[c])
             {

@@ -1,20 +1,38 @@
 #include <Arduino.h>
 #include <vector>
-#include "view/WebIHM.hpp"
+#include <string>
+#include "controll/Motores.h"
 
-char* SSID = "Arthur";
-char* PASSWORD = "Arthur1705";
+Motores motores;
 
-WebIHM ihm;
+std::vector<char> testCommands = {'W', 'S', 'D', 'A'};
 
-void setup() {
+void setup()
+{
     Serial.begin(9600);
-    Serial.println("Monitor serial iniciado...");
-    ihm.begin(SSID, PASSWORD);
-    Serial.println("Servido iniciado...");
+    motores.begin();
 
-    Serial.print("IP do servidor: ");
-    Serial.println(ihm.getIp());
+    motores.setSpeed(100);
 }
 
-void loop() {}
+void loop()
+{
+    Serial.print("Testando motores, movimento de teste: ");
+    Serial.print(testCommands[0]);
+    Serial.println(" em...");
+    Serial.println("3...");
+    delay(1000);
+    Serial.println("2..");
+    delay(1000);
+    Serial.println("1!");
+    delay(1000);
+
+    if (motores.lerComandos(testCommands))
+    {
+        Serial.println("Teste concluido com exito!");
+    }
+    else
+    {
+        Serial.println("Falha ao executar teste...");
+    }
+}
