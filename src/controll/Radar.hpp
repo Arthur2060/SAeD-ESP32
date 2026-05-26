@@ -1,4 +1,4 @@
-#include "model/Bussola.hpp"
+#include "model/Bussola.h"
 #include "model/Ultrasom.hpp"
 #include <vector>
 #include <cmath>

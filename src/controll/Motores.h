@@ -2,7 +2,7 @@
 #include <ESP32Encoder.h>
 #include <vector>
 #include <string>
-#include "Radar.hpp"
+#include "model/Bussola.hpp"
 
 struct Motor
 {
@@ -18,7 +18,7 @@ class Motores
 {
 private:
     Motor left, right;
-    Radar radar;
+    Bussola bussola;
 
     // Encoders
     ESP32Encoder encoderLeft;
@@ -127,7 +127,7 @@ private:
         long targetPulses = (long)(arcDistance * pulsesPerMeter);
         */
 
-        currentDegrees = degrees;
+        currentDegrees += degrees;
 
         if (currentDegrees > 0)
         {
@@ -144,7 +144,7 @@ private:
         ledcWrite(left.PWM_PIN, pwmValue);
         ledcWrite(right.PWM_PIN, pwmValue);
 
-        while (radar.getRawSensors()[1] != currentDegrees)
+        while (bussola.collectCompassData() != currentDegrees)
         {
             delay(10);
         }
@@ -171,7 +171,7 @@ private:
         ledcWrite(left.PWM_PIN, pwmValue);
         ledcWrite(right.PWM_PIN, pwmValue);
 
-        while (radar.getRawSensors()[1] != currentDegrees)
+        while (bussola.collectCompassData() != currentDegrees)
         {
             delay(10);
         }
@@ -237,7 +237,7 @@ public:
 
         centralize();
         stopMotors();
-        radar.begin();
+        bussola.begin();
     }
 
     bool lerComandos(std::vector<char> commands)

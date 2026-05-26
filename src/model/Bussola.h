@@ -21,7 +21,5 @@ private:
 float Bussola::collectCompassData()
 {
     compass.read();
-    float x;
-    x = compass.getAzimuth();
-    return x;
+    return compass.getAzimuth();
 }
