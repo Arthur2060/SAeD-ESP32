@@ -49,6 +49,7 @@ public:
 
     int detectarCor();
     std::vector<uint> getMacros();
+    void setMacros(std::vector<uint> macros);
 
     std::vector<uint> detectaCores();
 };
@@ -113,8 +114,7 @@ void Color::calibrarCores()
     mRv = 999999;
     mGv = 999999;
     mBv = 999999;
-    
-    
+
     tempoInicioCalib = millis();
     do
     {
@@ -124,31 +124,31 @@ void Color::calibrarCores()
         if (G > MGv)
             MGv = G;
         if (B > MBv)
-        MBv = B;
-        
+            MBv = B;
+
         if (R < mRv)
-        mRv = R;
+            mRv = R;
         if (G < mGv)
-        mGv = G;
+            mGv = G;
         if (B < mBv)
-        mBv = B;
+            mBv = B;
     } while (!(millis() - tempoInicioCalib >= tempoCalibracao));
-    
+
     Serial.println("Calibrado!");
-    
+
     delay(500);
-    
+
     // Verde
-    
+
     Serial.println("Calibrando verde...");
-    
+
     MRg = 0;
     MGg = 0;
     MBg = 0;
     mRg = 999999;
     mGg = 999999;
     mBg = 999999;
-    
+
     tempoInicioCalib = millis();
     do
     {
@@ -205,4 +205,38 @@ void Color::calibrarCores()
     Serial.println("Calibrado!");
 
     delay(500);
+}
+
+std::vector<uint> Color::getMacros()
+{
+    return
+    {
+        MRv, MGv, MBv, mRv, mGv, mBv,
+        MRg, MGg, MBg, mRg, mGg, mBg,
+        MRb, MGb, MBb, mRb, mGb, mBb
+    };
+}
+
+void Color::setMacros(std::vector<uint> macros)
+{
+    MRv = macros[0];
+    MGv = macros[1];
+    MBv = macros[2];
+    mRv = macros[3];
+    mGv = macros[4];
+    mBv = macros[5];
+
+    MRg = macros[6];
+    MGg = macros[7];
+    MBg = macros[8];
+    mRg = macros[9];
+    mGg = macros[10];
+    mBg = macros[11];
+
+    MRb = macros[12];
+    MGb = macros[13];
+    MBb = macros[14];
+    mRb = macros[15];
+    mGb = macros[16];
+    mBb = macros[17];
 }
