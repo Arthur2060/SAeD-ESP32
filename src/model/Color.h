@@ -27,13 +27,8 @@ private:
     unsigned int MRb = 0, MGb = 0, MBb = 0;
     unsigned int mRb = 999999, mGb = 999999, mBb = 999999;
 
-    bool modoCalibracao = false;
-    String corCalibrando = "";
-
     unsigned long tempoInicioCalib = 0;
     const int tempoCalibracao = 5000;
-
-    std::vector<uint> CalibraVm();
 
 public:
     Color() {}
@@ -50,79 +45,15 @@ public:
         digitalWrite(pinS1, LOW);
     }
 
-    int detectarCores();
+    void calibrarCores();
 
-    std::vector<uint> detectaCorBruto();
-    std::vector<uint> detectaCor();
+    int detectarCor();
+    std::vector<uint> getMacros();
+
+    std::vector<uint> detectaCores();
 };
 
-// *********** Função de leitura so sensor de cor ********************
-std::vector<uint> Color::detectaCorBruto()
-{
-    // Vermelho
-    digitalWrite(pinS2, LOW);
-    digitalWrite(pinS3, LOW);
-    R = pulseIn(pinOut, digitalRead(pinOut) == HIGH ? LOW : HIGH);
-
-    // Verde
-    digitalWrite(pinS2, HIGH);
-    G = pulseIn(pinOut, digitalRead(pinOut) == HIGH ? LOW : HIGH);
-
-    // Azul
-    digitalWrite(pinS2, LOW);
-    digitalWrite(pinS3, HIGH);
-    B = pulseIn(pinOut, digitalRead(pinOut) == HIGH ? LOW : HIGH);
-    return {R, G, B};
-}
-
-std::vector<uint> Color::CalibraVm()
-{
-    std::vector<uint> cores = detectaCorBruto();
-    unsigned int Cor, Mvm, Mvd, Maz, mvm, mvd, maz, compR, compG, compB;
-    compR = cores[0];
-    compG = cores[1];
-    compB = cores[2];
-
-    if (R < G && R < B)
-    {
-        // Salva o maior e o menor valor R lido durante calibração
-        if (R < compR)
-        {
-            Mvm = compR;
-        }
-
-        if (R > compR)
-        {
-            mvm = compR;
-        }
-
-        // Salva o maior e o menor valor G lido durante calibração
-        if (G < compG)
-        {
-            Mvd = compG;
-        }
-
-        if (G > compG)
-        {
-            mvd = compG;
-        }
-
-        // Salva o maior e o menor valor B lido durante calibração
-        if (B < compB)
-        {
-            Maz = compB;
-        }
-
-        if (B > compB)
-        {
-            maz = compB;
-        }
-    }
-
-    return {Mvm, Mvd, Maz, mvm, mvd, maz};
-}
-
-std::vector<uint> Color::detectaCor()
+std::vector<uint> Color::detectaCores()
 {
     digitalWrite(pinS2, LOW);
     digitalWrite(pinS3, LOW);
@@ -137,8 +68,10 @@ std::vector<uint> Color::detectaCor()
     return {R, G, B};
 }
 
-int Color::detectarCores()
+int Color::detectarCor()
 {
+    detectaCores();
+
     int cor = 0;
 
     //  Vermelho
@@ -166,4 +99,110 @@ int Color::detectarCores()
     }
 
     return cor;
+}
+
+void Color::calibrarCores()
+{
+    // Vermelho
+
+    Serial.println("Calibrando vermelho...");
+
+    MRv = 0;
+    MGv = 0;
+    MBv = 0;
+    mRv = 999999;
+    mGv = 999999;
+    mBv = 999999;
+    
+    
+    tempoInicioCalib = millis();
+    do
+    {
+        detectaCores();
+        if (R > MRv)
+            MRv = R;
+        if (G > MGv)
+            MGv = G;
+        if (B > MBv)
+        MBv = B;
+        
+        if (R < mRv)
+        mRv = R;
+        if (G < mGv)
+        mGv = G;
+        if (B < mBv)
+        mBv = B;
+    } while (!(millis() - tempoInicioCalib >= tempoCalibracao));
+    
+    Serial.println("Calibrado!");
+    
+    delay(500);
+    
+    // Verde
+    
+    Serial.println("Calibrando verde...");
+    
+    MRg = 0;
+    MGg = 0;
+    MBg = 0;
+    mRg = 999999;
+    mGg = 999999;
+    mBg = 999999;
+    
+    tempoInicioCalib = millis();
+    do
+    {
+        detectaCores();
+        if (R > MRg)
+            MRg = R;
+        if (G > MGg)
+            MGg = G;
+        if (B > MBg)
+            MBg = B;
+
+        if (R < mRg)
+            mRg = R;
+        if (G < mGg)
+            mGg = G;
+        if (B < mBg)
+            mBg = B;
+    } while (!(millis() - tempoInicioCalib >= tempoCalibracao));
+
+    Serial.println("Calibrado!");
+
+    delay(500);
+
+    // Azul
+
+    Serial.println("Calibrando azul...");
+
+    MRb = 0;
+    MGb = 0;
+    MBb = 0;
+    mRb = 999999;
+    mGb = 999999;
+    mBb = 999999;
+
+    tempoInicioCalib = millis();
+    do
+    {
+        detectaCores();
+        if (R > MRb)
+            MRb = R;
+        if (G > MGb)
+            MGb = G;
+        if (B > MBb)
+            MBb = B;
+
+        if (R < mRb)
+            mRb = R;
+        if (G < mGb)
+            mGb = G;
+        if (B < mBb)
+            mBb = B;
+    } while (!(millis() - tempoInicioCalib >= tempoCalibracao));
+
+    Serial.println("Calibrado!");
+
+    delay(500);
 }
