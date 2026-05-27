@@ -1,19 +1,15 @@
 #include <Arduino.h>
-#include <vector>
-#include <string>
-#include "view/SAeD.h"
+#include "controll/Motores.h"
 
-SAeD saed;
-
-std::vector<char> testCommands = {'W', 'S', 'D', 'A'};
+Motores motores;
 
 void setup()
 {
-    Serial.begin(9600);
-    saed.begin();
+  Serial.begin(9600);
+  motores.begin();
 }
 
 void loop()
 {
-    saed.received();
+  motores.lerComandos({'W', 'A', 'S', 'D'});
 }

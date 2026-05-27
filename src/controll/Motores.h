@@ -214,15 +214,15 @@ public:
         left.IN1_PIN = 2;
         left.IN2_PIN = 4;
 
-        left.ENC_PIN_1 = 26;
-        left.ENC_PIN_2 = 25;
+        left.ENC_PIN_1 = 2;
+        left.ENC_PIN_2 = 4;
 
-        right.PWM_PIN = 13;
-        right.IN1_PIN = 18;
-        right.IN2_PIN = 19;
+        right.PWM_PIN = 0;
+        right.IN1_PIN = 16;
+        right.IN2_PIN = 17;
 
-        right.ENC_PIN_1 = 33;
-        right.ENC_PIN_2 = 32;
+        right.ENC_PIN_1 = 32;
+        right.ENC_PIN_2 = 33;
     }
 
     void begin()
