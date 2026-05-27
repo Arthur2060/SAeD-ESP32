@@ -5,7 +5,7 @@ class Ultrasom
 
 private:
     int trigger, echo;
-    float minDistance = 0.3;
+    const int PULSE_PER_METER = 1.723;
 
 public:
     void begin(int trigger, int echo)
@@ -14,11 +14,10 @@ public:
         this->echo = echo;
     }
 
-    void begin(int trigger, int echo, float minDistance)
+    void begin(int trigger, int echo)
     {
         this->trigger = trigger;
         this->echo = echo;
-        this->minDistance = minDistance;
     }
 
     double collectUltrasonicData()
@@ -31,12 +30,9 @@ public:
         digitalWrite(trigger, LOW);
         pinMode(echo, INPUT);
 
-        double pulse = pulseIn(echo, HIGH) / 100;
-
-        if (pulse > minDistance) {
-            return pulse;
-        }
-        return minDistance;
+        double distance = (PULSE_PER_METER * pulseIn(echo, HIGH));
+        
+        return distance;
     }
 
     void setTrigger(int trigger)
