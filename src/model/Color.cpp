@@ -1,4 +1,4 @@
-#include "headers/Color.h"
+#include "Color.h"
 
 using namespace N;
 using namespace std;

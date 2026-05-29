@@ -1,4 +1,4 @@
-#include "headers/Bussola.h"
+#include "Bussola.h"
 
 using namespace N;
 using namespace std;
