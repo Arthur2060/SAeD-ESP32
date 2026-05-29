@@ -30,16 +30,14 @@ void WebIHM::defineRoutes()
         JsonDocument payload;
         deserializeJson(payload, BTS.readString());
 
-        char route = payload["route"];
-        char method = payload["method"];
+        String route = payload["route"];
+        String method = payload["method"];
         String body = payload["body"];
 
-        switch (route)
+        if (route == "map")
         {
-        case 'M':
-            switch (method)
+            if (method == "GET")
             {
-            case 'G':
                 std::vector<std::vector<bool>> map = core.getMap();
 
                 JsonDocument doc;
@@ -48,14 +46,12 @@ void WebIHM::defineRoutes()
                 doc["scaleY"] = map[0].size();
 
                 BTS.println(sendSomething(doc));
-                break;
             }
-            break;
-
-        case 'T':
-            switch (method)
+        }
+        else if (route == "target")
+        {
+            if (method == "GET")
             {
-            case 'G':
                 std::vector<int> position = core.getTargetPosition();
 
                 JsonDocument doc;
@@ -64,14 +60,12 @@ void WebIHM::defineRoutes()
                 doc["y"] = position[1];
 
                 BTS.println(sendSomething(doc));
-                break;
             }
-            break;
-
-        case 'P':
-            switch (method)
+        }
+        else if (route == "position")
+        {
+            if (method == "GET")
             {
-            case 'G':
                 std::vector<int> position = core.getCurrentPosition();
 
                 JsonDocument doc;
@@ -80,16 +74,13 @@ void WebIHM::defineRoutes()
                 doc["y"] = position[1];
 
                 BTS.println(sendSomething(doc));
-                break;
             }
-            break;
-
-        case 'C':
-            switch (method)
+        }
+        else if (route == "newItem")
+        {
+            if (method == "POST")
             {
-            case 'P':
                 core.received();
-                break;
             }
         }
     }

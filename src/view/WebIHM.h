@@ -18,7 +18,6 @@ namespace N
         WebIHM();
         void begin(char *ssid);
 
-        // Envia algum contêudo no formato JSON para todos os clientes conectados
         String sendSomething(JsonDocument content);
 
         void defineRoutes();
