@@ -1,5 +1,5 @@
 #include "model/Bussola.h"
-#include "model/Ultrasom.hpp"
+#include "model/Ultrasom.h"
 #include <vector>
 #include <cmath>
 

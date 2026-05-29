@@ -1,4 +1,4 @@
-#include "model/Color.hpp"
+#include "model/Color.h"
 
 #include "controll/Motores.h"
 #include "controll/MapManager.hpp"
@@ -168,7 +168,7 @@ void SAeD::received() {
 }
 
 void SAeD::analise() {
-    std::vector<uint> cor = color.detectaCor();
+    std::vector<uint> cor = color.detectaCores();
 
     for (int c = 0 ; c < mapManager.getDemarcacao().areas.size() ; c++) {
         if (

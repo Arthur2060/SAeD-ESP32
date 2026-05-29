@@ -1,15 +1,16 @@
 #include <Arduino.h>
-#include "controll/Motores.h"
+#include <Wire.h>
+#include "model/Bussola.h"
 
-Motores motores;
+Bussola bussola;
 
 void setup()
 {
   Serial.begin(9600);
-  motores.begin();
+  bussola.begin();
 }
 
 void loop()
 {
-  motores.lerComandos({'W', 'A', 'S', 'D'});
+  Serial.println(bussola.collectCompassData());
 }

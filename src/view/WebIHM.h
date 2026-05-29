@@ -1,40 +1,23 @@
-#include "ESPAsyncWebServer.h"
-#include "AsyncTCP.h"
 #include "ArduinoJson.h"
+#include <BluetoothSerial.h>
 #include "SAeD.h"
-#include <WiFi.h>
-
-AsyncWebServer server(80);
 
 class WebIHM
 {
 private:
     SAeD core;
-    IPAddress ip;
+    BluetoothSerial BTS;
+    const char *DEFAULT_SSID = "SAeD - SENAI";
 
 public:
-    WebIHM() {}
-
-    void begin(char *ssid, char *password)
+    WebIHM()
     {
-        WiFi.begin(ssid, password);
-
-        while (WiFi.status() != WL_CONNECTED)
-        {
-            delay(300);
-        }
-
-        ip = WiFi.localIP();
-
-        defineRoutes();
-
-        server.begin();
+        BTS.begin(DEFAULT_SSID);
     }
 
-    // Retorna o IP do servidor WebSocket
-    IPAddress getIp()
+    void begin(char *ssid)
     {
-        return this->ip;
+        BTS.begin(ssid);
     }
 
     // Envia algum contêudo no formato JSON para todos os clientes conectados
@@ -49,41 +32,69 @@ public:
 
     void defineRoutes()
     {
-        server.on("/map", HTTP_GET, [this](AsyncWebServerRequest *request) {
+        if (BTS.available() > 0)
+        {
+            JsonDocument payload;
+            deserializeJson(payload, BTS.readString());
 
-            std::vector<std::vector<bool>> map = core.getMap();
-    
-            JsonDocument doc;
+            char route = payload["route"];
+            char method = payload["method"];
+            String body = payload["body"];
 
-            doc["scaleX"] = map.size();
-            doc["scaleY"] = map[0].size();
-    
-            request->send(200, "text/html", sendSomething(doc)); });
+            switch (route)
+            {
+            case 'M':
+                switch (method)
+                {
+                case 'G':
+                    std::vector<std::vector<bool>> map = core.getMap();
 
-        server.on("/received", HTTP_POST, [this](AsyncWebServerRequest *request) {
+                    JsonDocument doc;
+
+                    doc["scaleX"] = map.size();
+                    doc["scaleY"] = map[0].size();
+
+                    BTS.println(sendSomething(doc));
+                }
+                break;
+
+            case 'T':
+                switch (method)
+                {
+                    std::vector<int> position = core.getTargetPosition();
+
+                    JsonDocument doc;
+
+                    doc["x"] = position[0];
+                    doc["y"] = position[1];
+
+                    BTS.println(sendSomething(doc));
+                }
+                break;
+
+            case 'P':
+                switch (method)
+                {
+                case 'G':
+                    std::vector<int> position = core.getCurrentPosition();
+
+                    JsonDocument doc;
+
+                    doc["x"] = position[0];
+                    doc["y"] = position[1];
+
+                    BTS.println(sendSomething(doc));
+                    break;
+                }
+                break;
             
-        });
-
-        server.on("/target", HTTP_GET, [this](AsyncWebServerRequest *request) {
-            std::vector<int> position = core.getTargetPosition();
-
-            JsonDocument doc;
-
-            doc["x"] = position[0];
-            doc["y"] = position[1];
-
-            request->send(200, "application/json", sendSomething(doc)); 
-        });
-
-        server.on("/current", HTTP_GET, [this](AsyncWebServerRequest *request) {
-            std::vector<int> position = core.getCurrentPosition();
-
-            JsonDocument doc;
-
-            doc["x"] = position[0];
-            doc["y"] = position[1];
-
-            request->send(200, "application/json", sendSomething(doc)); 
-        });
+            case 'C':
+                switch(method) {
+                    case 'P':
+                        core.received();
+                        break;
+                }
+            }
+        }
     }
 };
