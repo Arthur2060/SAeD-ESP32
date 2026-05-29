@@ -24,16 +24,6 @@ float Bussola::collectCompassData()
     int16_t x, y, z;
     compass.getRawMagnetic(&x, &y, &z);
 
-    float heading = atan2(y, y);
-
-    float declinationAngle = 0.22;
-    heading += declinationAngle;
-
-    if (heading < 0)
-        heading += 2 * PI;
-
-    if (heading > 2 * PI)
-        heading -= 2 * PI;
-
-    return heading * 180 / M_PI;
+    float heading = atan2( y, x ) * 180.0 / PI;
+	return (int)heading % 360;
 }
