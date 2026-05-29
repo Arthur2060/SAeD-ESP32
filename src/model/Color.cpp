@@ -1,58 +1,21 @@
-#include "Arduino.h"
-#include "vector"
+#include "headers/Color.h"
 
-// Pinos de conexao do modulo
-#define pinS0 18
-#define pinS1 19
-#define pinS2 21
-#define pinS3 22
-#define pinOut 23
+using namespace N;
+using namespace std;
 
-class Color
+
+
+void Color::begin()
 {
-private:
-    unsigned int R = 0;
-    unsigned int G = 0;
-    unsigned int B = 0;
+    pinMode(pinS0, OUTPUT);
+    pinMode(pinS1, OUTPUT);
+    pinMode(pinS2, OUTPUT);
+    pinMode(pinS3, OUTPUT);
+    pinMode(pinOut, INPUT);
 
-    //  VERMELHO
-    unsigned int MRv = 0, MGv = 0, MBv = 0;
-    unsigned int mRv = 999999, mGv = 999999, mBv = 999999;
-
-    //  VERDE
-    unsigned int MRg = 0, MGg = 0, MBg = 0;
-    unsigned int mRg = 999999, mGg = 999999, mBg = 999999;
-
-    //  AZUL
-    unsigned int MRb = 0, MGb = 0, MBb = 0;
-    unsigned int mRb = 999999, mGb = 999999, mBb = 999999;
-
-    unsigned long tempoInicioCalib = 0;
-    const int tempoCalibracao = 5000;
-
-public:
-    Color() {}
-
-    void begin()
-    {
-        pinMode(pinS0, OUTPUT);
-        pinMode(pinS1, OUTPUT);
-        pinMode(pinS2, OUTPUT);
-        pinMode(pinS3, OUTPUT);
-        pinMode(pinOut, INPUT);
-
-        digitalWrite(pinS0, HIGH);
-        digitalWrite(pinS1, LOW);
-    }
-
-    void calibrarCores();
-
-    int detectarCor();
-    std::vector<uint> getMacros();
-    void setMacros(std::vector<uint> macros);
-
-    std::vector<uint> detectaCores();
-};
+    digitalWrite(pinS0, HIGH);
+    digitalWrite(pinS1, LOW);
+}
 
 std::vector<uint> Color::detectaCores()
 {
@@ -209,12 +172,10 @@ void Color::calibrarCores()
 
 std::vector<uint> Color::getMacros()
 {
-    return
-    {
+    return {
         MRv, MGv, MBv, mRv, mGv, mBv,
         MRg, MGg, MBg, mRg, mGg, mBg,
-        MRb, MGb, MBb, mRb, mGb, mBb
-    };
+        MRb, MGb, MBb, mRb, mGb, mBb};
 }
 
 void Color::setMacros(std::vector<uint> macros)
