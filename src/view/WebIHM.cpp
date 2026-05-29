@@ -46,7 +46,7 @@ void WebIHM::defineRoutes()
                 doc["scaleY"] = map[0].size();
 
                 BTS.println(sendSomething(doc));
-            } else if (method == "POST") {
+            } else if (method == "PUT") {
                 JsonDocument requestBody;
                 deserializeJson(requestBody, body);
 
