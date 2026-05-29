@@ -46,6 +46,14 @@ void WebIHM::defineRoutes()
                 doc["scaleY"] = map[0].size();
 
                 BTS.println(sendSomething(doc));
+            } else if (method == "POST") {
+                JsonDocument requestBody;
+                deserializeJson(requestBody, body);
+
+                int scale[2] = {requestBody["scaleX"], requestBody["scaleY"]};
+                int initial[2] = {requestBody["initialX"], requestBody["initialY"]};
+
+                core.setNewMap(scale, initial);
             }
         }
         else if (route == "target")
