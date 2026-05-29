@@ -1,211 +1,99 @@
+#ifndef SAED_H
+#define SAED_H
+
 #include "model/Color.h"
 
 #include "controll/Motores.h"
-#include "controll/MapManager.hpp"
-#include "controll/SAeDStateMachine.hpp"
-#include "controll/Radar.hpp"
+#include "controll/MapManager.h"
+#include "controll/Radar.h"
 
 #include <vector>
 #include <random>
 #include <string>
+#include <map>
 
-std::vector<char> spinCommand = {'R', 'R', 'R'};
+#pragma once
 
-class SAeD
+enum class SAeDStateMap
 {
-private:
-    Motores motores;
-    Color color;
-    Radar radar;
-
-    MapManager mapManager;
-
-    SAeDStateDispatch dispatchState = SAeDStateDispatch::Wait;
-    SAeDStateMap mapState = SAeDStateMap::Wait;
-    SAeDStateNewItem newItemState = SAeDStateNewItem::Wait;
-
-    const int MAX_NO_OBSTACLE_LIMIT = 3;
-    int noObstacleLimit = MAX_NO_OBSTACLE_LIMIT;
-
-    double currentOdometri;
-
-    std::vector<double> obstacle = {};
-
-public:
-    SAeD() { 
-        this->mapManager = MapManager(10, 10, 0.3);
-
-        this->mapManager.getDemarcacao().setNewArea({9, 9}, {10, 10}, {255, 255, 255}, "white");
-    }
-    SAeD(int scaleX, int scaleY, float cellScale)
-    {
-        this->mapManager = MapManager(scaleX, scaleY, cellScale);
-    }
-
-    void begin()
-    {
-        motores.begin();
-        radar.begin();
-        color.begin();
-    }
-
-    void setNewMap(int *dimensions, int *initial);
-    void principalLoop();
-    void secondaryLoop();
-    void received();
-    void analise();
-
-    std::vector<std::vector<bool>> getMap() { return mapManager.getMap(); }
-    
-    std::vector<char> setTarget(int *target);
-    std::vector<int> getCurrentPosition();
-    std::vector<int> getTargetPosition();
+    Wait,
+    Mapping,
+    Demarc
 };
 
-void SAeD::principalLoop()
+std::map<SAeDStateMap, SAeDStateMap> SAeDTransitionMap = {
+    {SAeDStateMap::Wait, SAeDStateMap::Mapping},
+    {SAeDStateMap::Mapping, SAeDStateMap::Demarc},
+    {SAeDStateMap::Demarc, SAeDStateMap::Wait}};
+
+enum class SAeDStateDispatch
+{
+    Wait,
+    GetFromStock,
+    Dispatch
+};
+
+std::map<SAeDStateDispatch, SAeDStateDispatch> SAeDTransitionDispatch = {
+    {SAeDStateDispatch::Wait, SAeDStateDispatch::GetFromStock},
+    {SAeDStateDispatch::GetFromStock, SAeDStateDispatch::Dispatch},
+    {SAeDStateDispatch::Dispatch, SAeDStateDispatch::Wait}};
+
+enum class SAeDStateNewItem
+{
+    Wait,
+    GetNew,
+    Analise,
+    Stock
+};
+
+std::map<SAeDStateNewItem, SAeDStateNewItem> SAeDTransitionNewItem = {
+    {SAeDStateNewItem::Wait, SAeDStateNewItem::GetNew},
+    {SAeDStateNewItem::GetNew, SAeDStateNewItem::Analise},
+    {SAeDStateNewItem::Analise, SAeDStateNewItem::Stock},
+    {SAeDStateNewItem::Stock, SAeDStateNewItem::Wait}};
+
+namespace N
+{
+    std::vector<char> spinCommand = {'R', 'R', 'R'};
+
+    class SAeD
     {
-        switch (mapState)
-        {
-        case SAeDStateMap::Wait:
-            break;
-        case SAeDStateMap::Mapping:
-            if (noObstacleLimit <= 0)
-            {
-                motores.lerComandos(spinCommand);
-            }
-            else
-            {
-                std::random_device rd;
-                std::mt19937 gen(rd());
+    private:
+        Motores motores;
+        Color color;
+        Radar radar;
 
-                std::uniform_int_distribution<> distr(1, sizeof(mapManager.getMap()));
+        MapManager mapManager;
 
-                int randomX = distr(gen);
-                int randomY = distr(gen);
+        SAeDStateDispatch dispatchState = SAeDStateDispatch::Wait;
+        SAeDStateMap mapState = SAeDStateMap::Wait;
+        SAeDStateNewItem newItemState = SAeDStateNewItem::Wait;
 
-                mapManager.setTarget(randomX, randomY);
-                noObstacleLimit = MAX_NO_OBSTACLE_LIMIT;
-            }
-            break;
-        case SAeDStateMap::Demarc:
-            break;
-        }
+        const int MAX_NO_OBSTACLE_LIMIT = 3;
+        int noObstacleLimit = MAX_NO_OBSTACLE_LIMIT;
 
-        switch (dispatchState)
-        {
-        case SAeDStateDispatch::Wait:
-            break;
-        case SAeDStateDispatch::GetFromStock:
-            break;
-        case SAeDStateDispatch::Dispatch:
-            break;
-        }
+        double currentOdometri;
 
-        switch (newItemState)
-        {
-        case SAeDStateNewItem::Wait:
-            break;
-        case SAeDStateNewItem::GetNew:
-            break;
-        case SAeDStateNewItem::Analise:
-            break;
-        case SAeDStateNewItem::Stock:
-            break;
-        }
-    }
+        std::vector<double> obstacle = {};
 
-void SAeD::secondaryLoop()
-{
-    bool resul = false;
-    switch (mapState)
-    {
-    case SAeDStateMap::Wait:
-        break;
-    case SAeDStateMap::Mapping:
-        obstacle = radar.getObstacle();
+    public:
+        SAeD();
+        SAeD(int scaleX, int scaleY, float cellScale);
 
-        if (obstacle[0] == 0 && obstacle[1] == 0)
-            return;
-        resul = mapManager.addObstacle(obstacle[0], obstacle[1]);
-        (!resul) ? noObstacleLimit -= 1 : noObstacleLimit = MAX_NO_OBSTACLE_LIMIT;
-        obstacle = {};
-        break;
-    case SAeDStateMap::Demarc:
-        break;
-    }
+        void begin();
 
-    switch (dispatchState)
-    {
-    case SAeDStateDispatch::Wait:
-        break;
-    case SAeDStateDispatch::GetFromStock:
-        break;
-    case SAeDStateDispatch::Dispatch:
-        break;
-    }
+        void setNewMap(int *dimensions, int *initial);
+        void principalLoop();
+        void secondaryLoop();
+        void received();
+        void analise();
 
-    switch (newItemState)
-    {
-    case SAeDStateNewItem::Wait:
-        break;
-    case SAeDStateNewItem::GetNew:
-        break;
-    case SAeDStateNewItem::Analise:
-        break;
-    case SAeDStateNewItem::Stock:
-        break;
-    }
+        std::vector<std::vector<bool>> getMap() { return mapManager.getMap(); }
+
+        std::vector<char> setTarget(int *target);
+        std::vector<int> getCurrentPosition();
+        std::vector<int> getTargetPosition();
+    };
 }
 
-void SAeD::received() {
-    std::vector<char> path = setTarget(mapManager.getDemarcacao().recieveingCell);
-    newItemState = SAeDTransitionNewItem[newItemState];
-    bool resp = motores.lerComandos(path);
-
-    if (resp) {
-        newItemState = SAeDTransitionNewItem[newItemState];
-    }
-}
-
-void SAeD::analise() {
-    std::vector<uint> cor = color.detectaCores();
-
-    for (int c = 0 ; c < mapManager.getDemarcacao().areas.size() ; c++) {
-        if (
-            cor[0] == mapManager.getDemarcacao().areas[c].color[0] &&
-            cor[1] == mapManager.getDemarcacao().areas[c].color[1] &&
-            cor[2] == mapManager.getDemarcacao().areas[c].color[2])
-        {
-            int* startCell = mapManager.getDemarcacao().areas[c].startCell;
-
-            mapManager.setTarget(startCell[0] - 1, startCell[1] + 1);
-            newItemState = SAeDTransitionNewItem[newItemState];
-            return;
-        }
-    }
-    newItemState = SAeDTransitionNewItem[newItemState];
-    newItemState = SAeDTransitionNewItem[newItemState];
-}
-
-std::vector<char> SAeD::setTarget(int *target)
-{
-    return mapManager.setTarget(target);
-}
-
-void SAeD::setNewMap(int *dimensions, int *initial)
-{
-    mapManager.setNewMap(dimensions);
-    mapManager.setCurrentCell(initial[0], initial[1]);
-    
-    mapState = SAeDStateMap::Mapping;
-}
-
-std::vector<int> SAeD::getCurrentPosition()
-{
-    return mapManager.getCurrentCell();
-}
-
-std::vector<int> SAeD::getTargetPosition()
-{
-    return mapManager.getTarget();
-}
+#endif
