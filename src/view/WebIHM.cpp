@@ -68,6 +68,13 @@ void WebIHM::defineRoutes()
                 doc["y"] = position[1];
 
                 BTS.println(sendSomething(doc));
+            } else if (method == "PUT") {
+                JsonDocument requestBody;
+                deserializeJson(requestBody, body);
+
+                int target[2] = {requestBody["targetX"], requestBody["targetY"]};
+
+                core.setTarget(target);
             }
         }
         else if (route == "position")
