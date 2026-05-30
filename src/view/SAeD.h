@@ -21,22 +21,12 @@ enum class SAeDStateMap
     Demarc
 };
 
-std::map<SAeDStateMap, SAeDStateMap> SAeDTransitionMap = {
-    {SAeDStateMap::Wait, SAeDStateMap::Mapping},
-    {SAeDStateMap::Mapping, SAeDStateMap::Demarc},
-    {SAeDStateMap::Demarc, SAeDStateMap::Wait}};
-
 enum class SAeDStateDispatch
 {
     Wait,
     GetFromStock,
     Dispatch
 };
-
-std::map<SAeDStateDispatch, SAeDStateDispatch> SAeDTransitionDispatch = {
-    {SAeDStateDispatch::Wait, SAeDStateDispatch::GetFromStock},
-    {SAeDStateDispatch::GetFromStock, SAeDStateDispatch::Dispatch},
-    {SAeDStateDispatch::Dispatch, SAeDStateDispatch::Wait}};
 
 enum class SAeDStateNewItem
 {
@@ -46,24 +36,35 @@ enum class SAeDStateNewItem
     Stock
 };
 
-std::map<SAeDStateNewItem, SAeDStateNewItem> SAeDTransitionNewItem = {
-    {SAeDStateNewItem::Wait, SAeDStateNewItem::GetNew},
-    {SAeDStateNewItem::GetNew, SAeDStateNewItem::Analise},
-    {SAeDStateNewItem::Analise, SAeDStateNewItem::Stock},
-    {SAeDStateNewItem::Stock, SAeDStateNewItem::Wait}};
-
 namespace N
 {
-    std::vector<char> spinCommand = {'R', 'R', 'R'};
-
+    
     class SAeD
     {
-    private:
+        private:
         Motores motores;
         Color color;
         Radar radar;
-
+        
         MapManager mapManager;
+        
+        std::vector<char> spinCommand = {'R', 'R', 'R'};
+        
+        std::map<SAeDStateMap, SAeDStateMap> SAeDTransitionMap = {
+            {SAeDStateMap::Wait, SAeDStateMap::Mapping},
+            {SAeDStateMap::Mapping, SAeDStateMap::Demarc},
+            {SAeDStateMap::Demarc, SAeDStateMap::Wait}};
+
+        std::map<SAeDStateDispatch, SAeDStateDispatch> SAeDTransitionDispatch = {
+            {SAeDStateDispatch::Wait, SAeDStateDispatch::GetFromStock},
+            {SAeDStateDispatch::GetFromStock, SAeDStateDispatch::Dispatch},
+            {SAeDStateDispatch::Dispatch, SAeDStateDispatch::Wait}};
+
+        std::map<SAeDStateNewItem, SAeDStateNewItem> SAeDTransitionNewItem = {
+            {SAeDStateNewItem::Wait, SAeDStateNewItem::GetNew},
+            {SAeDStateNewItem::GetNew, SAeDStateNewItem::Analise},
+            {SAeDStateNewItem::Analise, SAeDStateNewItem::Stock},
+            {SAeDStateNewItem::Stock, SAeDStateNewItem::Wait}};
 
         SAeDStateDispatch dispatchState = SAeDStateDispatch::Wait;
         SAeDStateMap mapState = SAeDStateMap::Wait;
