@@ -7,8 +7,8 @@
 // Pinos de conexao do modulo
 #define pinS0 18
 #define pinS1 19
-#define pinS2 35
-#define pinS3 34
+#define pinS2 27
+#define pinS3 13
 #define pinOut 23
 
 namespace N
