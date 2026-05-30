@@ -5,12 +5,12 @@ using namespace std;
 
 void Motores::moveForward()
 {
-    moveDistance(CELL_DISTANCE, true);
+    moveDistance(true);
 }
 
 void Motores::moveBackward()
 {
-    moveDistance(CELL_DISTANCE, false);
+    moveDistance(false);
 }
 
 void Motores::turnLeft()
@@ -28,12 +28,8 @@ void Motores::spin360()
     rotate(360);
 }
 
-void Motores::moveDistance(float distance, bool direction)
+void Motores::moveDistance(bool direction)
 {
-    // Calcular pulsos necessários
-    // Pulsos por revolução do motor no eixo de saída: ENCODER_PPR * GEAR_RATIO * ENCODER_MULTIPLIER
-    const float pulsesPerMeter = (ENCODER_PPR * ENCODER_MULTIPLIER * GEAR_RATIO) / (PI * WHEEL_DIAMETER);
-    const long targetPulses = (long)(distance * pulsesPerMeter);
 
     encoderLeft.setCount(0);
     encoderRight.setCount(0);
@@ -56,28 +52,22 @@ void Motores::moveDistance(float distance, bool direction)
     int accumulatorLeft = pwmValue;
     int accumulatorRight = pwmValue;
 
-    delay(1000);
-    while (abs(encoderLeft.getCount()) < targetPulses || abs(encoderRight.getCount()) < targetPulses)
+    if (encoderLeft.getCount() > encoderRight.getCount() + 2 && accumulatorRight < MAX_PWM && accumulatorLeft > MIN_PWM)
     {
-        if (encoderLeft.getCount() > encoderRight.getCount() + 2 && accumulatorRight < MAX_PWM && accumulatorLeft > MIN_PWM)
-        {
-            accumulatorRight += 5;
-            accumulatorLeft -= 5;
-            ledcWrite(right.PWM_PIN, accumulatorRight);
-            ledcWrite(left.PWM_PIN, accumulatorLeft);
-        }
-        else if (encoderRight.getCount() > encoderLeft.getCount() + 2 && accumulatorLeft < MAX_PWM && accumulatorRight > MIN_PWM)
-        {
-            accumulatorRight -= 5;
-            accumulatorLeft += 5;
-            ledcWrite(right.PWM_PIN, accumulatorRight);
-            ledcWrite(left.PWM_PIN, accumulatorLeft);
-        }
-
-        delay(10);
+        accumulatorRight += 5;
+        accumulatorLeft -= 5;
+        ledcWrite(right.PWM_PIN, accumulatorRight);
+        ledcWrite(left.PWM_PIN, accumulatorLeft);
+    }
+    else if (encoderRight.getCount() > encoderLeft.getCount() + 2 && accumulatorLeft < MAX_PWM && accumulatorRight > MIN_PWM)
+    {
+        accumulatorRight -= 5;
+        accumulatorLeft += 5;
+        ledcWrite(right.PWM_PIN, accumulatorRight);
+        ledcWrite(left.PWM_PIN, accumulatorLeft);
     }
 
-    delay(1000);
+    delay(ONE_METER_DELAY / CELL_DISTANCE);
 
     stopMotors();
 }
@@ -86,7 +76,6 @@ void Motores::rotate(int degrees)
 {
     const float arcDistance = (TRACK_WIDTH * PI * abs(degrees)) / 360.0f;
     const float pulsesPerMeter = (ENCODER_PPR * ENCODER_MULTIPLIER * GEAR_RATIO) / (PI * WHEEL_DIAMETER);
-    const long targetPulses = (long)(arcDistance * pulsesPerMeter);
 
     encoderLeft.setCount(0);
     encoderRight.setCount(0);
@@ -96,28 +85,12 @@ void Motores::rotate(int degrees)
         // Giro para a esquerda: roda esquerda para trás, roda direita para frente
         setMotorDirection(left.IN1_PIN, left.IN2_PIN, false);
         setMotorDirection(right.IN1_PIN, right.IN2_PIN, true);
-
-        int sum = currentDegrees + degrees;
-
-        if (sum > 360)
-        {
-            int dif = 360 - currentDegrees;
-            sum -= dif;
-            currentDegrees = sum;
-        }
     }
     else
     {
         // Giro para a direita: roda esquerda para frente, roda direita para trás
         setMotorDirection(left.IN1_PIN, left.IN2_PIN, true);
         setMotorDirection(right.IN1_PIN, right.IN2_PIN, false);
-
-        int sub = currentDegrees - degrees;
-
-        if (sub < 0)
-        {
-            currentDegrees = abs(sub);
-        }
     }
 
     int pwmLeft = map(currentSpeed, 0, 100, MIN_PWM, MAX_PWM);
@@ -128,7 +101,7 @@ void Motores::rotate(int degrees)
     unsigned long startMillis = millis();
     const unsigned long timeout = 5000;
 
-    while (abs(encoderLeft.getCount()) < targetPulses || abs(encoderRight.getCount()) < targetPulses)
+    while (abs(encoderLeft.getCount()) < TARGET_PULSE || abs(encoderRight.getCount()) < TARGET_PULSE)
     {
         if (millis() - startMillis > timeout)
         {
@@ -179,11 +152,11 @@ void Motores::stopMotors()
 Motores::Motores()
 {
     left.PWM_PIN = 15;
-    left.IN1_PIN = 2;
-    left.IN2_PIN = 4;
+    left.IN1_PIN = 4;
+    left.IN2_PIN = 2;
 
-    left.ENC_PIN_1 = 2;
-    left.ENC_PIN_2 = 4;
+    left.ENC_PIN_1 = 25;
+    left.ENC_PIN_2 = 26;
 
     right.PWM_PIN = 0;
     right.IN1_PIN = 16;
@@ -227,10 +200,10 @@ bool Motores::lerComandos(std::vector<char> commands)
             moveBackward();
             break;
         case 'A':
-            turnLeft();
+            turnRight();
             break;
         case 'D':
-            turnRight();
+            turnLeft();
             break;
         case 'R':
             spin360();
