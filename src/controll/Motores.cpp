@@ -30,7 +30,6 @@ void Motores::spin360()
 
 void Motores::moveDistance(bool direction)
 {
-
     encoderLeft.setCount(0);
     encoderRight.setCount(0);
 
@@ -67,7 +66,7 @@ void Motores::moveDistance(bool direction)
         ledcWrite(left.PWM_PIN, accumulatorLeft);
     }
 
-    delay(ONE_METER_DELAY / CELL_DISTANCE);
+    delay(ONE_METER_DELAY * CELL_DISTANCE);
 
     stopMotors();
 }

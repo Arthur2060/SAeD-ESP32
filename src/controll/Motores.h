@@ -33,7 +33,7 @@ namespace N
         const int MIN_PWM = 50;                // Mínimo diferente de zero
         const int ENCODER_PPR = 47;            // Pulsos por revolução do encoder       
         const float ENCODER_MULTIPLIER = 2.0f; // attachHalfQuad conta duas transições por pulso
-        const int CELL_DISTANCE = 1;         // metros (distância de uma célula)
+        const int CELL_DISTANCE = 0.3;         // metros (distância de uma célula)
         const int GEAR_RATIO = 35;             // Razão de redução típica
         const float WHEEL_DIAMETER = 0.07f;    // metros (~7cm)
         const float TRACK_WIDTH = 0.225f;      // metros (~20cm entre as rodas)
