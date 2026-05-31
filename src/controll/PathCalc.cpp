@@ -3,73 +3,7 @@
 using namespace N;
 using namespace std;
 
-PathCalc::PathCalc(std::vector<std::vector<bool>> map)
-{
-    this->map = map;
-}
-
-PathCalc::PathCalc(int scaleX, int scaleY)
-{
-    std::vector<std::vector<bool>> map;
-
-    for (int x = 0; x <= scaleX; x++)
-    {
-        map.push_back({});
-        std::vector<bool> targetLine = map[x];
-        for (int y = 0; y <= scaleY; y++)
-        {
-            map[x].push_back(false);
-        }
-    }
-
-    this->map = map;
-}
-
-void PathCalc::setMap(std::vector<std::vector<bool>> map)
-{
-    this->map = map;
-    this->currentCell[0] = 0;
-    this->currentCell[1] = 0;
-}
-
-std::vector<int> PathCalc::getTarget()
-{
-    return {targetCell[0], targetCell[1]};
-}
-
-std::vector<char> PathCalc::setTarget(int x, int y)
-{
-    if (
-        !(x >= 0 && x <= sizeof(map) && y >= 0 && y <= sizeof(map[x])) ||
-        (map[x][y]))
-    {
-        // Invalid target - Alvo inválido
-        return {'I', 'T'};
-    }
-
-    this->targetCell[0] = x;
-    this->targetCell[1] = y;
-
-    return moveToTarget();
-}
-
-std::vector<char> PathCalc::setTarget(int *target)
-{
-    if (
-        !(target[0] >= 0 && target[0] <= sizeof(map) &&
-          target[1] >= 0 && target[1] <= sizeof(map[target[0]])))
-    {
-        // Invalid Target - Alvo inválido
-        return {'I', 'T'};
-    }
-
-    this->targetCell[0] = target[0];
-    this->targetCell[1] = target[1];
-
-    return moveToTarget();
-}
-
-std::vector<char> PathCalc::moveToTarget()
+std::vector<char> PathCalc::createPath(int* currentCell, int* targetCell)
 {
     if (
         targetCell[0] == currentCell[0] &&
