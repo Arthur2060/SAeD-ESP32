@@ -2,7 +2,6 @@
 #define BUSSOLA_H
 
 #include "QMC5883LCompass.h"
-#include "Adafruit_QMC5883P.h"
 #include "Adafruit_Sensor.h"
 
 namespace N
