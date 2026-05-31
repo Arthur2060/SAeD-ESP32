@@ -5,6 +5,8 @@
 
 #include "controll/Motores.h"
 #include "controll/MapManager.h"
+#include "controll/PathCalc.h"
+#include "controll/Demarcacao.h"
 #include "controll/Radar.h"
 
 #include "BluetoothSerial.h"
@@ -15,45 +17,44 @@
 #include <string>
 #include <map>
 
-#pragma once
-
-enum class SAeDStateMap
-{
-    Wait,
-    Mapping,
-    Demarc
-};
-
-enum class SAeDStateDispatch
-{
-    Wait,
-    GetFromStock,
-    Dispatch
-};
-
-enum class SAeDStateNewItem
-{
-    Wait,
-    GetNew,
-    Analise,
-    Stock
-};
-
 namespace SAeD
 {
-    
-    class SAeD
+    enum class SAeDStateMap
     {
-        private:
+        Wait,
+        Mapping,
+        Demarc
+    };
+
+    enum class SAeDStateDispatch
+    {
+        Wait,
+        GetFromStock,
+        Dispatch
+    };
+
+    enum class SAeDStateNewItem
+    {
+        Wait,
+        GetNew,
+        Analise,
+        Stock
+    };
+
+    class Principal
+    {
+    private:
         Motores motores;
-        ColorDetect color;
+        ColorDetect colorDetect;
+        Demarcacao demarcacao;
+        PathCalc pathCalc;
         Radar radar;
 
         BluetoothSerial BTS;
         MapManager mapManager;
-        
+
         std::vector<char> spinCommand = {'R', 'R', 'R'};
-        
+
         std::map<SAeDStateMap, SAeDStateMap> SAeDTransitionMap = {
             {SAeDStateMap::Wait, SAeDStateMap::Mapping},
             {SAeDStateMap::Mapping, SAeDStateMap::Demarc},
@@ -82,8 +83,8 @@ namespace SAeD
         std::vector<double> obstacle = {};
 
     public:
-        SAeD();
-        SAeD(int scaleX, int scaleY, float cellScale);
+        Principal();
+        Principal(int scaleX, int scaleY, float cellScale);
 
         void begin();
 
@@ -91,13 +92,7 @@ namespace SAeD
         void principalLoop();
         void secondaryLoop();
         void received();
-        void analise();
-
-        std::vector<std::vector<bool>> getMap() { return mapManager.getMap(); }
-
-        std::vector<char> setTarget(int *target);
-        std::vector<int> getCurrentPosition();
-        std::vector<int> getTargetPosition();
+        area analise();
     };
 }
 

@@ -15,7 +15,7 @@ Demarcacao::Demarcacao(int rc1, int rc2)
     this->recieveingCell[1] = rc2;
 }
 
-void Demarcacao::setNewArea(std::vector<uint16_t> initialCell, std::vector<uint16_t> finalCell, std::vector<uint8_t> color, char *name)
+void Demarcacao::setNewArea(std::vector<uint16_t> initialCell, std::vector<uint16_t> finalCell, color color, char *name)
 {
     area newArea;
 
@@ -27,7 +27,7 @@ void Demarcacao::setNewArea(std::vector<uint16_t> initialCell, std::vector<uint1
     newArea.endCell[0] = finalCell[0];
     newArea.endCell[1] = finalCell[1];
 
-    newArea.color = color;
+    newArea.areaColor = color;
 
     areas.push_back(newArea);
 }

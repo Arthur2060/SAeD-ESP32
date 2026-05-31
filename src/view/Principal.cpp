@@ -1,28 +1,17 @@
-#include "SAeD.h"
+#include "Principal.h"
 
 using namespace SAeD;
 using namespace std;
 
-SAeD::SAeD()
+void Principal::begin()
 {
-    this->mapManager = MapManager(10, 10, 0.3);
-
-    this->mapManager.getDemarcacao().setNewArea({9, 9}, {10, 10}, {255, 255, 255}, "white");
-}
-SAeD::SAeD(int scaleX, int scaleY, float cellScale)
-{
-    this->mapManager = MapManager(scaleX, scaleY, cellScale);
+    this->BTS.begin("SAeD");
+    this->motores.begin();
+    this->radar.begin();
+    this->colorDetect.begin();
 }
 
-void SAeD::begin()
-{
-    BTS.begin("SAeD");
-    motores.begin();
-    radar.begin();
-    color.begin();
-}
-
-void SAeD::principalLoop()
+void Principal::principalLoop()
 {
     switch (mapState)
     {
@@ -40,10 +29,10 @@ void SAeD::principalLoop()
 
             std::uniform_int_distribution<> distr(1, sizeof(mapManager.getMap()));
 
-            int randomX = distr(gen);
-            int randomY = distr(gen);
+            int random[2] = {distr(gen), distr(gen)};
+            int* current = mapManager.getCurrentCell();
 
-            mapManager.setTarget(randomX, randomY);
+            this->pathCalc.createPath(current, random);
             noObstacleLimit = MAX_NO_OBSTACLE_LIMIT;
         }
         break;
@@ -99,7 +88,7 @@ void SAeD::principalLoop()
     }
 }
 
-void SAeD::secondaryLoop()
+void Principal::secondaryLoop()
 {
     bool resul = false;
     switch (mapState)
@@ -142,9 +131,9 @@ void SAeD::secondaryLoop()
     }
 }
 
-void SAeD::received()
+void Principal::received()
 {
-    std::vector<char> path = setTarget(mapManager.getDemarcacao().recieveingCell);
+    std::vector<char> path = pathCalc.createPath(mapManager.getCurrentCell(), demarcacao.recieveingCell);
     newItemState = SAeDTransitionNewItem[newItemState];
     bool resp = motores.lerComandos(path);
 
@@ -154,47 +143,32 @@ void SAeD::received()
     }
 }
 
-void SAeD::analise()
+area Principal::analise()
 {
-    std::vector<uint> cor = color.detectaCores();
-
-    for (int c = 0; c < mapManager.getDemarcacao().areas.size(); c++)
+    for (int c = 0; c < demarcacao.areas.size(); c++)
     {
-        if (
-            cor[0] == mapManager.getDemarcacao().areas[c].color[0] &&
-            cor[1] == mapManager.getDemarcacao().areas[c].color[1] &&
-            cor[2] == mapManager.getDemarcacao().areas[c].color[2])
-        {
-            int *startCell = mapManager.getDemarcacao().areas[c].startCell;
+        area target = this->demarcacao.areas[c];
 
-            mapManager.setTarget(startCell[0] - 1, startCell[1] + 1);
+        if (this->colorDetect.isThisColor(target.areaColor))
+        {
+            int *startCell = demarcacao.areas[c].startCell;
+
+            startCell[0] -= 1;
+            startCell[1] += 1;
+
+            pathCalc.createPath(mapManager.getCurrentCell(), startCell);
             newItemState = SAeDTransitionNewItem[newItemState];
-            return;
+            return target;
         }
     }
     newItemState = SAeDTransitionNewItem[newItemState];
     newItemState = SAeDTransitionNewItem[newItemState];
 }
 
-std::vector<char> SAeD::setTarget(int *target)
-{
-    return mapManager.setTarget(target);
-}
-
-void SAeD::setNewMap(int *dimensions, int *initial)
+void Principal::setNewMap(int *dimensions, int *initial)
 {
     mapManager.setNewMap(dimensions);
     mapManager.setCurrentCell(initial[0], initial[1]);
 
     mapState = SAeDStateMap::Mapping;
-}
-
-std::vector<int> SAeD::getCurrentPosition()
-{
-    return mapManager.getCurrentCell();
-}
-
-std::vector<int> SAeD::getTargetPosition()
-{
-    return mapManager.getTarget();
 }
