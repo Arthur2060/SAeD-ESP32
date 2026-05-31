@@ -3,46 +3,20 @@
 using namespace N;
 using namespace std;
 
-Demarcacao::Demarcacao(std::vector<std::vector<bool>> map, int rc1, int rc2)
+Demarcacao::Demarcacao()
 {
-    this->map = map;
+    this->recieveingCell[0] = 2;
+    this->recieveingCell[0] = 4;
+}
+
+Demarcacao::Demarcacao(int rc1, int rc2)
+{
     this->recieveingCell[0] = rc1;
     this->recieveingCell[1] = rc2;
 }
 
-Demarcacao::Demarcacao(int scaleX, int scaleY)
+void Demarcacao::setNewArea(std::vector<uint16_t> initialCell, std::vector<uint16_t> finalCell, std::vector<uint8_t> color, char *name)
 {
-    std::vector<std::vector<bool>> map;
-
-    for (int x = 0; x <= scaleX; x++)
-    {
-        map.push_back({});
-        std::vector<bool> targetLine = map[x];
-        for (int y = 0; y <= scaleY; y++)
-        {
-            map[x].push_back(false);
-        }
-    }
-
-    this->map = map;
-}
-
-bool Demarcacao::setNewArea(std::vector<uint16_t> initialCell, std::vector<uint16_t> finalCell, std::vector<uint8_t> color, char *name)
-{
-    if (
-        initialCell[0] < 0 ||
-        initialCell[1] < 0 ||
-        initialCell[0] > sizeof(map) ||
-        initialCell[1] < sizeof(map[0]) ||
-
-        finalCell[0] < 0 ||
-        finalCell[1] < 0 ||
-        finalCell[0] > sizeof(map) ||
-        finalCell[1] < sizeof(map[0]))
-    {
-        return false;
-    }
-
     area newArea;
 
     newArea.startCell[0] = initialCell[0];
@@ -56,7 +30,6 @@ bool Demarcacao::setNewArea(std::vector<uint16_t> initialCell, std::vector<uint1
     newArea.color = color;
 
     areas.push_back(newArea);
-    return true;
 }
 
 area Demarcacao::getArea(char *name)
@@ -93,26 +66,22 @@ area Demarcacao::getCellArea(int *cellLocation)
     return target;
 }
 
-void Demarcacao::setMap(std::vector<std::vector<bool>> map)
-{
-    this->map = map;
-    validateAreas();
-}
-
-void Demarcacao::validateAreas()
+void Demarcacao::validateAreas(std::vector<std::vector<bool>> map)
 {
     for (int c = 0; c <= sizeof(areas); c++)
     {
-        if (
-            areas[c].startCell[0] < 0 ||
-            areas[c].startCell[1] < 0 ||
-            areas[c].startCell[0] > sizeof(map) ||
-            areas[c].startCell[1] < sizeof(map[areas[c].startCell[0]]) ||
+        area area = areas[c];
 
-            areas[c].endCell[0] < 0 ||
-            areas[c].endCell[1] < 0 ||
-            areas[c].endCell[0] > sizeof(map) ||
-            areas[c].endCell[1] < sizeof(map[areas[c].endCell[0]]))
+        if (
+            area.startCell[0] < 0 ||
+            area.startCell[1] < 0 ||
+            area.startCell[0] > sizeof(map) ||
+            area.startCell[1] < sizeof(map[0]) ||
+
+            area.endCell[0] < 0 ||
+            area.endCell[1] < 0 ||
+            area.endCell[0] > sizeof(map) ||
+            area.endCell[1] < sizeof(map[0]))
         {
             areas.erase(areas.begin() + c);
         }

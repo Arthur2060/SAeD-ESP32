@@ -17,21 +17,20 @@ namespace N
     class Demarcacao
     {
     private:
-        std::vector<std::vector<bool>> map;
+        std::vector<area> areas;
 
     public:
-        std::vector<area> areas;
         int recieveingCell[2] = {};
 
-        Demarcacao() {}
-        Demarcacao(std::vector<std::vector<bool>> map, int rc1, int rc2);
-        Demarcacao(int scaleX, int scaleY);
+        Demarcacao();
+        Demarcacao(int rc1, int rc2);
 
-        bool setNewArea(std::vector<uint16_t> initialCell, std::vector<uint16_t> finalCell, std::vector<uint8_t> color, char *name);
+        void setNewArea(std::vector<uint16_t> initialCell, std::vector<uint16_t> finalCell, std::vector<uint8_t> color, char *name);
+
         area getArea(char *name);
         area getCellArea(int *cellLocation);
-        void setMap(std::vector<std::vector<bool>> map);
-        void validateAreas();
+
+        void validateAreas(std::vector<std::vector<bool>> map);
     };
 }
 
