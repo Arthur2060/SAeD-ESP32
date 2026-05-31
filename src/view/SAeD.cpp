@@ -16,6 +16,7 @@ SAeD::SAeD(int scaleX, int scaleY, float cellScale)
 
 void SAeD::begin()
 {
+    BTS.begin("SAeD");
     motores.begin();
     radar.begin();
     color.begin();
@@ -70,6 +71,31 @@ void SAeD::principalLoop()
         break;
     case SAeDStateNewItem::Stock:
         break;
+    }
+
+    if (BTS.available() > 0) {
+        JsonDocument payload;
+        deserializeJson(payload, BTS.readString());
+
+        String route = payload["route"];
+        String method = payload["method"];
+        String body = payload["body"];
+
+        if (route == "controll") {
+            if (method == "Front") {
+                motores.lerComandos({'W'});
+            } else if (method == "Bottom") {
+                motores.lerComandos({'S'});
+            } else if (method == "Left") {
+                motores.lerComandos({'A'});
+            } else if (method == "Right") {
+                motores.lerComandos({'D'});
+            } else if (method == "Spin") {
+                motores.lerComandos({'R'});
+            }
+        }
+
+        serializeJson(payload, Serial);
     }
 }
 

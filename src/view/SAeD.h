@@ -7,6 +7,9 @@
 #include "controll/MapManager.h"
 #include "controll/Radar.h"
 
+#include "BluetoothSerial.h"
+#include "ArduinoJson.h"
+
 #include <vector>
 #include <random>
 #include <string>
@@ -45,7 +48,8 @@ namespace N
         Motores motores;
         Color color;
         Radar radar;
-        
+
+        BluetoothSerial BTS;
         MapManager mapManager;
         
         std::vector<char> spinCommand = {'R', 'R', 'R'};
