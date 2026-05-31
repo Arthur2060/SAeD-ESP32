@@ -24,7 +24,7 @@ std::vector<double> Radar::getRawSensors()
 
 std::vector<double> Radar::getObstacle()
 {
-    double distance = 3.65 * ultrasom.collectUltrasonicData();
+    double distance = ultrasom.collectUltrasonicData();
     int angle = bussola.collectCompassData();
 
     if (distance >= 300)
