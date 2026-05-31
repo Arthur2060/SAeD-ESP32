@@ -16,15 +16,16 @@ MapManager::MapManager(int scaleX, int scaleY, float distanciaDeQuadro)
     }
 
     this->distanciaDeQuadro = distanciaDeQuadro;
-    this->demarcacao = Demarcacao(map, 2, 3);
-    this->pathCalc = PathCalc(map);
+    this->currentCell[0] = 0;
+    this->currentCell[1] = 1;
 }
 
 MapManager::MapManager(std::vector<std::vector<bool>> map, float distanciaDeQuadro)
 {
     this->map = map;
     this->distanciaDeQuadro = distanciaDeQuadro;
-    this->demarcacao = Demarcacao(map, 2, 3);
+    this->currentCell[0] = 0;
+    this->currentCell[1] = 1;
 }
 
 float MapManager::getDistanciaDeQuadro()
@@ -32,18 +33,20 @@ float MapManager::getDistanciaDeQuadro()
     return distanciaDeQuadro;
 }
 
-void MapManager::setDistanciaDeQuadro(float distancia)
+float MapManager::setDistanciaDeQuadro(float distancia)
 {
     if (distancia > 0)
     {
-        distanciaDeQuadro = distancia;
+        this->distanciaDeQuadro = distancia;
     }
+
+    return this->distanciaDeQuadro;
 }
 
 bool MapManager::addObstacle(float distanceX, float distanceY)
 {
-    float x = pathCalc.currentCell[0] + (distanceX / distanciaDeQuadro);
-    float y = pathCalc.currentCell[1] + (distanceY / distanciaDeQuadro);
+    float x = this->currentCell[0] + (distanceX / distanciaDeQuadro);
+    float y = this->currentCell[1] + (distanceY / distanciaDeQuadro);
 
     if (!map[x][y])
     {
@@ -54,11 +57,6 @@ bool MapManager::addObstacle(float distanceX, float distanceY)
     return false;
 }
 
-Demarcacao MapManager::getDemarcacao()
-{
-    return this->demarcacao;
-}
-
 std::vector<std::vector<bool>> MapManager::getMap()
 {
     return this->map;
@@ -67,7 +65,6 @@ std::vector<std::vector<bool>> MapManager::getMap()
 void MapManager::setNewMap(std::vector<std::vector<bool>> map)
 {
     this->map = map;
-    this->demarcacao.setMap(this->map);
 }
 
 void MapManager::setNewMap(int scalex, int scaley)
@@ -79,8 +76,6 @@ void MapManager::setNewMap(int scalex, int scaley)
             this->map[x].push_back(false);
         }
     }
-
-    this->demarcacao.setMap(this->map);
 }
 
 void MapManager::setNewMap(int *scale)
@@ -92,32 +87,17 @@ void MapManager::setNewMap(int *scale)
             this->map[x].push_back(false);
         }
     }
-
-    this->demarcacao.setMap(this->map);
 }
 
-void MapManager::setCurrentCell(int x, int y)
+int* MapManager::setCurrentCell(int x, int y)
 {
-    pathCalc.currentCell[0] = x;
-    pathCalc.currentCell[1] = y;
+    this->currentCell[0] = x;
+    this->currentCell[1] = y;
+
+    return this->currentCell;
 }
 
-std::vector<char> MapManager::setTarget(int x, int y)
+int* MapManager::getCurrentCell()
 {
-    return pathCalc.setTarget(x, y);
-}
-
-std::vector<char> MapManager::setTarget(int *coordinates)
-{
-    return pathCalc.setTarget(coordinates);
-}
-
-std::vector<int> MapManager::getCurrentCell()
-{
-    return {pathCalc.currentCell[0], pathCalc.currentCell[1]};
-}
-
-std::vector<int> MapManager::getTarget()
-{
-    return pathCalc.getTarget();
+    return this->currentCell;
 }

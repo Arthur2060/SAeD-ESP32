@@ -2,8 +2,6 @@
 #define MAP_MANAGER_H
 
 #include <vector>
-#include "Demarcacao.h"
-#include "PathCalc.h"
 
 namespace N
 {
@@ -11,9 +9,8 @@ namespace N
     {
     private:
         std::vector<std::vector<bool>> map;
+        int currentCell[2];
         float distanciaDeQuadro = 0.3f;
-        Demarcacao demarcacao;
-        PathCalc pathCalc;
 
     public:
         MapManager() {}
@@ -21,23 +18,18 @@ namespace N
         MapManager(std::vector<std::vector<bool>> map, float distanciaDeQuadro);
 
         float getDistanciaDeQuadro();
-        void setDistanciaDeQuadro(float distancia);
+        float setDistanciaDeQuadro(float distancia);
 
         bool addObstacle(float distanceX, float distanceY);
-
-        Demarcacao getDemarcacao();
 
         std::vector<std::vector<bool>> getMap();
 
         void setNewMap(std::vector<std::vector<bool>> map);
         void setNewMap(int scalex, int scaley);
         void setNewMap(int *scale);
-        void setCurrentCell(int x, int y);
 
-        std::vector<char> setTarget(int x, int y);
-        std::vector<char> setTarget(int *coordinates);
-        std::vector<int> getCurrentCell();
-        std::vector<int> getTarget();
+        int* getCurrentCell();
+        int* setCurrentCell(int x, int y);
     };
 }
 
