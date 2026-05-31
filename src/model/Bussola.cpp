@@ -1,6 +1,6 @@
 #include "Bussola.h"
 
-using namespace N;
+using namespace SAeD;
 using namespace std;
 
 bool Bussola::begin()

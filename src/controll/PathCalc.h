@@ -4,7 +4,7 @@
 #include <vector>
 #include <cmath>
 
-namespace N
+namespace SAeD
 {
     class PathCalc
     {

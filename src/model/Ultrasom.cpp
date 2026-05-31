@@ -1,6 +1,6 @@
 #include "Ultrasom.h"
 
-using namespace N;
+using namespace SAeD;
 using namespace std;
 
 void Ultrasom::begin(int trigger, int echo)

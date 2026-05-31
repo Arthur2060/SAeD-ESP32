@@ -1,6 +1,6 @@
 #include "MapManager.h"
 
-using namespace N;
+using namespace SAeD;
 using namespace std;
 
 MapManager::MapManager(int scaleX, int scaleY, float distanciaDeQuadro)

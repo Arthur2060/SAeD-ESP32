@@ -1,6 +1,6 @@
 #include "Demarcacao.h"
 
-using namespace N;
+using namespace SAeD;
 using namespace std;
 
 Demarcacao::Demarcacao()

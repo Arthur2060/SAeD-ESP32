@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-namespace N
+namespace SAeD
 {
     class Ultrasom
     {

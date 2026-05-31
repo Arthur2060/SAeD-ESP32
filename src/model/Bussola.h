@@ -4,7 +4,7 @@
 #include "QMC5883LCompass.h"
 #include "Adafruit_Sensor.h"
 
-namespace N
+namespace SAeD
 {
     class Bussola
     {

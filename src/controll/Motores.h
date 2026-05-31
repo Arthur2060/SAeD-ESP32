@@ -6,7 +6,7 @@
 #include <vector>
 #include <string>
 
-namespace N
+namespace SAeD
 {
     struct Motor
     {

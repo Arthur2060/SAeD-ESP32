@@ -1,7 +1,7 @@
 #ifndef SAED_H
 #define SAED_H
 
-#include "model/Color.h"
+#include "model/ColorDetect.h"
 
 #include "controll/Motores.h"
 #include "controll/MapManager.h"
@@ -39,14 +39,14 @@ enum class SAeDStateNewItem
     Stock
 };
 
-namespace N
+namespace SAeD
 {
     
     class SAeD
     {
         private:
         Motores motores;
-        Color color;
+        ColorDetect color;
         Radar radar;
 
         BluetoothSerial BTS;

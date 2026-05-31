@@ -3,7 +3,7 @@
 
 #include <vector>
 
-namespace N
+namespace SAeD
 {
     class MapManager
     {

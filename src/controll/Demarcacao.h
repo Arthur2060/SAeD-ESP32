@@ -4,7 +4,7 @@
 #include <vector>
 #include <stdint.h>
 
-namespace N
+namespace SAeD
 {
     struct area
     {

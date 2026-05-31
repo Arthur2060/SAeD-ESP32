@@ -1,6 +1,6 @@
 #include "SAeD.h"
 
-using namespace N;
+using namespace SAeD;
 using namespace std;
 
 SAeD::SAeD()

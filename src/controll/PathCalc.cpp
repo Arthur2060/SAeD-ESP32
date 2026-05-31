@@ -1,6 +1,6 @@
 #include "PathCalc.h"
 
-using namespace N;
+using namespace SAeD;
 using namespace std;
 
 std::vector<char> PathCalc::createPath(int* currentCell, int* targetCell)

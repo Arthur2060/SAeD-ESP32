@@ -6,9 +6,9 @@
 #include <vector>
 #include <cmath>
 
-using namespace N;
+using namespace SAeD;
 
-namespace N
+namespace SAeD
 {
     class Radar
     {
