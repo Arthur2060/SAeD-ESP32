@@ -1,11 +1,9 @@
-#include "Color.h"
+#include "ColorDetect.h"
 
-using namespace N;
+using namespace SAeD;
 using namespace std;
 
-
-
-void Color::begin()
+void ColorDetect::begin()
 {
     pinMode(pinS0, OUTPUT);
     pinMode(pinS1, OUTPUT);
@@ -15,9 +13,11 @@ void Color::begin()
 
     digitalWrite(pinS0, HIGH);
     digitalWrite(pinS1, LOW);
+
+    calibrateColors();
 }
 
-std::vector<uint> Color::detectaCores()
+std::vector<uint> ColorDetect::detectColors()
 {
     digitalWrite(pinS2, LOW);
     digitalWrite(pinS3, LOW);
@@ -32,40 +32,21 @@ std::vector<uint> Color::detectaCores()
     return {R, G, B};
 }
 
-int Color::detectarCor()
+bool ColorDetect::isThisColor(color color)
 {
-    detectaCores();
+    detectColors();
 
-    int cor = 0;
-
-    //  Vermelho
-    if ((R >= mRv && R <= MRv) &&
-        (G >= mGv && G <= MGv) &&
-        (B >= mBv && B <= MBv))
+    if ((R >= color.minR && R <= color.MaxR) &&
+        (G >= color.minG && G <= color.MaxG) &&
+        (B >= color.minB && B <= color.MaxB))
     {
-        cor = 1;
+        return true;
     }
 
-    //  Verde
-    if ((R >= mRg && R <= MRg) &&
-        (G >= mGg && G <= MGg) &&
-        (B >= mBg && B <= MBg))
-    {
-        cor = 2;
-    }
-
-    //  Azul
-    if ((R >= mRb && R <= MRb) &&
-        (G >= mGb && G <= MGb) &&
-        (B >= mBb && B <= MBb))
-    {
-        cor = 3;
-    }
-
-    return cor;
+    return false;
 }
 
-void Color::calibrarCores()
+void ColorDetect::calibrateColors()
 {
     // Vermelho
 
@@ -81,7 +62,7 @@ void Color::calibrarCores()
     tempoInicioCalib = millis();
     do
     {
-        detectaCores();
+        detectColors();
         if (R > MRv)
             MRv = R;
         if (G > MGv)
@@ -115,7 +96,7 @@ void Color::calibrarCores()
     tempoInicioCalib = millis();
     do
     {
-        detectaCores();
+        detectColors();
         if (R > MRg)
             MRg = R;
         if (G > MGg)
@@ -149,7 +130,7 @@ void Color::calibrarCores()
     tempoInicioCalib = millis();
     do
     {
-        detectaCores();
+        detectColors();
         if (R > MRb)
             MRb = R;
         if (G > MGb)
@@ -170,34 +151,34 @@ void Color::calibrarCores()
     delay(500);
 }
 
-std::vector<uint> Color::getMacros()
-{
-    return {
-        MRv, MGv, MBv, mRv, mGv, mBv,
-        MRg, MGg, MBg, mRg, mGg, mBg,
-        MRb, MGb, MBb, mRb, mGb, mBb};
-}
+color ColorDetect::defineColor() {
+    color newColor;
 
-void Color::setMacros(std::vector<uint> macros)
-{
-    MRv = macros[0];
-    MGv = macros[1];
-    MBv = macros[2];
-    mRv = macros[3];
-    mGv = macros[4];
-    mBv = macros[5];
+    newColor.MaxR = 0;
+    newColor.MaxG = 0;
+    newColor.MaxB = 0;
+    newColor.minR = 999999;
+    newColor.minG = 999999;
+    newColor.minB = 999999;
 
-    MRg = macros[6];
-    MGg = macros[7];
-    MBg = macros[8];
-    mRg = macros[9];
-    mGg = macros[10];
-    mBg = macros[11];
+    tempoInicioCalib = millis();
+    do
+    {
+        detectColors();
+        if (R > newColor.MaxR)
+            newColor.MaxR = R;
+        if (G > newColor.MaxG)
+            newColor.MaxG = G;
+        if (B > newColor.MaxB)
+            newColor.MaxB = B;
 
-    MRb = macros[12];
-    MGb = macros[13];
-    MBb = macros[14];
-    mRb = macros[15];
-    mGb = macros[16];
-    mBb = macros[17];
+        if (R < newColor.minR)
+            newColor.minR = R;
+        if (G < newColor.minG)
+            newColor.minG = G;
+        if (B < newColor.minB)
+            newColor.minB = B;
+    } while (!(millis() - tempoInicioCalib >= tempoCalibracao));
+
+    return newColor;
 }
