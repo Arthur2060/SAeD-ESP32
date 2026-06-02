@@ -27,11 +27,7 @@ namespace SAeD
         Demarcacao();
         Demarcacao(int rc1, int rc2);
 
-<<<<<<< HEAD
         void setNewArea(std::vector<uint16_t> initialCell, std::vector<uint16_t> finalCell, color color, const char * name);
-=======
-        void setNewArea(std::vector<uint16_t> initialCell, std::vector<uint16_t> finalCell, color color, String name);
->>>>>>> e3aee7036add9922928563e51c8dd3db0fbbd6e9
 
         area getArea(char *name);
         area getCellArea(int *cellLocation);
