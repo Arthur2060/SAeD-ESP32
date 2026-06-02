@@ -8,7 +8,7 @@
 #define pinS0 18
 #define pinS1 19
 #define pinS2 27
-#define pinS3 13
+#define pinS3 5
 #define pinOut 23
 
 namespace SAeD
@@ -42,7 +42,6 @@ namespace SAeD
         unsigned int mRb, mGb, mBb;
 
         void begin();
-        void calibrateColors();
 
         std::vector<uint> detectColors();
         bool isThisColor(color color);
