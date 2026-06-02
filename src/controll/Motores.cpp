@@ -66,7 +66,7 @@ void Motores::moveDistance(bool direction)
         ledcWrite(left.PWM_PIN, accumulatorLeft);
     }
 
-    delay(ONE_METER_DELAY * CELL_DISTANCE);
+    delay(ONE_METER_DELAY * cellScale);
 
     stopMotors();
 }
@@ -151,8 +151,8 @@ void Motores::stopMotors()
 Motores::Motores()
 {
     left.PWM_PIN = 15;
-    left.IN1_PIN = 4;
-    left.IN2_PIN = 2;
+    left.IN1_PIN = 2;
+    left.IN2_PIN = 4;
 
     left.ENC_PIN_1 = 25;
     left.ENC_PIN_2 = 26;
@@ -222,4 +222,8 @@ void Motores::setSpeed(int newSpeed)
     {
         currentSpeed = newSpeed;
     }
+}
+
+void Motores::setCellScale(float cellScale) {
+    this->cellScale = cellScale;
 }

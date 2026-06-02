@@ -3,6 +3,22 @@
 using namespace SAeD;
 using namespace std;
 
+MapManager::MapManager() {
+    for (int x = 0; x <= 10; x++)
+    {
+        map.push_back({});
+        std::vector<bool> targetLine = map[x];
+        for (int y = 0; y <= 10; y++)
+        {
+            map[x].push_back(false);
+        }
+    }
+
+    this->distanciaDeQuadro = 0.3;
+    this->currentCell[0] = 0;
+    this->currentCell[1] = 1;
+}
+
 MapManager::MapManager(int scaleX, int scaleY, float distanciaDeQuadro)
 {
     for (int x = 0; x <= scaleX; x++)

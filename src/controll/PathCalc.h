@@ -11,9 +11,6 @@ namespace SAeD
     private:
 
     public:
-
-        PathCalc();
-        
         std::vector<char> createPath(int* currentCell, int* targetCell);
     };
 }

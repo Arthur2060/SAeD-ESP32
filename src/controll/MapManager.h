@@ -13,7 +13,7 @@ namespace SAeD
         float distanciaDeQuadro = 0.3f;
 
     public:
-        MapManager() {}
+        MapManager();
         MapManager(int scaleX, int scaleY, float distanciaDeQuadro);
         MapManager(std::vector<std::vector<bool>> map, float distanciaDeQuadro);
 

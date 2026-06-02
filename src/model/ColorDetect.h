@@ -8,7 +8,7 @@
 #define pinS0 18
 #define pinS1 19
 #define pinS2 27
-#define pinS3 13
+#define pinS3 5
 #define pinOut 23
 
 namespace SAeD
@@ -28,23 +28,8 @@ namespace SAeD
         const int tempoCalibracao = 5000;
 
     public:
-        // Primary Colors Macros
-        //  Vermelho
-        unsigned int MRv, MGv, MBv;
-        unsigned int mRv, mGv, mBv;
-
-        //  Verde
-        unsigned int MRg, MGg, MBg;
-        unsigned int mRg, mGg, mBg;
-
-        //  Azul
-        unsigned int MRb, MGb, MBb;
-        unsigned int mRb, mGb, mBb;
-
-        ColorDetect();
 
         void begin();
-        void calibrateColors();
 
         std::vector<uint> detectColors();
         bool isThisColor(color color);

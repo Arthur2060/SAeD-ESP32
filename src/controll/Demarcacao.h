@@ -13,7 +13,7 @@ namespace SAeD
         int startCell[2];
         int endCell[2];
         color areaColor;
-        char *name;
+        String name;
     };
 
     class Demarcacao
@@ -26,7 +26,7 @@ namespace SAeD
         Demarcacao();
         Demarcacao(int rc1, int rc2);
 
-        void setNewArea(std::vector<uint16_t> initialCell, std::vector<uint16_t> finalCell, color color, char *name);
+        void setNewArea(std::vector<uint16_t> initialCell, std::vector<uint16_t> finalCell, color color, String name);
 
         area getArea(char *name);
         area getCellArea(int *cellLocation);

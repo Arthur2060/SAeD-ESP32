@@ -3,12 +3,25 @@
 using namespace SAeD;
 using namespace std;
 
+Principal::Principal()
+{
+}
+
+Principal::Principal(int scaleX, int scaleY, float cellScale)
+{
+    int scale[2] = {scaleX, scaleY};
+    mapManager.setNewMap(scale);
+    mapManager.setDistanciaDeQuadro(cellScale);
+    motores.setCellScale(cellScale);
+}
+
 void Principal::begin()
 {
-    this->BTS.begin("SAeD");
-    this->motores.begin();
-    this->radar.begin();
-    this->colorDetect.begin();
+    BTS.begin("SAeD");
+    motores.begin();
+    radar.begin();
+    colorDetect.begin();
+    motores.lerComandos({'W'});
 }
 
 void Principal::principalLoop()
@@ -54,7 +67,19 @@ void Principal::principalLoop()
             if (method == "GET")
             {
                 JsonDocument doc;
-                doc["areas"] = demarcacao.areas;
+                JsonArray array = doc.to<JsonArray>();
+                for (int c = 0; c <= demarcacao.areas.size(); c++)
+                {
+                    JsonDocument sub;
+
+                    sub["name"] = demarcacao.areas[c].name;
+                    sub["startCellX"] = demarcacao.areas[c].startCell[0];
+                    sub["startCellY"] = demarcacao.areas[c].startCell[1];
+                    sub["endCellX"] = demarcacao.areas[c].endCell[0];
+                    sub["endCellY"] = demarcacao.areas[c].endCell[1];
+
+                    array.add(sub);
+                }
 
                 serializeJson(doc, BTS);
             }
@@ -74,10 +99,6 @@ void Principal::principalLoop()
         {
             if (method == "GET")
             {
-                JsonDocument doc;
-                doc["map"] = mapManager.getMap();
-
-                serializeJson(doc, BTS);
             }
             else if (method == "PUT")
             {
@@ -96,6 +117,10 @@ void Principal::principalLoop()
                 doc["receivingY"] = demarcacao.recieveingCell[1];
 
                 serializeJson(doc, BTS);
+            }
+            else if (method == "POST")
+            {
+                received();
             }
             else if (method == "PUT")
             {
@@ -134,9 +159,9 @@ area Principal::analise()
 {
     for (int c = 0; c < demarcacao.areas.size(); c++)
     {
-        area target = this->demarcacao.areas[c];
+        area target = demarcacao.areas[c];
 
-        if (this->colorDetect.isThisColor(target.areaColor))
+        if (colorDetect.isThisColor(target.areaColor))
         {
             int *startCell = demarcacao.areas[c].startCell;
 

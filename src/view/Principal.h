@@ -44,12 +44,6 @@ namespace SAeD
     class Principal
     {
     private:
-        Motores motores;
-        ColorDetect colorDetect;
-        Demarcacao demarcacao;
-        PathCalc pathCalc;
-        Radar radar;
-
         BluetoothSerial BTS;
         MapManager mapManager;
 
@@ -79,9 +73,26 @@ namespace SAeD
         int noObstacleLimit = MAX_NO_OBSTACLE_LIMIT;
 
         double currentOdometri;
-        double noObstacleLimit;
 
         std::vector<double> obstacle = {};
+
+        void newItemLoopPrimary();
+        void mapLoopPrimary();
+        void dispatchLoopPrimary();
+
+        void newItemLoopSecondary();
+        void mapLoopSecondary();
+        void dispatchLoopSecondary();
+
+        void setNewMap(int *dimensions, int *initial);
+        void received();
+        area analise();
+
+        Motores motores;
+        ColorDetect colorDetect;
+        Demarcacao demarcacao;
+        PathCalc pathCalc;
+        Radar radar;
 
     public:
         Principal();
@@ -89,20 +100,8 @@ namespace SAeD
 
         void begin();
 
-        void setNewMap(int *dimensions, int *initial);
         void principalLoop();
         void secondaryLoop();
-
-        void newItemLoopPrimary();
-        void mapLoopPrimary();
-        void dispatchLoopPrimary();
-        
-        void newItemLoopSecondary();
-        void mapLoopSecondary();
-        void dispatchLoopSecondary();
-        
-        void received();
-        area analise();
     };
 }
 
