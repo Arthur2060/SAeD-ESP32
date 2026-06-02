@@ -1,8 +1,10 @@
 #include <Arduino.h>
+#include "model/Bussola.h"
 #include "view/Principal.h"
 
 using namespace SAeD;
 
+Bussola bussola;
 Principal prince(10, 10, 0.3);
 
 TaskHandle_t WatchDog = NULL;

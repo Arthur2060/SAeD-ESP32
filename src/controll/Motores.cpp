@@ -15,12 +15,12 @@ void Motores::moveBackward()
 
 void Motores::turnLeft()
 {
-    rotate(90);
+    rotate(true);
 }
 
 void Motores::turnRight()
 {
-    rotate(-90);
+    rotate(false);
 }
 
 void Motores::spin360()
@@ -41,70 +41,48 @@ void Motores::moveDistance(bool direction)
         setMotorDirection(right.IN1_PIN, right.IN2_PIN, false);
     }
 
-    const int pwmValue = map(currentSpeed, 0, 100, MIN_PWM, MAX_PWM);
-    ledcWrite(left.PWM_PIN, pwmValue);
-    ledcWrite(right.PWM_PIN, pwmValue);
+    ledcWrite(left.PWM_PIN, 255);
+    ledcWrite(right.PWM_PIN, 255);
 
     delay(1350); // PELO AMOR DE DEUS, NÃO MUDE ISSO, NÃO SEI PORQUE, MAS QUALQUER OUTRA COISA NÃO SERVE!
 
     stopMotors();
 }
 
-void Motores::rotate(int degrees)
+void Motores::rotate(bool direction)
 {
-    const float arcDistance = (TRACK_WIDTH * PI * abs(degrees)) / 360.0f;
-    const float pulsesPerMeter = (ENCODER_PPR * ENCODER_MULTIPLIER * GEAR_RATIO) / (PI * WHEEL_DIAMETER);
-
-    encoderLeft.setCount(0);
-    encoderRight.setCount(0);
-
-    if (degrees > 0)
+    float target;
+    if (direction)
     {
         // Giro para a esquerda: roda esquerda para trás, roda direita para frente
         setMotorDirection(left.IN1_PIN, left.IN2_PIN, false);
         setMotorDirection(right.IN1_PIN, right.IN2_PIN, true);
+        
+        target = selectEquivalentAngle[selectNextAngle[currentDegrees]];
     }
     else
     {
         // Giro para a direita: roda esquerda para frente, roda direita para trás
         setMotorDirection(left.IN1_PIN, left.IN2_PIN, true);
         setMotorDirection(right.IN1_PIN, right.IN2_PIN, false);
+        
+        target = selectEquivalentAngle[selectPreviousAngle[currentDegrees]];
     }
+    correctOrientation();
 
-    int pwmLeft = map(currentSpeed, 0, 100, MIN_PWM, MAX_PWM);
-    int pwmRight = pwmLeft;
-    ledcWrite(left.PWM_PIN, pwmLeft);
-    ledcWrite(right.PWM_PIN, pwmRight);
+    ledcWrite(left.PWM_PIN, 255);
+    ledcWrite(right.PWM_PIN, 255);
 
-    unsigned long startMillis = millis();
-    const unsigned long timeout = 5000;
+    float actualCompass = bussola.collectCompassData();
 
-    while (abs(encoderLeft.getCount()) < TARGET_PULSE || abs(encoderRight.getCount()) < TARGET_PULSE)
+    while (abs(actualCompass - target) > 3)
     {
-        if (millis() - startMillis > timeout)
-        {
-            break;
-        }
-
-        if (abs(encoderLeft.getCount()) > abs(encoderRight.getCount()) + 2 && pwmRight < MAX_PWM && pwmLeft > MIN_PWM)
-        {
-            pwmRight += 5;
-            pwmLeft -= 5;
-            ledcWrite(right.PWM_PIN, pwmRight);
-            ledcWrite(left.PWM_PIN, pwmLeft);
-        }
-        else if (abs(encoderRight.getCount()) > abs(encoderLeft.getCount()) + 2 && pwmLeft < MAX_PWM && pwmRight > MIN_PWM)
-        {
-            pwmRight -= 5;
-            pwmLeft += 5;
-            ledcWrite(right.PWM_PIN, pwmRight);
-            ledcWrite(left.PWM_PIN, pwmLeft);
-        }
-
-        delay(10);
+        actualCompass = bussola.collectCompassData();
+        delay(1);
     }
 
     stopMotors();
+    currentDegrees = selectCurrentAngle[target];
 }
 
 void Motores::setMotorDirection(int in1, int in2, bool direction)
@@ -203,6 +181,20 @@ void Motores::setSpeed(int newSpeed)
     }
 }
 
-void Motores::setCellScale(float cellScale) {
+void Motores::setCellScale(float cellScale)
+{
     this->cellScale = cellScale;
+}
+
+void Motores::correctOrientation()
+{
+    ledcWrite(left.PWM_PIN, 255);
+    ledcWrite(right.PWM_PIN, 255);
+
+    while (bussola.collectCompassData() != selectEquivalentAngle[currentDegrees])
+    {
+        delay(10);
+    }
+
+    stopMotors();
 }
