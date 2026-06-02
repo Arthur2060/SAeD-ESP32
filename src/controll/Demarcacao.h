@@ -13,20 +13,21 @@ namespace SAeD
         int startCell[2];
         int endCell[2];
         color areaColor;
-        char *name;
+        const char *name;
     };
 
     class Demarcacao
     {
     private:
     public:
-        int recieveingCell[2] = {};
+        int recieveingCell[2];
+        int startCell[2];
         std::vector<area> areas;
 
         Demarcacao();
         Demarcacao(int rc1, int rc2);
 
-        void setNewArea(std::vector<uint16_t> initialCell, std::vector<uint16_t> finalCell, color color, char *name);
+        void setNewArea(std::vector<uint16_t> initialCell, std::vector<uint16_t> finalCell, color color, const char * name);
 
         area getArea(char *name);
         area getCellArea(int *cellLocation);

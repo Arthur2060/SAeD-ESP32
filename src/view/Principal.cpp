@@ -3,12 +3,20 @@
 using namespace SAeD;
 using namespace std;
 
+Principal::Principal(int scaleX, int scaleY, float cellScale)
+{
+    int scale[2] = {scaleX, scaleY};
+    mapManager.setNewMap(scale);
+    mapManager.setDistanciaDeQuadro(cellScale);
+    motores.setCellScale(cellScale);
+}
+
 void Principal::begin()
 {
-    this->BTS.begin("SAeD");
-    this->motores.begin();
-    this->radar.begin();
-    this->colorDetect.begin();
+    BTS.begin("SAeD");
+    motores.begin();
+    radar.begin();
+    colorDetect.begin();
 }
 
 void Principal::principalLoop()
@@ -22,9 +30,9 @@ void Principal::principalLoop()
         JsonDocument payload;
         deserializeJson(payload, BTS.readString());
 
-        String route = payload["route"];
-        String method = payload["method"];
-        String body = payload["body"];
+        string route = payload["route"];
+        string method = payload["method"];
+        string body = payload["body"];
 
         if (route == "controll")
         {
@@ -48,13 +56,29 @@ void Principal::principalLoop()
             {
                 motores.lerComandos({'R'});
             }
+            else if (method == "Start")
+            {
+                this->move(demarcacao.startCell);
+            }
         }
         else if (route == "area")
         {
             if (method == "GET")
             {
                 JsonDocument doc;
-                doc["areas"] = demarcacao.areas;
+                JsonArray array = doc.to<JsonArray>();
+                for (int c = 0; c <= demarcacao.areas.size(); c++)
+                {
+                    JsonDocument sub;
+
+                    sub["name"] = demarcacao.areas[c].name;
+                    sub["startCellX"] = demarcacao.areas[c].startCell[0];
+                    sub["startCellY"] = demarcacao.areas[c].startCell[1];
+                    sub["endCellX"] = demarcacao.areas[c].endCell[0];
+                    sub["endCellY"] = demarcacao.areas[c].endCell[1];
+
+                    array.add(sub);
+                }
 
                 serializeJson(doc, BTS);
             }
@@ -63,21 +87,19 @@ void Principal::principalLoop()
                 JsonDocument doc;
                 deserializeJson(doc, body);
 
+                string name = doc["name"];
+
                 demarcacao.setNewArea(
                     {doc["initialX"], doc["initialY"]},
                     {doc["finalX"], doc["finalY"]},
                     colorDetect.defineColor(),
-                    doc["name"]);
+                    name.c_str());
             }
         }
         else if (route == "map")
         {
             if (method == "GET")
             {
-                JsonDocument doc;
-                doc["map"] = mapManager.getMap();
-
-                serializeJson(doc, BTS);
             }
             else if (method == "PUT")
             {
@@ -96,6 +118,10 @@ void Principal::principalLoop()
                 doc["receivingY"] = demarcacao.recieveingCell[1];
 
                 serializeJson(doc, BTS);
+            }
+            else if (method == "POST")
+            {
+                received();
             }
             else if (method == "PUT")
             {
@@ -134,9 +160,9 @@ area Principal::analise()
 {
     for (int c = 0; c < demarcacao.areas.size(); c++)
     {
-        area target = this->demarcacao.areas[c];
+        area target = demarcacao.areas[c];
 
-        if (this->colorDetect.isThisColor(target.areaColor))
+        if (colorDetect.isThisColor(target.areaColor))
         {
             int *startCell = demarcacao.areas[c].startCell;
 
@@ -243,4 +269,11 @@ void Principal::dispatchLoopSecondary()
     case SAeDStateDispatch::Dispatch:
         break;
     }
+}
+
+void Principal::move(int* end)
+{
+    vector<char> path = pathCalc.createPath(mapManager.getCurrentCell(), end);
+    motores.lerComandos(path);
+    mapManager.setCurrentCell(end[0], end[1]);
 }

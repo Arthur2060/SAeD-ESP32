@@ -41,8 +41,6 @@ namespace SAeD
         unsigned int MRb, MGb, MBb;
         unsigned int mRb, mGb, mBb;
 
-        ColorDetect();
-
         void begin();
         void calibrateColors();
 

@@ -30,9 +30,6 @@ void Motores::spin360()
 
 void Motores::moveDistance(bool direction)
 {
-    encoderLeft.setCount(0);
-    encoderRight.setCount(0);
-
     if (direction)
     {
         setMotorDirection(left.IN1_PIN, left.IN2_PIN, true); // Frente
@@ -48,25 +45,7 @@ void Motores::moveDistance(bool direction)
     ledcWrite(left.PWM_PIN, pwmValue);
     ledcWrite(right.PWM_PIN, pwmValue);
 
-    int accumulatorLeft = pwmValue;
-    int accumulatorRight = pwmValue;
-
-    if (encoderLeft.getCount() > encoderRight.getCount() + 2 && accumulatorRight < MAX_PWM && accumulatorLeft > MIN_PWM)
-    {
-        accumulatorRight += 5;
-        accumulatorLeft -= 5;
-        ledcWrite(right.PWM_PIN, accumulatorRight);
-        ledcWrite(left.PWM_PIN, accumulatorLeft);
-    }
-    else if (encoderRight.getCount() > encoderLeft.getCount() + 2 && accumulatorLeft < MAX_PWM && accumulatorRight > MIN_PWM)
-    {
-        accumulatorRight -= 5;
-        accumulatorLeft += 5;
-        ledcWrite(right.PWM_PIN, accumulatorRight);
-        ledcWrite(left.PWM_PIN, accumulatorLeft);
-    }
-
-    delay(ONE_METER_DELAY * CELL_DISTANCE);
+    delay(1350); // PELO AMOR DE DEUS, NÃO MUDE ISSO, NÃO SEI PORQUE, MAS QUALQUER OUTRA COISA NÃO SERVE!
 
     stopMotors();
 }
@@ -151,8 +130,8 @@ void Motores::stopMotors()
 Motores::Motores()
 {
     left.PWM_PIN = 15;
-    left.IN1_PIN = 4;
-    left.IN2_PIN = 2;
+    left.IN1_PIN = 2;
+    left.IN2_PIN = 4;
 
     left.ENC_PIN_1 = 25;
     left.ENC_PIN_2 = 26;
@@ -222,4 +201,8 @@ void Motores::setSpeed(int newSpeed)
     {
         currentSpeed = newSpeed;
     }
+}
+
+void Motores::setCellScale(float cellScale) {
+    this->cellScale = cellScale;
 }

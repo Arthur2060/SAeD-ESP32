@@ -6,7 +6,10 @@ using namespace std;
 Demarcacao::Demarcacao()
 {
     this->recieveingCell[0] = 2;
-    this->recieveingCell[0] = 4;
+    this->recieveingCell[1] = 4;
+    
+    this->startCell[0] = 0;
+    this->startCell[1] = 0;
 }
 
 Demarcacao::Demarcacao(int rc1, int rc2)
@@ -15,7 +18,7 @@ Demarcacao::Demarcacao(int rc1, int rc2)
     this->recieveingCell[1] = rc2;
 }
 
-void Demarcacao::setNewArea(std::vector<uint16_t> initialCell, std::vector<uint16_t> finalCell, color color, char *name)
+void Demarcacao::setNewArea(std::vector<uint16_t> initialCell, std::vector<uint16_t> finalCell, color color, const char* name)
 {
     area newArea;
 
