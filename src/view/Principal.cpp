@@ -164,7 +164,7 @@ void Principal::received()
     newItemState = SAeDTransitionNewItem[newItemState];
 }
 
-area Principal::analise()
+void Principal::analise()
 {
     claw.nextState();
     for (int c = 0; c < demarcacao.areas.size(); c++)
@@ -180,7 +180,6 @@ area Principal::analise()
 
             newItemState = SAeDTransitionNewItem[newItemState];
             stock(target);
-            return target;
         }
     }
     newItemState = SAeDTransitionNewItem[newItemState];

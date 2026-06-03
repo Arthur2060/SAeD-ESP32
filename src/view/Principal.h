@@ -45,9 +45,6 @@ namespace SAeD
     class Principal
     {
     private:
-        BluetoothSerial BTS;
-        MapManager mapManager;
-
         std::vector<char> spinCommand = {'R', 'R', 'R'};
 
         std::map<SAeDStateMap, SAeDStateMap> SAeDTransitionMap = {
@@ -89,8 +86,10 @@ namespace SAeD
         void received();
         void stock(area area);
         void move(int *end);
-        area analise();
+        void analise();
 
+        BluetoothSerial BTS;
+        MapManager mapManager;
         Motores motores;
         ColorDetect colorDetect;
         Demarcacao demarcacao;

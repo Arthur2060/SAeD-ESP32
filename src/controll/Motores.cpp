@@ -77,7 +77,7 @@ void Motores::rotate(bool direction)
 
     float actualCompass = bussola.collectCompassData();
 
-    while (abs(actualCompass - target) > 0)
+    while (abs(actualCompass - target) > 1)
     {
         actualCompass = bussola.collectCompassData();
         delay(1);
@@ -110,8 +110,8 @@ void Motores::stopMotors()
 Motores::Motores()
 {
     left.PWM_PIN = 15;
-    left.IN1_PIN = 2;
-    left.IN2_PIN = 4;
+    left.IN1_PIN = 4;
+    left.IN2_PIN = 2;
 
     left.ENC_PIN_1 = 25;
     left.ENC_PIN_2 = 26;
