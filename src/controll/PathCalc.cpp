@@ -29,14 +29,14 @@ std::vector<char> PathCalc::createPath(int *currentCell, int *targetCell)
     {
         for (int c2 = diference[1]; c2 > 0; c2--)
         {
-            path.push_back('S');
+            path.push_back('W');
         }
     }
     else if (diference[1] < 0)
     {
         for (int c2 = diference[1]; c2 < 0; c2++)
         {
-            path.push_back('W');
+            path.push_back('S');
         }
     }
 

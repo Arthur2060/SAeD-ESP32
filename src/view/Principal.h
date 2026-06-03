@@ -2,6 +2,7 @@
 #define SAED_H
 
 #include "model/ColorDetect.h"
+#include "model/Claw.h"
 
 #include "controll/Motores.h"
 #include "controll/MapManager.h"
@@ -86,6 +87,7 @@ namespace SAeD
 
         void setNewMap(int *dimensions, int *initial);
         void received();
+        void stock(area area);
         void move(int *end);
         area analise();
 
@@ -94,6 +96,7 @@ namespace SAeD
         Demarcacao demarcacao;
         PathCalc pathCalc;
         Radar radar;
+        Claw claw;
 
     public:
         Principal(int scaleX, int scaleY, float cellScale);

@@ -35,13 +35,13 @@ void Motores::moveDistance(bool direction)
 {
     if (direction)
     {
-        setMotorDirection(left.IN1_PIN, left.IN2_PIN, true); // Frente
-        setMotorDirection(right.IN1_PIN, right.IN2_PIN, true);
+        setMotorDirection(left.IN1_PIN, left.IN2_PIN, false); // Trás
+        setMotorDirection(right.IN1_PIN, right.IN2_PIN, false);
     }
     else
     {
-        setMotorDirection(left.IN1_PIN, left.IN2_PIN, false); // Trás
-        setMotorDirection(right.IN1_PIN, right.IN2_PIN, false);
+        setMotorDirection(right.IN1_PIN, right.IN2_PIN, true);
+        setMotorDirection(left.IN1_PIN, left.IN2_PIN, true); // Frente
     }
 
     ledcWrite(left.PWM_PIN, 255);
@@ -60,7 +60,7 @@ void Motores::rotate(bool direction)
         // Giro para a esquerda: roda esquerda para trás, roda direita para frente
         setMotorDirection(left.IN1_PIN, left.IN2_PIN, false);
         setMotorDirection(right.IN1_PIN, right.IN2_PIN, true);
-        
+
         target = selectEquivalentAngle[selectNextAngle[currentDegrees]];
     }
     else
@@ -68,10 +68,9 @@ void Motores::rotate(bool direction)
         // Giro para a direita: roda esquerda para frente, roda direita para trás
         setMotorDirection(left.IN1_PIN, left.IN2_PIN, true);
         setMotorDirection(right.IN1_PIN, right.IN2_PIN, false);
-        
+
         target = selectEquivalentAngle[selectPreviousAngle[currentDegrees]];
     }
-    correctOrientation();
 
     ledcWrite(left.PWM_PIN, 255);
     ledcWrite(right.PWM_PIN, 255);
@@ -143,6 +142,10 @@ void Motores::begin()
     encoderLeft.setCount(0);
     encoderRight.setCount(0);
 
+    setMotorDirection(left.IN1_PIN, left.IN2_PIN, false);
+    setMotorDirection(right.IN1_PIN, right.IN2_PIN, true);
+
+    correctOrientation();
     stopMotors();
 }
 

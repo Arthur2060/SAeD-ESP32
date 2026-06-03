@@ -13,7 +13,8 @@
 
 namespace SAeD
 {
-    struct color {
+    struct color
+    {
         unsigned int MaxR, MaxG, MaxB, minR, minG, minB;
     };
 
@@ -28,19 +29,6 @@ namespace SAeD
         const int tempoCalibracao = 5000;
 
     public:
-        // Primary Colors Macros
-        //  Vermelho
-        unsigned int MRv, MGv, MBv;
-        unsigned int mRv, mGv, mBv;
-
-        //  Verde
-        unsigned int MRg, MGg, MBg;
-        unsigned int mRg, mGg, mBg;
-
-        //  Azul
-        unsigned int MRb, MGb, MBb;
-        unsigned int mRb, mGb, mBb;
-
         void begin();
 
         std::vector<uint> detectColors();

@@ -13,7 +13,6 @@ void loop2(void *parameter);
 
 void setup()
 {
-    Serial.begin(9600);
     prince.begin();
 
     xTaskCreatePinnedToCore(

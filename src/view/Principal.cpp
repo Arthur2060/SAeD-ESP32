@@ -17,6 +17,7 @@ void Principal::begin()
     motores.begin();
     radar.begin();
     colorDetect.begin();
+    claw.begin();
 }
 
 void Principal::principalLoop()
@@ -155,6 +156,7 @@ void Principal::received()
 
 area Principal::analise()
 {
+    claw.nextState();
     for (int c = 0; c < demarcacao.areas.size(); c++)
     {
         area target = demarcacao.areas[c];
@@ -166,12 +168,22 @@ area Principal::analise()
             startCell[0] -= 1;
             startCell[1] += 1;
 
-            pathCalc.createPath(mapManager.getCurrentCell(), startCell);
             newItemState = SAeDTransitionNewItem[newItemState];
+            stock(target);
             return target;
         }
     }
     newItemState = SAeDTransitionNewItem[newItemState];
+    newItemState = SAeDTransitionNewItem[newItemState];
+    claw.nextState();
+}
+
+void Principal::stock(area area) {
+    int target[2] = {area.startCell[0] - 1, area.startCell[1] - 1};
+    
+    move(target);
+
+    claw.nextState();
     newItemState = SAeDTransitionNewItem[newItemState];
 }
 
