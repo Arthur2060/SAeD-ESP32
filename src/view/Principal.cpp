@@ -39,7 +39,7 @@ void Principal::principalLoop()
             if (method == "Front")
             {
                 int target[2] = {mapManager.currentCell[0], (mapManager.currentCell[1] + 1)};
-                
+
                 move(target);
             }
             else if (method == "Bottom")
@@ -206,7 +206,7 @@ void Principal::mapLoopPrimary()
     case SAeDStateMap::Mapping:
         obstacle = radar.getObstacle();
 
-        if (obstacle[0] == 0 && obstacle[1] == 0)
+        if (!obstacle[0] && !obstacle[1])
             return;
         (!mapManager.addObstacle(obstacle[0], obstacle[1])) ? noObstacleLimit -= 1 : noObstacleLimit = MAX_NO_OBSTACLE_LIMIT;
         break;
@@ -269,8 +269,17 @@ void Principal::dispatchLoopSecondary()
     }
 }
 
-void Principal::move(int* end)
+void Principal::move(int *end)
 {
+    if (
+        (mapManager.getMap()[mapManager.currentCell[0] + 1][mapManager.currentCell[1]] && end[0]) > 0 ||
+        (mapManager.getMap()[mapManager.currentCell[0] - 1][mapManager.currentCell[1]] && end[0]) < 0 ||
+        (mapManager.getMap()[mapManager.currentCell[0]][mapManager.currentCell[1] + 1] && end[1]) > 0 ||
+        (mapManager.getMap()[mapManager.currentCell[0]][mapManager.currentCell[1] - 1] && end[1]) < 0
+    )
+    {
+        return;
+    }
     vector<char> path = pathCalc.createPath(mapManager.currentCell, end);
     motores.lerComandos(path);
     mapManager.currentCell[0] = end[0];
