@@ -204,11 +204,6 @@ void Principal::mapLoopPrimary()
     case SAeDStateMap::Wait:
         break;
     case SAeDStateMap::Mapping:
-        obstacle = radar.getObstacle();
-
-        if (!obstacle[0] && !obstacle[1])
-            return;
-        (!mapManager.addObstacle(obstacle[0], obstacle[1])) ? noObstacleLimit -= 1 : noObstacleLimit = MAX_NO_OBSTACLE_LIMIT;
         break;
     case SAeDStateMap::Demarc:
         break;
@@ -250,6 +245,12 @@ void Principal::mapLoopSecondary()
     case SAeDStateMap::Wait:
         break;
     case SAeDStateMap::Mapping:
+        obstacle = radar.getObstacle();
+
+        if (!obstacle[0] && !obstacle[1])
+            return;
+        (!mapManager.addObstacle(obstacle[0], obstacle[1])) ? noObstacleLimit -= 1 : noObstacleLimit = MAX_NO_OBSTACLE_LIMIT;
+        break;
         break;
     case SAeDStateMap::Demarc:
         break;
@@ -275,8 +276,7 @@ void Principal::move(int *end)
         (mapManager.getMap()[mapManager.currentCell[0] + 1][mapManager.currentCell[1]] && end[0]) > 0 ||
         (mapManager.getMap()[mapManager.currentCell[0] - 1][mapManager.currentCell[1]] && end[0]) < 0 ||
         (mapManager.getMap()[mapManager.currentCell[0]][mapManager.currentCell[1] + 1] && end[1]) > 0 ||
-        (mapManager.getMap()[mapManager.currentCell[0]][mapManager.currentCell[1] - 1] && end[1]) < 0
-    )
+        (mapManager.getMap()[mapManager.currentCell[0]][mapManager.currentCell[1] - 1] && end[1]) < 0)
     {
         return;
     }
