@@ -4,11 +4,11 @@ using namespace SAeD;
 using namespace std;
 
 MapManager::MapManager() {
-    for (int x = 0; x <= 10; x++)
+    for (int x = 0; x <= 5; x++)
     {
         map.push_back({});
         std::vector<bool> targetLine = map[x];
-        for (int y = 0; y <= 10; y++)
+        for (int y = 0; y <= 5; y++)
         {
             map[x].push_back(false);
         }
@@ -16,7 +16,7 @@ MapManager::MapManager() {
 
     this->distanciaDeQuadro = 0.3;
     this->currentCell[0] = 0;
-    this->currentCell[1] = 1;
+    this->currentCell[1] = 0;
 }
 
 MapManager::MapManager(int scaleX, int scaleY, float distanciaDeQuadro)
@@ -33,7 +33,7 @@ MapManager::MapManager(int scaleX, int scaleY, float distanciaDeQuadro)
 
     this->distanciaDeQuadro = distanciaDeQuadro;
     this->currentCell[0] = 0;
-    this->currentCell[1] = 1;
+    this->currentCell[1] = 0;
 }
 
 MapManager::MapManager(std::vector<std::vector<bool>> map, float distanciaDeQuadro)
@@ -41,7 +41,7 @@ MapManager::MapManager(std::vector<std::vector<bool>> map, float distanciaDeQuad
     this->map = map;
     this->distanciaDeQuadro = distanciaDeQuadro;
     this->currentCell[0] = 0;
-    this->currentCell[1] = 1;
+    this->currentCell[1] = 0;
 }
 
 float MapManager::getDistanciaDeQuadro()

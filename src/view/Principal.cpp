@@ -65,6 +65,16 @@ void Principal::principalLoop()
             {
                 this->move(demarcacao.startCell);
             }
+            else if (method == "GET")
+            {
+                claw.nextState();
+            }
+            else if (method == "PUT")
+            {
+                claw.nextState();
+                delay(3000);
+                claw.nextState();
+            }
         }
         else if (route == "area")
         {
