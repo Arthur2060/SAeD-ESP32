@@ -86,7 +86,7 @@ namespace SAeD
 
         void setNewMap(int *dimensions, int *initial);
         void received();
-        void move(int* end);
+        void move(int *end);
         area analise();
 
         Motores motores;

@@ -9,10 +9,11 @@ namespace SAeD
     {
     private:
         std::vector<std::vector<bool>> map;
-        int currentCell[2];
         float distanciaDeQuadro = 0.3f;
 
     public:
+        int currentCell[2];
+
         MapManager();
         MapManager(int scaleX, int scaleY, float distanciaDeQuadro);
         MapManager(std::vector<std::vector<bool>> map, float distanciaDeQuadro);
@@ -28,8 +29,8 @@ namespace SAeD
         void setNewMap(int scalex, int scaley);
         void setNewMap(int *scale);
 
-        int* getCurrentCell();
-        int* setCurrentCell(int x, int y);
+        int *getCurrentCell();
+        int *setCurrentCell(int x, int y);
     };
 }
 

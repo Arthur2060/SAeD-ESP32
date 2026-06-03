@@ -3,53 +3,41 @@
 using namespace SAeD;
 using namespace std;
 
-std::vector<char> PathCalc::createPath(int* currentCell, int* targetCell)
+std::vector<char> PathCalc::createPath(int *currentCell, int *targetCell)
 {
-    if (
-        targetCell[0] == currentCell[0] &&
-        targetCell[1] == currentCell[1])
-    {
-        // Alredy In Target - Já estou no alvo
-        return {'A', 'I', 'T'};
-    }
-
     int diference[2] = {currentCell[0] - targetCell[0], currentCell[1] - targetCell[1]};
     std::vector<char> path;
 
-    for (int c = 0; c < (int)(sizeof(diference) / sizeof(diference[0])); c++)
+    if (diference[0] > 0)
     {
-        int workNumber = diference[c];
-        char workChar;
-
-        if (c == 1)
+        for (int c2 = diference[0]; c2 > 0; c2--)
         {
-            if (workNumber < 1)
-            {
-                path.push_back('A');
-            }
-            else
-            {
-                path.push_back('D');
-            }
+            path.push_back('W');
         }
-
-        if (workNumber < 1)
+        path.push_back('D');
+    }
+    else if (diference[0] < 0)
+    {
+        for (int c2 = diference[0]; c2 < 0; c2++)
         {
-            workNumber *= -1;
-            workChar = 'S';
+            path.push_back('S');
         }
-        else
+        path.push_back('A');
+    }
+
+    if (diference[1] > 0)
+    {
+        for (int c2 = diference[1]; c2 > 0; c2--)
         {
-            workChar = 'W';
+            path.push_back('S');
         }
-
-        do
+    }
+    else if (diference[1] < 0)
+    {
+        for (int c2 = diference[1]; c2 < 0; c2++)
         {
-            path.push_back(workChar);
-            workNumber--;
-        } while (workNumber > 0);
-
-        currentCell[c] += targetCell[c];
+            path.push_back('W');
+        }
     }
 
     return path;

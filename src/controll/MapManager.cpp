@@ -104,16 +104,3 @@ void MapManager::setNewMap(int *scale)
         }
     }
 }
-
-int* MapManager::setCurrentCell(int x, int y)
-{
-    this->currentCell[0] = x;
-    this->currentCell[1] = y;
-
-    return this->currentCell;
-}
-
-int* MapManager::getCurrentCell()
-{
-    return this->currentCell;
-}

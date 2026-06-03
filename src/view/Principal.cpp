@@ -38,11 +38,15 @@ void Principal::principalLoop()
         {
             if (method == "Front")
             {
-                motores.lerComandos({'W'});
+                int target[2] = {mapManager.currentCell[0], (mapManager.currentCell[1] + 1)};
+                
+                move(target);
             }
             else if (method == "Bottom")
             {
-                motores.lerComandos({'S'});
+                int target[2] = {mapManager.currentCell[0], (mapManager.currentCell[1] - 1)};
+
+                move(target);
             }
             else if (method == "Left")
             {
@@ -132,8 +136,6 @@ void Principal::principalLoop()
                 demarcacao.recieveingCell[1] = doc["y"];
             }
         }
-
-        serializeJson(payload, Serial);
     }
 }
 
@@ -146,14 +148,9 @@ void Principal::secondaryLoop()
 
 void Principal::received()
 {
-    std::vector<char> path = pathCalc.createPath(mapManager.getCurrentCell(), demarcacao.recieveingCell);
     newItemState = SAeDTransitionNewItem[newItemState];
-    bool resp = motores.lerComandos(path);
-
-    if (resp)
-    {
-        newItemState = SAeDTransitionNewItem[newItemState];
-    }
+    move(demarcacao.recieveingCell);
+    newItemState = SAeDTransitionNewItem[newItemState];
 }
 
 area Principal::analise()
@@ -240,6 +237,7 @@ void Principal::newItemLoopSecondary()
     case SAeDStateNewItem::GetNew:
         break;
     case SAeDStateNewItem::Analise:
+        analise();
         break;
     case SAeDStateNewItem::Stock:
         break;
@@ -273,7 +271,8 @@ void Principal::dispatchLoopSecondary()
 
 void Principal::move(int* end)
 {
-    vector<char> path = pathCalc.createPath(mapManager.getCurrentCell(), end);
+    vector<char> path = pathCalc.createPath(mapManager.currentCell, end);
     motores.lerComandos(path);
-    mapManager.setCurrentCell(end[0], end[1]);
+    mapManager.currentCell[0] = end[0];
+    mapManager.currentCell[1] = end[1];
 }

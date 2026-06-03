@@ -25,7 +25,10 @@ void Motores::turnRight()
 
 void Motores::spin360()
 {
-    rotate(360);
+    rotate(true);
+    rotate(true);
+    rotate(true);
+    rotate(true);
 }
 
 void Motores::moveDistance(bool direction)
@@ -75,7 +78,7 @@ void Motores::rotate(bool direction)
 
     float actualCompass = bussola.collectCompassData();
 
-    while (abs(actualCompass - target) > 3)
+    while (abs(actualCompass - target) > 0)
     {
         actualCompass = bussola.collectCompassData();
         delay(1);
