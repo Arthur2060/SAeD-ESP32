@@ -35,11 +35,11 @@ namespace SAeD
         void analise();
 
         BluetoothSerial BTS;
-        MapManager *mapManager;
+        MapManager *mapManager = new MapManager();
+        Demarcacao *demarcacao = new Demarcacao();
+        PathCalc *pathCalc = new PathCalc();
         Motores *motores;
         ColorDetect *colorDetect;
-        Demarcacao *demarcacao;
-        PathCalc *pathCalc;
         Radar *radar;
         Claw *claw;
 

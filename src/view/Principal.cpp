@@ -13,10 +13,10 @@ Principal::Principal(float cellScale)
 void Principal::begin()
 {
     BTS.begin("SAeD");
-    motores->begin();
     radar->begin();
+    motores->begin();
     colorDetect->begin();
-    claw->begin();
+    claw->home();
 }
 
 void Principal::principalLoop()
@@ -157,22 +157,19 @@ void Principal::received()
 void Principal::analise()
 {
     claw->get();
-    delay(5000);
+    delay(8000);
+    area target;
     for (int c = 0; c < demarcacao->areas.size(); c++)
     {
         area target = demarcacao->areas[c];
 
         if (colorDetect->isThisColor(target.areaColor))
         {
-            int *startCell = demarcacao->areas[c].startCell;
-
-            startCell[0] -= 1;
-            startCell[1] += 1;
-
-            stock(target);
+            area target = demarcacao->areas[c];
         }
-    }
-    (void)0;
+    };
+    delay(12000);
+    stock(target);
 }
 
 void Principal::stock(area area)
@@ -180,6 +177,7 @@ void Principal::stock(area area)
     int target[2] = {area.startCell[0] - 1, area.startCell[1] - 1};
 
     move(target);
+    delay(1000);
     claw->put();
 }
 

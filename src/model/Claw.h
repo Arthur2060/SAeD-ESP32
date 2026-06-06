@@ -11,18 +11,14 @@ namespace SAeD
         public:
             Claw() {}
 
-            void begin() {
-                Serial.begin(115200);
-            }
-
             void home() {
-                Serial1.print(0);
+                Serial.println(0);
             }
             void get() {
-                Serial1.print(1);
+                Serial.println(1);
             }
             void put() {
-                Serial1.print(2);
+                Serial.println(2);
             }
     };
 }
