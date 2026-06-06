@@ -16,57 +16,11 @@
 #include <vector>
 #include <random>
 #include <string>
-#include <map>
 
 namespace SAeD
-{
-    enum class SAeDStateMap
-    {
-        Wait,
-        Mapping,
-        Demarc
-    };
-
-    enum class SAeDStateDispatch
-    {
-        Wait,
-        GetFromStock,
-        Dispatch
-    };
-
-    enum class SAeDStateNewItem
-    {
-        Wait,
-        GetNew,
-        Analise,
-        Stock
-    };
-
-    class Principal
+{    class Principal
     {
     private:
-        std::vector<char> spinCommand = {'R', 'R', 'R'};
-
-        std::map<SAeDStateMap, SAeDStateMap> SAeDTransitionMap = {
-            {SAeDStateMap::Wait, SAeDStateMap::Mapping},
-            {SAeDStateMap::Mapping, SAeDStateMap::Demarc},
-            {SAeDStateMap::Demarc, SAeDStateMap::Wait}};
-
-        std::map<SAeDStateDispatch, SAeDStateDispatch> SAeDTransitionDispatch = {
-            {SAeDStateDispatch::Wait, SAeDStateDispatch::GetFromStock},
-            {SAeDStateDispatch::GetFromStock, SAeDStateDispatch::Dispatch},
-            {SAeDStateDispatch::Dispatch, SAeDStateDispatch::Wait}};
-
-        std::map<SAeDStateNewItem, SAeDStateNewItem> SAeDTransitionNewItem = {
-            {SAeDStateNewItem::Wait, SAeDStateNewItem::GetNew},
-            {SAeDStateNewItem::GetNew, SAeDStateNewItem::Analise},
-            {SAeDStateNewItem::Analise, SAeDStateNewItem::Stock},
-            {SAeDStateNewItem::Stock, SAeDStateNewItem::Wait}};
-
-        SAeDStateDispatch dispatchState = SAeDStateDispatch::Wait;
-        SAeDStateMap mapState = SAeDStateMap::Wait;
-        SAeDStateNewItem newItemState = SAeDStateNewItem::Wait;
-
         const int MAX_NO_OBSTACLE_LIMIT = 3;
         int noObstacleLimit = MAX_NO_OBSTACLE_LIMIT;
 
@@ -103,7 +57,6 @@ namespace SAeD
         void begin();
 
         void principalLoop();
-        void secondaryLoop();
     };
 }
 
