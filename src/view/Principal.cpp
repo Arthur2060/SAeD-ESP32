@@ -3,21 +3,20 @@
 using namespace SAeD;
 using namespace std;
 
-Principal::Principal(int scaleX, int scaleY, float cellScale)
+Principal::Principal(float cellScale)
 {
-    int scale[2] = {scaleX, scaleY};
-    mapManager.setNewMap(scale);
-    mapManager.setDistanciaDeQuadro(cellScale);
-    motores.setCellScale(cellScale);
+    this->motores = new Motores();
+    this->radar = new Radar();
+    this->colorDetect = new ColorDetect();
+    this->claw = new Claw();
 }
-
 void Principal::begin()
 {
     BTS.begin("SAeD");
-    motores.begin();
-    radar.begin();
-    colorDetect.begin();
-    claw.begin();
+    motores->begin();
+    radar->begin();
+    colorDetect->begin();
+    claw->begin();
 }
 
 void Principal::principalLoop()
@@ -39,41 +38,38 @@ void Principal::principalLoop()
         {
             if (method == "Front")
             {
-                int target[2] = {mapManager.currentCell[0], (mapManager.currentCell[1] + 1)};
+                int target[2] = {mapManager->currentCell[0], (mapManager->currentCell[1] + 1)};
 
                 move(target);
             }
             else if (method == "Bottom")
             {
-                int target[2] = {mapManager.currentCell[0], (mapManager.currentCell[1] - 1)};
+                int target[2] = {mapManager->currentCell[0], (mapManager->currentCell[1] - 1)};
 
                 move(target);
             }
             else if (method == "Left")
             {
-                motores.lerComandos({'A'});
+                motores->lerComandos({'A'});
             }
             else if (method == "Right")
             {
-                motores.lerComandos({'D'});
+                motores->lerComandos({'D'});
             }
             else if (method == "Spin")
             {
-                motores.lerComandos({'R'});
+                motores->lerComandos({'R'});
             }
             else if (method == "Start")
             {
-                this->move(demarcacao.startCell);
+                this->move(demarcacao->startCell);
             }
             else if (method == "GET")
             {
-                claw.nextState();
             }
             else if (method == "PUT")
             {
-                claw.nextState();
                 delay(3000);
-                claw.nextState();
             }
         }
         else if (route == "area")
@@ -82,15 +78,15 @@ void Principal::principalLoop()
             {
                 JsonDocument doc;
                 JsonArray array = doc.to<JsonArray>();
-                for (int c = 0; c <= demarcacao.areas.size(); c++)
+                for (int c = 0; c <= demarcacao->areas.size(); c++)
                 {
                     JsonDocument sub;
 
-                    sub["name"] = demarcacao.areas[c].name;
-                    sub["startCellX"] = demarcacao.areas[c].startCell[0];
-                    sub["startCellY"] = demarcacao.areas[c].startCell[1];
-                    sub["endCellX"] = demarcacao.areas[c].endCell[0];
-                    sub["endCellY"] = demarcacao.areas[c].endCell[1];
+                    sub["name"] = demarcacao->areas[c].name;
+                    sub["startCellX"] = demarcacao->areas[c].startCell[0];
+                    sub["startCellY"] = demarcacao->areas[c].startCell[1];
+                    sub["endCellX"] = demarcacao->areas[c].endCell[0];
+                    sub["endCellY"] = demarcacao->areas[c].endCell[1];
 
                     array.add(sub);
                 }
@@ -104,10 +100,10 @@ void Principal::principalLoop()
 
                 string name = doc["name"];
 
-                demarcacao.setNewArea(
+                demarcacao->setNewArea(
                     {doc["initialX"], doc["initialY"]},
                     {doc["finalX"], doc["finalY"]},
-                    colorDetect.defineColor(),
+                    colorDetect->defineColor(),
                     name.c_str());
             }
         }
@@ -121,7 +117,8 @@ void Principal::principalLoop()
                 JsonDocument doc;
                 deserializeJson(doc, body);
 
-                mapManager.setNewMap(doc["scaleX"], doc["scaleY"]);
+                // map PUT received but MapManager no longer holds full map data; ignoring
+                (void)doc;
             }
         }
         else if (route == "receiving")
@@ -129,8 +126,8 @@ void Principal::principalLoop()
             if (method == "GET")
             {
                 JsonDocument doc;
-                doc["receivingX"] = demarcacao.recieveingCell[0];
-                doc["receivingY"] = demarcacao.recieveingCell[1];
+                doc["receivingX"] = demarcacao->recieveingCell[0];
+                doc["receivingY"] = demarcacao->recieveingCell[1];
 
                 serializeJson(doc, BTS);
             }
@@ -143,166 +140,53 @@ void Principal::principalLoop()
                 JsonDocument doc;
                 deserializeJson(doc, body);
 
-                demarcacao.recieveingCell[0] = doc["x"];
-                demarcacao.recieveingCell[1] = doc["y"];
+                demarcacao->recieveingCell[0] = doc["x"];
+                demarcacao->recieveingCell[1] = doc["y"];
             }
         }
     }
 }
 
-void Principal::secondaryLoop()
-{
-    void newItemLoopSecondary();
-    void mapLoopSecondary();
-    void dispatchLoopSecondary();
-}
-
 void Principal::received()
 {
-    newItemState = SAeDTransitionNewItem[newItemState];
-    move(demarcacao.recieveingCell);
-    newItemState = SAeDTransitionNewItem[newItemState];
+    move(demarcacao->recieveingCell);
 }
 
 void Principal::analise()
 {
-    claw.nextState();
-    for (int c = 0; c < demarcacao.areas.size(); c++)
+    for (int c = 0; c < demarcacao->areas.size(); c++)
     {
-        area target = demarcacao.areas[c];
+        area target = demarcacao->areas[c];
 
-        if (colorDetect.isThisColor(target.areaColor))
+        if (colorDetect->isThisColor(target.areaColor))
         {
-            int *startCell = demarcacao.areas[c].startCell;
+            int *startCell = demarcacao->areas[c].startCell;
 
             startCell[0] -= 1;
             startCell[1] += 1;
 
-            newItemState = SAeDTransitionNewItem[newItemState];
             stock(target);
         }
     }
-    newItemState = SAeDTransitionNewItem[newItemState];
-    newItemState = SAeDTransitionNewItem[newItemState];
-    claw.nextState();
+    (void)0;
 }
 
-void Principal::stock(area area) {
+void Principal::stock(area area)
+{
     int target[2] = {area.startCell[0] - 1, area.startCell[1] - 1};
-    
+
     move(target);
-
-    claw.nextState();
-    newItemState = SAeDTransitionNewItem[newItemState];
 }
 
-void Principal::setNewMap(int *dimensions, int *initial)
-{
-    mapManager.setNewMap(dimensions);
-    mapManager.setCurrentCell(initial[0], initial[1]);
-
-    mapState = SAeDStateMap::Mapping;
-}
-
-void Principal::newItemLoopPrimary()
-{
-    switch (newItemState)
-    {
-    case SAeDStateNewItem::Wait:
-        break;
-    case SAeDStateNewItem::GetNew:
-        break;
-    case SAeDStateNewItem::Analise:
-        break;
-    case SAeDStateNewItem::Stock:
-        break;
-    }
-}
-void Principal::mapLoopPrimary()
-{
-    switch (mapState)
-    {
-    case SAeDStateMap::Wait:
-        break;
-    case SAeDStateMap::Mapping:
-        break;
-    case SAeDStateMap::Demarc:
-        break;
-    }
-}
-void Principal::dispatchLoopPrimary()
-{
-    switch (dispatchState)
-    {
-    case SAeDStateDispatch::Wait:
-        break;
-    case SAeDStateDispatch::GetFromStock:
-        break;
-    case SAeDStateDispatch::Dispatch:
-        break;
-    }
-}
-
-void Principal::newItemLoopSecondary()
-{
-
-    switch (newItemState)
-    {
-    case SAeDStateNewItem::Wait:
-        break;
-    case SAeDStateNewItem::GetNew:
-        break;
-    case SAeDStateNewItem::Analise:
-        analise();
-        break;
-    case SAeDStateNewItem::Stock:
-        break;
-    }
-}
-void Principal::mapLoopSecondary()
-{
-    switch (mapState)
-    {
-    case SAeDStateMap::Wait:
-        break;
-    case SAeDStateMap::Mapping:
-        obstacle = radar.getObstacle();
-
-        if (!obstacle[0] && !obstacle[1])
-            return;
-        (!mapManager.addObstacle(obstacle[0], obstacle[1])) ? noObstacleLimit -= 1 : noObstacleLimit = MAX_NO_OBSTACLE_LIMIT;
-        break;
-        break;
-    case SAeDStateMap::Demarc:
-        break;
-    }
-}
-void Principal::dispatchLoopSecondary()
-{
-
-    switch (dispatchState)
-    {
-    case SAeDStateDispatch::Wait:
-        break;
-    case SAeDStateDispatch::GetFromStock:
-        break;
-    case SAeDStateDispatch::Dispatch:
-        break;
-    }
-}
+void Principal::newItemLoopPrimary() {}
+void Principal::mapLoopPrimary() {}
+void Principal::dispatchLoopPrimary() {}
 
 void Principal::move(int *end)
 {
-    if (
-        (mapManager.getMap()[mapManager.currentCell[0] + 1][mapManager.currentCell[1]] && end[0]) > 0 ||
-        (mapManager.getMap()[mapManager.currentCell[0] - 1][mapManager.currentCell[1]] && end[0]) < 0 ||
-        (mapManager.getMap()[mapManager.currentCell[0]][mapManager.currentCell[1] + 1] && end[1]) > 0 ||
-        (mapManager.getMap()[mapManager.currentCell[0]][mapManager.currentCell[1] - 1] && end[1]) < 0)
-    {
-        return;
-    }
-    vector<char> path = pathCalc.createPath(mapManager.currentCell, end);
-    motores.lerComandos(path);
-    mapManager.currentCell[0] = end[0];
-    mapManager.currentCell[1] = end[1];
+    // MapManager no longer holds a full map; assume pathCalc handles validity
+    vector<char> path = pathCalc->createPath(mapManager->currentCell, end);
+    motores->lerComandos(path);
+    mapManager->currentCell[0] = end[0];
+    mapManager->currentCell[1] = end[1];
 }

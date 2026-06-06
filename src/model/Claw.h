@@ -2,42 +2,22 @@
 #define CLAW_H
 
 #include <Arduino.h>
-#include <map>
 
-#define TX_PIN 1
-#define RX_PIN 3
+using namespace std;
 
 namespace SAeD
 {
+    class Claw {
+        public:
+            Claw() {}
 
-    enum class ClawState
-    {
-        IDLE,
-        GET,
-        PUT
-    };
+            void begin() {
+                Serial.begin(115200);
+            }
 
-    class Claw
-    {
-    private:
-        HardwareSerial serial = Serial1;
-        ClawState currentState = ClawState::IDLE;
-
-        std::map<ClawState, int> clawCurrentState = {
-            {ClawState::IDLE, 0},
-            {ClawState::GET, 1},
-            {ClawState::PUT, 2}};
-
-        std::map<ClawState, ClawState> clawStateMachine = {
-            {ClawState::IDLE, ClawState::GET},
-            {ClawState::GET, ClawState::PUT},
-            {ClawState::PUT, ClawState::IDLE}};
-
-    public:
-        Claw();
-        void begin();
-
-        void nextState();
+            void home() {
+                Serial1.write(0);
+            }
     };
 }
 

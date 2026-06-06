@@ -5,60 +5,18 @@ using namespace std;
 
 MapManager::MapManager()
 {
-    this->distanciaDeQuadro = 0.3;
     this->currentCell[0] = 0;
     this->currentCell[1] = 0;
 }
-
-MapManager::MapManager(float distanciaDeQuadro)
+bool MapManager::addObstacle(int x, int y)
 {
-    this->distanciaDeQuadro = distanciaDeQuadro;
-    this->currentCell[0] = 0;
-    this->currentCell[1] = 0;
-}
-
-float MapManager::getDistanciaDeQuadro()
-{
-    return distanciaDeQuadro;
-}
-
-float MapManager::setDistanciaDeQuadro(float distancia)
-{
-    if (distancia > 0)
+    // store obstacles in a simple vector; check for duplicates
+    for (int i = 0; i < obstacles.size(); ++i)
     {
-        this->distanciaDeQuadro = distancia;
+        if (obstacles[i][0] == x && obstacles[i][1] == y)
+            return false;
     }
 
-    return this->distanciaDeQuadro;
-}
-
-bool MapManager::addObstacle(float distanceX, float distanceY)
-{
-    float x = this->currentCell[0] + (distanceX / distanciaDeQuadro);
-    float y = this->currentCell[1] + (distanceY / distanciaDeQuadro);
-
-    auto isNew = [this](int x, int y)
-    {
-        for (int c = 0; c < obstacles.size(); c++)
-        {
-            if (obstacles[c][0] == x && obstacles[c][1] == y)
-            {
-                return false;
-            }
-        }
-
-        return true;
-    };
-
-    if (isNew(x, y))
-    {
-        obstacles.push_back(new int[2]{(int)x, (int)y});
-        return true;
-    }
-
-    return false;
-}
-
-vector<int *> MapManager::getObstacles() {
-    return obstacles;
+    obstacles.push_back(new int[2]{x, y});
+    return true;
 }

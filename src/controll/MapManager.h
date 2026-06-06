@@ -10,21 +10,15 @@ namespace SAeD
     class MapManager
     {
     private:
-        float distanciaDeQuadro = 0.3f;
+        std::vector<int *> obstacles;
 
     public:
-        vector<int *> obstacles;
         int currentCell[2];
 
         MapManager();
-        MapManager(float distanciaDeQuadro);
 
-        float getDistanciaDeQuadro();
-        float setDistanciaDeQuadro(float distancia);
-
-        vector<int *> getObstacles();
-
-        bool addObstacle(float distanceX, float distanceY);
+        // Add an obstacle at cell coordinates (x,y). Returns true if added (was new).
+        bool addObstacle(int x, int y);
     };
 }
 

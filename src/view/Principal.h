@@ -18,41 +18,33 @@
 #include <string>
 
 namespace SAeD
-{    class Principal
+{
+    class Principal
     {
     private:
         const int MAX_NO_OBSTACLE_LIMIT = 3;
         int noObstacleLimit = MAX_NO_OBSTACLE_LIMIT;
 
-        double currentOdometri;
-
-        std::vector<double> obstacle = {};
-
         void newItemLoopPrimary();
         void mapLoopPrimary();
         void dispatchLoopPrimary();
 
-        void newItemLoopSecondary();
-        void mapLoopSecondary();
-        void dispatchLoopSecondary();
-
-        void setNewMap(int *dimensions, int *initial);
         void received();
         void stock(area area);
         void move(int *end);
         void analise();
 
         BluetoothSerial BTS;
-        MapManager mapManager;
-        Motores motores;
-        ColorDetect colorDetect;
-        Demarcacao demarcacao;
-        PathCalc pathCalc;
-        Radar radar;
-        Claw claw;
+        MapManager *mapManager;
+        Motores *motores;
+        ColorDetect *colorDetect;
+        Demarcacao *demarcacao;
+        PathCalc *pathCalc;
+        Radar *radar;
+        Claw *claw;
 
     public:
-        Principal(int scaleX, int scaleY, float cellScale);
+        Principal(float cellScale);
 
         void begin();
 
