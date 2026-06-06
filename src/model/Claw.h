@@ -16,7 +16,13 @@ namespace SAeD
             }
 
             void home() {
-                Serial1.write(0);
+                Serial1.print(0);
+            }
+            void get() {
+                Serial1.print(1);
+            }
+            void put() {
+                Serial1.print(2);
             }
     };
 }

@@ -66,10 +66,11 @@ void Principal::principalLoop()
             }
             else if (method == "GET")
             {
+                this->claw->get();
             }
             else if (method == "PUT")
             {
-                delay(3000);
+                this->claw->put();
             }
         }
         else if (route == "area")
@@ -150,10 +151,13 @@ void Principal::principalLoop()
 void Principal::received()
 {
     move(demarcacao->recieveingCell);
+    analise();
 }
 
 void Principal::analise()
 {
+    claw->get();
+    delay(5000);
     for (int c = 0; c < demarcacao->areas.size(); c++)
     {
         area target = demarcacao->areas[c];
@@ -176,6 +180,7 @@ void Principal::stock(area area)
     int target[2] = {area.startCell[0] - 1, area.startCell[1] - 1};
 
     move(target);
+    claw->put();
 }
 
 void Principal::newItemLoopPrimary() {}
