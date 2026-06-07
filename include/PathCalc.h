@@ -9,9 +9,8 @@ namespace SAeD
     class PathCalc
     {
     private:
-
     public:
-        std::vector<char> createPath(int* currentCell, int* targetCell);
+        std::vector<char> createPath(int *currentCell, int *targetCell);
     };
 }
 

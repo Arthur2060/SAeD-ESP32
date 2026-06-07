@@ -4,7 +4,7 @@
 #include <vector>
 #include <stdint.h>
 
-#include "model/ColorDetect.h"
+#include "ColorDetect.h"
 
 namespace SAeD
 {
@@ -27,7 +27,7 @@ namespace SAeD
         Demarcacao();
         Demarcacao(int rc1, int rc2);
 
-        void setNewArea(std::vector<uint16_t> initialCell, std::vector<uint16_t> finalCell, color color, const char * name);
+        void setNewArea(std::vector<uint16_t> initialCell, std::vector<uint16_t> finalCell, color color, const char *name);
 
         area getArea(char *name);
         area getCellArea(int *cellLocation);

@@ -30,10 +30,11 @@ namespace SAeD
 
     public:
         void begin();
-
         std::vector<uint> detectColors();
         bool isThisColor(color color);
         color defineColor();
+        void calibrate();
     };
 }
+
 #endif

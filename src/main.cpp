@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "view/Principal.h"
+#include "Principal.h"
 
 using namespace SAeD;
 

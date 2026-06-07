@@ -1,14 +1,14 @@
 #ifndef SAED_H
 #define SAED_H
 
-#include "model/ColorDetect.h"
-#include "model/Claw.h"
+#include "ColorDetect.h"
+#include "Claw.h"
 
-#include "controll/Motores.h"
-#include "controll/MapManager.h"
-#include "controll/PathCalc.h"
-#include "controll/Demarcacao.h"
-#include "controll/Radar.h"
+#include "Motores.h"
+#include "MapManager.h"
+#include "PathCalc.h"
+#include "Demarcacao.h"
+#include "Radar.h"
 
 #include "BluetoothSerial.h"
 #include "ArduinoJson.h"

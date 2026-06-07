@@ -1,8 +1,8 @@
 #ifndef RADAR_H
 #define RADAR_H
 
-#include "model/Bussola.h"
-#include "model/Ultrasom.h"
+#include "Bussola.h"
+#include "Ultrasom.h"
 #include <vector>
 #include <cmath>
 

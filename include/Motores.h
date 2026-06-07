@@ -1,7 +1,7 @@
 #ifndef MOTORES_H
 #define MOTORES_H
 
-#include "model/Bussola.h"
+#include "Bussola.h"
 
 #include <Arduino.h>
 #include <ESP32Encoder.h>
@@ -97,12 +97,11 @@ namespace SAeD
 
     public:
         Motores();
-        void begin();
-        bool lerComandos(std::vector<char> commands);
-        void setSpeed(int newSpeed);
         void setCellScale(float cellScale);
+        void begin();
+        bool lerComandos(std::vector<char> comandos);
+        void setSpeed(int newSpeed);
     };
-
 }
 
 #endif
