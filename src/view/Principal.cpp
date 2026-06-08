@@ -16,7 +16,7 @@ void Principal::begin()
     radar->begin();
     motores->begin();
     colorDetect->begin();
-    claw->home();
+    claw->idle();
 }
 
 void Principal::principalLoop()
@@ -74,7 +74,7 @@ void Principal::principalLoop()
             }
             else if (method == "IDLE")
             {
-                this->claw->home();
+                this->claw->idle();
             }
         }
         else if (route == "area")
