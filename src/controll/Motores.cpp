@@ -10,7 +10,8 @@ void Motores::moveForward()
 
 void Motores::moveBackward()
 {
-    moveDistance(false);
+    rotate(true);
+    rotate(true);
 }
 
 void Motores::turnLeft()
@@ -75,11 +76,17 @@ void Motores::rotate(bool direction)
     ledcWrite(left.PWM_PIN, 255);
     ledcWrite(right.PWM_PIN, 255);
 
-    float actualCompass = bussola.collectCompassData();
+    float accumulator = 0;
+    float lastCompass = bussola.collectCompassData();
 
-    while (abs(actualCompass - target) > 1)
+    while (accumulator < 90);
     {
-        actualCompass = bussola.collectCompassData();
+        float currentCompass = bussola.collectCompassData();
+
+        if (lastCompass != currentCompass) {
+            accumulator = abs(lastCompass - currentCompass);
+        }
+
         delay(1);
     }
 
