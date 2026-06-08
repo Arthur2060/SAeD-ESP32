@@ -10,6 +10,7 @@ namespace SAeD
     {
     private:
         QMC5883LCompass compass;
+        float rawTo360(float raw);
 
     public:
         bool begin();
