@@ -14,15 +14,15 @@ namespace SAeD
 
         void home()
         {
-            Serial.println(0);
+            Serial.println("0");
         }
         void get()
         {
-            Serial.println(1);
+            Serial.println("1");
         }
         void put()
         {
-            Serial.println(2);
+            Serial.println("2");
         }
     };
 }

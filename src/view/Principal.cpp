@@ -72,6 +72,10 @@ void Principal::principalLoop()
             {
                 this->claw->put();
             }
+            else if (method == "IDLE")
+            {
+                this->claw->home();
+            }
         }
         else if (route == "area")
         {
@@ -177,7 +181,6 @@ void Principal::stock(area area)
     int target[2] = {area.startCell[0] - 1, area.startCell[1] - 1};
 
     move(target);
-    delay(1000);
     claw->put();
 }
 
