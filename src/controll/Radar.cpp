@@ -27,33 +27,17 @@ std::vector<double> Radar::getObstacle()
     double distance = ultrasom.collectUltrasonicData();
     int angle = bussola.collectCompassData();
 
-    if (distance >= 300)
-    {
-        return {0, 0};
-    }
-
     return {distance * sin(angle), distance * cos(angle)};
 }
 
 std::vector<double> Radar::getObstacle(double distance, int angle)
 {
-
-    if (distance >= 300)
-    {
-        return {0, 0};
-    }
-
     return {(distance * sin(angle)), (distance * cos(angle))};
 }
 
 std::vector<double> Radar::getObstacle(int angle)
 {
     double distance = 3.65 * ultrasom.collectUltrasonicData();
-
-    if (distance >= 300)
-    {
-        return {0, 0};
-    }
 
     return {distance * sin(angle), distance * cos(angle)};
 }
