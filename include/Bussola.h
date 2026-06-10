@@ -14,7 +14,7 @@ namespace SAeD
 
     public:
         bool begin();
-        float collectCompassData();
+        int collectCompassData();
     };
 }
 #endif
