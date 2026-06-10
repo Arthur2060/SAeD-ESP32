@@ -5,7 +5,7 @@ using namespace std;
 
 void Motores::moveForward()
 {
-    moveDistance(true);
+    moveDistance();
 }
 
 void Motores::moveBackward()
@@ -32,18 +32,10 @@ void Motores::spin360()
     rotate(true);
 }
 
-void Motores::moveDistance(bool direction)
+void Motores::moveDistance()
 {
-    if (direction)
-    {
-        setMotorDirection(left.IN1_PIN, left.IN2_PIN, false); // Trás
-        setMotorDirection(right.IN1_PIN, right.IN2_PIN, false);
-    }
-    else
-    {
-        setMotorDirection(right.IN1_PIN, right.IN2_PIN, true);
-        setMotorDirection(left.IN1_PIN, left.IN2_PIN, true); // Frente
-    }
+    setMotorDirection(right.IN1_PIN, right.IN2_PIN, true);
+    setMotorDirection(left.IN1_PIN, left.IN2_PIN, true);
 
     ledcWrite(left.PWM_PIN, 255);
     ledcWrite(right.PWM_PIN, 255);
@@ -61,37 +53,20 @@ void Motores::rotate(bool direction)
         // Giro para a esquerda: roda esquerda para trás, roda direita para frente
         setMotorDirection(left.IN1_PIN, left.IN2_PIN, false);
         setMotorDirection(right.IN1_PIN, right.IN2_PIN, true);
-
-        target = selectEquivalentAngle[selectNextAngle[currentDegrees]];
     }
     else
     {
         // Giro para a direita: roda esquerda para frente, roda direita para trás
         setMotorDirection(left.IN1_PIN, left.IN2_PIN, true);
         setMotorDirection(right.IN1_PIN, right.IN2_PIN, false);
-
-        target = selectEquivalentAngle[selectPreviousAngle[currentDegrees]];
     }
 
     ledcWrite(left.PWM_PIN, 255);
     ledcWrite(right.PWM_PIN, 255);
 
-    float accumulator = 0;
-    float lastCompass = bussola.collectCompassData();
-
-    while (accumulator < 90);
-    {
-        float currentCompass = bussola.collectCompassData();
-
-        if (lastCompass != currentCompass) {
-            accumulator = abs(lastCompass - currentCompass);
-        }
-
-        delay(1);
-    }
+    delay(TOTAL_SPIN_DELAY / 4);
 
     stopMotors();
-    currentDegrees = selectCurrentAngle[target];
 }
 
 void Motores::setMotorDirection(int in1, int in2, bool direction)
@@ -149,10 +124,6 @@ void Motores::begin()
     encoderLeft.setCount(0);
     encoderRight.setCount(0);
 
-    setMotorDirection(left.IN1_PIN, left.IN2_PIN, false);
-    setMotorDirection(right.IN1_PIN, right.IN2_PIN, true);
-
-    correctOrientation();
     stopMotors();
 }
 
@@ -192,22 +163,4 @@ void Motores::setSpeed(int newSpeed)
     {
         currentSpeed = newSpeed;
     }
-}
-
-void Motores::setCellScale(float cellScale)
-{
-    this->cellScale = cellScale;
-}
-
-void Motores::correctOrientation()
-{
-    ledcWrite(left.PWM_PIN, 255);
-    ledcWrite(right.PWM_PIN, 255);
-
-    while (bussola.collectCompassData() != selectEquivalentAngle[currentDegrees])
-    {
-        delay(10);
-    }
-
-    stopMotors();
 }
