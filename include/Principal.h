@@ -6,7 +6,6 @@
 
 #include "Motores.h"
 #include "MapManager.h"
-#include "PathCalc.h"
 #include "Demarcacao.h"
 #include "Radar.h"
 
@@ -35,13 +34,12 @@ namespace SAeD
         void analise();
 
         BluetoothSerial BTS;
-        MapManager *mapManager = new MapManager();
-        Demarcacao *demarcacao = new Demarcacao();
-        PathCalc *pathCalc = new PathCalc();
-        Motores *motores;
-        ColorDetect *colorDetect;
-        Radar *radar;
-        Claw *claw;
+        MapManager mapManager;
+        Demarcacao demarcacao;
+        Motores motores;
+        ColorDetect colorDetect;
+        Radar radar;
+        Claw claw;
 
     public:
         Principal(float cellScale);

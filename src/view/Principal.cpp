@@ -5,18 +5,15 @@ using namespace std;
 
 Principal::Principal(float cellScale)
 {
-    this->motores = new Motores();
-    this->radar = new Radar();
-    this->colorDetect = new ColorDetect();
-    this->claw = new Claw();
+    this->mapManager.setCellScale(cellScale);
 }
 void Principal::begin()
 {
     BTS.begin("SAeD");
-    radar->begin();
-    motores->begin();
-    colorDetect->begin();
-    claw->idle();
+    radar.begin();
+    motores.begin();
+    colorDetect.begin();
+    claw.idle();
 }
 
 void Principal::principalLoop()
@@ -38,43 +35,43 @@ void Principal::principalLoop()
         {
             if (method == "Front")
             {
-                int target[2] = {mapManager->currentCell[0], (mapManager->currentCell[1] + 1)};
+                int target[2] = {mapManager.currentCell[0], (mapManager.currentCell[1] + 1)};
 
                 move(target);
             }
             else if (method == "Bottom")
             {
-                int target[2] = {mapManager->currentCell[0], (mapManager->currentCell[1] - 1)};
+                int target[2] = {mapManager.currentCell[0], (mapManager.currentCell[1] - 1)};
 
                 move(target);
             }
             else if (method == "Left")
             {
-                motores->lerComandos({'A'});
+                motores.lerComandos({'A'});
             }
             else if (method == "Right")
             {
-                motores->lerComandos({'D'});
+                motores.lerComandos({'D'});
             }
             else if (method == "Spin")
             {
-                motores->lerComandos({'R'});
+                motores.lerComandos({'R'});
             }
             else if (method == "Start")
             {
-                this->move(demarcacao->startCell);
+                move(demarcacao.startCell);
             }
             else if (method == "GET")
             {
-                this->claw->get();
+                claw.get();
             }
             else if (method == "PUT")
             {
-                this->claw->put();
+                claw.put();
             }
             else if (method == "IDLE")
             {
-                this->claw->idle();
+                claw.idle();
             }
         }
         else if (route == "area")
@@ -83,15 +80,15 @@ void Principal::principalLoop()
             {
                 JsonDocument doc;
                 JsonArray array = doc.to<JsonArray>();
-                for (int c = 0; c <= demarcacao->areas.size(); c++)
+                for (int c = 0; c <= demarcacao.areas.size(); c++)
                 {
                     JsonDocument sub;
 
-                    sub["name"] = demarcacao->areas[c].name;
-                    sub["startCellX"] = demarcacao->areas[c].startCell[0];
-                    sub["startCellY"] = demarcacao->areas[c].startCell[1];
-                    sub["endCellX"] = demarcacao->areas[c].endCell[0];
-                    sub["endCellY"] = demarcacao->areas[c].endCell[1];
+                    sub["name"] = demarcacao.areas[c].name;
+                    sub["startCellX"] = demarcacao.areas[c].startCell[0];
+                    sub["startCellY"] = demarcacao.areas[c].startCell[1];
+                    sub["endCellX"] = demarcacao.areas[c].endCell[0];
+                    sub["endCellY"] = demarcacao.areas[c].endCell[1];
 
                     array.add(sub);
                 }
@@ -105,10 +102,10 @@ void Principal::principalLoop()
 
                 string name = doc["name"];
 
-                demarcacao->setNewArea(
+                demarcacao.setNewArea(
                     {doc["initialX"], doc["initialY"]},
                     {doc["finalX"], doc["finalY"]},
-                    colorDetect->defineColor(),
+                    colorDetect.defineColor(),
                     name.c_str());
             }
         }
@@ -131,8 +128,8 @@ void Principal::principalLoop()
             if (method == "GET")
             {
                 JsonDocument doc;
-                doc["receivingX"] = demarcacao->recieveingCell[0];
-                doc["receivingY"] = demarcacao->recieveingCell[1];
+                doc["receivingX"] = demarcacao.recieveingCell[0];
+                doc["receivingY"] = demarcacao.recieveingCell[1];
 
                 serializeJson(doc, BTS);
             }
@@ -145,8 +142,8 @@ void Principal::principalLoop()
                 JsonDocument doc;
                 deserializeJson(doc, body);
 
-                demarcacao->recieveingCell[0] = doc["x"];
-                demarcacao->recieveingCell[1] = doc["y"];
+                demarcacao.recieveingCell[0] = doc["x"];
+                demarcacao.recieveingCell[1] = doc["y"];
             }
         }
     }
@@ -154,22 +151,22 @@ void Principal::principalLoop()
 
 void Principal::received()
 {
-    move(demarcacao->recieveingCell);
+    move(demarcacao.recieveingCell);
     analise();
 }
 
 void Principal::analise()
 {
-    claw->get();
+    claw.get();
     delay(8000);
     area target;
-    for (int c = 0; c < demarcacao->areas.size(); c++)
+    for (int c = 0; c < demarcacao.areas.size(); c++)
     {
-        area target = demarcacao->areas[c];
+        area target = demarcacao.areas[c];
 
-        if (colorDetect->isThisColor(target.areaColor))
+        if (colorDetect.isThisColor(target.areaColor))
         {
-            area target = demarcacao->areas[c];
+            area target = demarcacao.areas[c];
         }
     };
     delay(12000);
@@ -181,7 +178,7 @@ void Principal::stock(area area)
     int target[2] = {area.startCell[0] - 1, area.startCell[1] - 1};
 
     move(target);
-    claw->put();
+    claw.put();
 }
 
 void Principal::newItemLoopPrimary() {}
@@ -191,8 +188,8 @@ void Principal::dispatchLoopPrimary() {}
 void Principal::move(int *end)
 {
     // MapManager no longer holds a full map; assume pathCalc handles validity
-    vector<char> path = pathCalc->createPath(mapManager->currentCell, end);
-    motores->lerComandos(path);
-    mapManager->currentCell[0] = end[0];
-    mapManager->currentCell[1] = end[1];
+    vector<char> path = mapManager.createPath(end);
+    motores.lerComandos(path);
+    mapManager.currentCell[0] = end[0];
+    mapManager.currentCell[1] = end[1];
 }
