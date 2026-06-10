@@ -20,3 +20,48 @@ bool MapManager::addObstacle(int x, int y)
     obstacles.push_back(new int[2]{x, y});
     return true;
 }
+
+
+vector<char> MapManager::createPath(int *targetCell)
+{
+    int diference[2] = {currentCell[0] - targetCell[0], currentCell[1] - targetCell[1]};
+    vector<char> path;
+
+    if (diference[1] < 0)
+    {
+        for (int c2 = 0; c2 <= diference[0]; c2++)
+        {
+            path.push_back('W');
+        }
+    }
+    else
+    {
+        path.push_back('S');
+        for (int c2 = diference[0]; c2 < 0; c2++)
+        {
+            path.push_back('W');
+        }
+    }
+    if (diference[0] > 0)
+    {
+        path.push_back('D');
+        for (int c2 = 0; c2 <= diference[0]; c2++)
+        {
+            path.push_back('W');
+        }
+    }
+    else if (diference[0] < 0)
+    {
+        path.push_back('A');
+        for (int c2 = diference[0]; c2 <= 0; c2++)
+        {
+            path.push_back('W');
+        }
+    }
+
+    return path;
+}
+
+void MapManager::setCellScale(float cellScale) {
+    this->cellScale = cellScale;
+}

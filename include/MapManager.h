@@ -11,6 +11,7 @@ namespace SAeD
     {
     private:
         std::vector<int *> obstacles;
+        float cellScale = 0.21;
 
     public:
         int currentCell[2];
@@ -19,6 +20,8 @@ namespace SAeD
 
         // Add an obstacle at cell coordinates (x,y). Returns true if added (was new).
         bool addObstacle(int x, int y);
+        vector<char> createPath(int *end);
+        void setCellScale(float cellScale);
     };
 }
 
