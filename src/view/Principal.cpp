@@ -18,10 +18,6 @@ void Principal::begin()
 
 void Principal::principalLoop()
 {
-    void newItemLoopPrimary();
-    void mapLoopPrimary();
-    void dispatchLoopPrimary();
-
     if (BTS.available() > 0)
     {
         JsonDocument payload;
@@ -147,6 +143,14 @@ void Principal::principalLoop()
             }
         }
     }
+
+    JsonDocument log;
+
+    log["route"] = "log";
+    log["method"] = "POST";
+    log["body"] = "( distance; 1 - angle; 1 )";
+
+    serializeJson(log, BTS);
 }
 
 void Principal::received()
