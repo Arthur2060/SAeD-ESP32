@@ -5,13 +5,12 @@ using namespace std;
 
 void Motores::moveForward()
 {
-    moveDistance();
+    moveDistance(true);
 }
 
 void Motores::moveBackward()
 {
-    rotate(true);
-    rotate(true);
+    moveDistance(false);
 }
 
 void Motores::turnLeft()
@@ -28,15 +27,20 @@ void Motores::spin360()
 {
     rotate(true);
     rotate(true);
-    rotate(true);
-    rotate(true);
 }
 
-void Motores::moveDistance()
+void Motores::moveDistance(bool front)
 {
-    setMotorDirection(right.IN1_PIN, right.IN2_PIN, true);
-    setMotorDirection(left.IN1_PIN, left.IN2_PIN, true);
-
+    if (front)
+    {
+        setMotorDirection(right.IN1_PIN, right.IN2_PIN, true);
+        setMotorDirection(left.IN1_PIN, left.IN2_PIN, true);
+    }
+    else
+    {
+        setMotorDirection(right.IN1_PIN, right.IN2_PIN, false);
+        setMotorDirection(left.IN1_PIN, left.IN2_PIN, false);
+    }
     ledcWrite(left.PWM_PIN, 255);
     ledcWrite(right.PWM_PIN, 255);
 

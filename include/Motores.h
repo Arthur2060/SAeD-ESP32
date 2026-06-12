@@ -43,7 +43,7 @@ namespace SAeD
         void turnRight();
         void spin360();
 
-        void moveDistance();
+        void moveDistance(bool front);
         void rotate(bool direction);
         void setMotorDirection(int in1, int in2, bool direction);
         void stopMotors();
