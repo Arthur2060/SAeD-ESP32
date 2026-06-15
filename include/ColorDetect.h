@@ -2,7 +2,6 @@
 #define COLOR_H
 
 #include "Arduino.h"
-#include "vector"
 
 // Pinos de conexao do modulo
 #define pinS0 18
@@ -30,7 +29,7 @@ namespace SAeD
 
     public:
         void begin();
-        std::vector<uint> detectColors();
+        uint* detectColors();
         bool isThisColor(color color);
         color defineColor();
         void calibrate();

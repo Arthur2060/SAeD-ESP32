@@ -15,7 +15,7 @@ void ColorDetect::begin()
     digitalWrite(pinS1, LOW);
 }
 
-std::vector<uint> ColorDetect::detectColors()
+uint* ColorDetect::detectColors()
 {
     digitalWrite(pinS2, LOW);
     digitalWrite(pinS3, LOW);
@@ -27,7 +27,11 @@ std::vector<uint> ColorDetect::detectColors()
     digitalWrite(pinS2, LOW);
     digitalWrite(pinS3, HIGH);
     B = pulseIn(pinOut, digitalRead(pinOut) == HIGH ? LOW : HIGH);
-    return {R, G, B};
+
+    uint result[3] = {R, G, B};
+
+    return result;
+    delete[] result;
 }
 
 bool ColorDetect::isThisColor(color color)

@@ -72,6 +72,7 @@ area Demarcacao::getArea(char *name)
         }
     }
 
+    delete[] name;
     return target;
 }
 
@@ -91,6 +92,7 @@ area Demarcacao::getCellArea(int *cellLocation)
         }
     }
 
+    delete[] cellLocation;
     return target;
 }
 

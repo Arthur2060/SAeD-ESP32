@@ -4,10 +4,6 @@
 #include "Bussola.h"
 
 #include <Arduino.h>
-#include <ESP32Encoder.h>
-#include <vector>
-#include <map>
-#include <string>
 
 namespace SAeD
 {
@@ -27,10 +23,6 @@ namespace SAeD
         Motor left, right;
 
         Bussola bussola;
-
-        // Encoders
-        ESP32Encoder encoderLeft;
-        ESP32Encoder encoderRight;
 
         const int ONE_METER_DELAY = 4500;
         const int TOTAL_SPIN_DELAY = 8000;
@@ -53,7 +45,7 @@ namespace SAeD
         Motores();
         void setCellScale(float cellScale);
         void begin();
-        bool lerComandos(std::vector<char> comandos);
+        bool lerComandos(char* comandos);
         void setSpeed(int newSpeed);
     };
 }

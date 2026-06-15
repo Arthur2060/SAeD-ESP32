@@ -43,15 +43,18 @@ void Principal::principalLoop()
             }
             else if (method == "Left")
             {
-                motores.lerComandos({'A'});
+                char command[1] = {'A'};
+                motores.lerComandos(command);
             }
             else if (method == "Right")
             {
-                motores.lerComandos({'D'});
+                char command[1] = {'D'};
+                motores.lerComandos(command);
             }
             else if (method == "Spin")
             {
-                motores.lerComandos({'R'});
+                char command[1] = {'R'};
+                motores.lerComandos(command);
             }
             else if (method == "Start")
             {
@@ -105,20 +108,6 @@ void Principal::principalLoop()
                     name.c_str());
             }
         }
-        else if (route == "map")
-        {
-            if (method == "GET")
-            {
-            }
-            else if (method == "PUT")
-            {
-                JsonDocument doc;
-                deserializeJson(doc, body);
-
-                // map PUT received but MapManager no longer holds full map data; ignoring
-                (void)doc;
-            }
-        }
         else if (route == "receiving")
         {
             if (method == "GET")
@@ -143,14 +132,6 @@ void Principal::principalLoop()
             }
         }
     }
-
-    JsonDocument log;
-
-    log["route"] = "log";
-    log["method"] = "POST";
-    log["body"] = "( distance; 1 - angle; 1 )";
-
-    serializeJson(log, BTS);
 }
 
 void Principal::received()
@@ -191,9 +172,9 @@ void Principal::dispatchLoopPrimary() {}
 
 void Principal::move(int *end)
 {
-    // MapManager no longer holds a full map; assume pathCalc handles validity
-    vector<char> path = mapManager.createPath(end);
+    char* path = mapManager.createPath(end);
     motores.lerComandos(path);
     mapManager.currentCell[0] = end[0];
     mapManager.currentCell[1] = end[1];
+    delete end;
 }

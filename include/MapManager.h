@@ -1,6 +1,7 @@
 #ifndef MAP_MANAGER_H
 #define MAP_MANAGER_H
 
+#include <cmath>
 #include <vector>
 
 using namespace std;
@@ -20,7 +21,7 @@ namespace SAeD
 
         // Add an obstacle at cell coordinates (x,y). Returns true if added (was new).
         bool addObstacle(int x, int y);
-        vector<char> createPath(int *end);
+        char* createPath(int *end);
         void setCellScale(float cellScale);
     };
 }

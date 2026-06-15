@@ -14,30 +14,42 @@ void Radar::begin(int trigger, int echo)
     ultrasom.begin(trigger, echo);
 }
 
-std::vector<double> Radar::getRawSensors()
+double *Radar::getRawSensors()
 {
     double distance = 3.65 * ultrasom.collectUltrasonicData();
     double angle = bussola.collectCompassData();
 
-    return {distance, angle};
+    double result[2] = {distance, angle};
+
+    return result;
+    delete[] result;
 }
 
-std::vector<double> Radar::getObstacle()
+double *Radar::getObstacle()
 {
     double distance = ultrasom.collectUltrasonicData();
     int angle = bussola.collectCompassData();
 
-    return {distance * sin(angle), distance * cos(angle)};
+    double result[2] = {distance * sin(angle), distance * cos(angle)};
+
+    return result;
+    delete[] result;
 }
 
-std::vector<double> Radar::getObstacle(double distance, int angle)
+double *Radar::getObstacle(double distance, int angle)
 {
-    return {(distance * sin(angle)), (distance * cos(angle))};
+    double result[2] = {(distance * sin(angle)), (distance * cos(angle))};
+
+    return result;
+    delete[] result;
 }
 
-std::vector<double> Radar::getObstacle(int angle)
+double *Radar::getObstacle(int angle)
 {
     double distance = 3.65 * ultrasom.collectUltrasonicData();
 
-    return {distance * sin(angle), distance * cos(angle)};
+    double result[2] = {distance * sin(angle), distance * cos(angle)};
+
+    return result;
+    delete[] result;
 }

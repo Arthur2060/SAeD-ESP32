@@ -122,18 +122,12 @@ void Motores::begin()
     pinMode(right.IN1_PIN, OUTPUT);
     pinMode(right.IN2_PIN, OUTPUT);
 
-    encoderLeft.attachHalfQuad(left.ENC_PIN_1, left.ENC_PIN_2);
-    encoderRight.attachHalfQuad(right.ENC_PIN_1, right.ENC_PIN_2);
-
-    encoderLeft.setCount(0);
-    encoderRight.setCount(0);
-
     stopMotors();
 }
 
-bool Motores::lerComandos(std::vector<char> commands)
+bool Motores::lerComandos(char* commands)
 {
-    for (int c = 0; c < commands.size(); c++)
+    for (int c = 0; c < sizeof(commands) / sizeof(commands[0]); c++)
     {
         switch (commands[c])
         {
@@ -157,6 +151,7 @@ bool Motores::lerComandos(std::vector<char> commands)
             return false;
         }
     }
+    delete[] commands;
 
     return true;
 }
