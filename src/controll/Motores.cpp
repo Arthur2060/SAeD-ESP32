@@ -3,32 +3,6 @@
 using namespace SAeD;
 using namespace std;
 
-void Motores::moveForward()
-{
-    moveDistance(true);
-}
-
-void Motores::moveBackward()
-{
-    moveDistance(false);
-}
-
-void Motores::turnLeft()
-{
-    rotate(true);
-}
-
-void Motores::turnRight()
-{
-    rotate(false);
-}
-
-void Motores::spin360()
-{
-    rotate(true);
-    rotate(true);
-}
-
 void Motores::moveDistance(bool front)
 {
     if (front)
@@ -54,7 +28,6 @@ void Motores::rotate(bool direction)
     float target;
     if (direction)
     {
-        // Giro para a esquerda: roda esquerda para trás, roda direita para frente
         setMotorDirection(left.IN1_PIN, left.IN2_PIN, false);
         setMotorDirection(right.IN1_PIN, right.IN2_PIN, true);
     }
@@ -68,7 +41,7 @@ void Motores::rotate(bool direction)
     ledcWrite(left.PWM_PIN, 255);
     ledcWrite(right.PWM_PIN, 255);
 
-    delay(TOTAL_SPIN_DELAY / 4);
+    delay(2000);
 
     stopMotors();
 }
@@ -125,26 +98,27 @@ void Motores::begin()
     stopMotors();
 }
 
-bool Motores::lerComandos(char* commands)
+bool Motores::lerComandos(char *commands)
 {
     for (int c = 0; c < sizeof(commands) / sizeof(commands[0]); c++)
     {
         switch (commands[c])
         {
         case 'W':
-            moveForward();
+            moveDistance(true);
             break;
         case 'S':
-            moveBackward();
+            moveDistance(false);
             break;
         case 'A':
-            turnRight();
+            rotate(true);
             break;
         case 'D':
-            turnLeft();
+            rotate(false);
             break;
         case 'R':
-            spin360();
+            rotate(true);
+            rotate(true);
             break;
         default:
             Serial.println("Comando inválido!");

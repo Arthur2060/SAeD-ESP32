@@ -24,9 +24,6 @@ namespace SAeD
 
         Bussola bussola;
 
-        const int ONE_METER_DELAY = 4500;
-        const int TOTAL_SPIN_DELAY = 8000;
-
         int currentSpeed = 100; // %
 
         void moveForward();
