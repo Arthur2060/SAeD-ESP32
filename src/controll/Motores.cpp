@@ -1,7 +1,6 @@
 #include "Motores.h"
 
 using namespace SAeD;
-using namespace std;
 
 void Motores::moveDistance(bool front)
 {

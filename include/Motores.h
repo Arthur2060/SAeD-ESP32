@@ -1,8 +1,6 @@
 #ifndef MOTORES_H
 #define MOTORES_H
 
-#include "Bussola.h"
-
 #include <Arduino.h>
 
 namespace SAeD
@@ -21,8 +19,6 @@ namespace SAeD
     {
     private:
         Motor left, right;
-
-        Bussola bussola;
 
         int currentSpeed = 100; // %
 
